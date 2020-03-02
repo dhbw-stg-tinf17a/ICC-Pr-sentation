@@ -1,26 +1,44 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
-import Home from '../views/Home.vue';
+
+const LandingPage = () => import('../views/LandingPage.vue');
+const Commute = () => import('../views/CommuteUseCase.vue');
+const Restaurant = () => import('../views/RestaurantUseCase.vue');
+const Trainer = () => import('../views/TrainerUseCase.vue');
+const Travel = () => import('../views/TravelUseCase.vue');
 
 Vue.use(VueRouter);
 
 const routes = [
   {
     path: '/',
-    name: 'Home',
-    component: Home,
+    name: 'landingPage',
+    component: LandingPage,
   },
   {
-    path: '/about',
-    name: 'About',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/About.vue'),
+    path: '/commute',
+    name: 'commute',
+    component: Commute,
+  },
+  {
+    path: '/restaurant',
+    name: 'restaurant',
+    component: Restaurant,
+  },
+  {
+    path: '/trainer',
+    name: 'trainer',
+    component: Trainer,
+  },
+  {
+    path: '/travel',
+    name: 'travel',
+    component: Travel,
   },
 ];
 
 const router = new VueRouter({
+  mode: 'history',
   routes,
 });
 
