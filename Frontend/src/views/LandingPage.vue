@@ -1,0 +1,34 @@
+<template>
+  <div class="hero-body">
+    <div
+      id="container"
+      class="container has-text-centered"
+    >
+      <div class="column is-6 is-offset-3">
+        <h1 class="is-size-1">
+          Welcome to Gunter!
+        </h1>
+        <h2 class="is-size-3">
+          Worlds smartest PDA
+        </h2>
+        <div class="box">
+          <div class="field is-grouped">
+            <p class="control is-expanded">
+              <input
+                class="input"
+                type="text"
+                placeholder="Start speaking or typing"
+              >
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<style scoped>
+#container {
+    margin-top: 12rem;
+}
+</style>

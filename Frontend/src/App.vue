@@ -1,32 +1,125 @@
 <template>
-  <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
+  <section class="hero is-info is-fullheight">
+    <div class="hero-head">
+      <nav class="navbar">
+        <div class="container">
+          <div class="navbar-brand">
+            <router-link
+              id="logo"
+              to="/"
+            >
+              <img
+                src="./assets/logo.jpg"
+                width="150"
+                height="150"
+                alt="Logo"
+              >
+            </router-link>
+            <span
+              class="navbar-burger burger"
+              data-target="navbarMenu"
+            >
+              <span />
+              <span />
+              <span />
+            </span>
+          </div>
+          <div
+            id="navbarMenu"
+            class="navbar-menu"
+          >
+            <div class="navbar-end">
+              <span class="navbar-item">
+                <router-link
+                  class="button is-white is-outlined"
+                  :to="{name: 'commute'}"
+                >
+                  <span class="icon">
+                    <i class="fas fa-train" />
+                  </span>
+                  <span>Commute</span>
+                </router-link>
+              </span>
+              <span class="navbar-item">
+                <router-link
+                  class="button is-white is-outlined"
+                  :to="{name: 'travel'}"
+                >
+                  <span class="icon">
+                    <i class="fas fa-plane-departure" />
+                  </span>
+                  <span>Travel</span>
+                </router-link>
+              </span>
+              <span class="navbar-item">
+                <router-link
+                  class="button is-white is-outlined"
+                  to="restaurant"
+                >
+                  <span class="icon">
+                    <i class="fas fa-utensils" />
+                  </span>
+                  <span>Restaurant</span>
+                </router-link>
+              </span>
+              <span class="navbar-item">
+                <router-link
+                  class="button is-white is-outlined"
+                  to="trainer"
+                >
+                  <span class="icon">
+                    <i class="fas fa-swimmer" />
+                  </span>
+                  <span>Trainer</span>
+                </router-link>
+              </span>
+            </div>
+          </div>
+        </div>
+      </nav>
     </div>
-    <router-view/>
-  </div>
+
+    <router-view />
+  </section>
 </template>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
+<script>
+export default {
+  created() {
+    this.$buefy.dialog.confirm({
+      message: 'This Page talks to you!',
+      type: 'is-success',
+      onConfirm: () => {
+        const utterance = new SpeechSynthesisUtterance('Hello my name is Gunter!');
+        utterance.rate = 1.3;
+        utterance.lang = 'en-US';
+        speechSynthesis.speak(utterance);
+      },
+    });
+  },
+};
+</script>
 
-#nav {
-  padding: 30px;
+<style scoped>
+#logo {
+    padding-top: 1rem;
 }
-
-#nav a {
-  font-weight: bold;
-  color: #2c3e50;
+.hero.is-info {
+  background: linear-gradient(
+      rgba(0, 0, 0, 0.5),
+      rgba(0, 0, 0, 0.5)
+    ), url('./assets/wallpaper.jpg') no-repeat center center fixed;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
 }
-
-#nav a.router-link-exact-active {
-  color: #42b983;
+.hero .nav, .hero.is-success .nav {
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+.hero .subtitle {
+  padding: 3rem 0;
+  line-height: 1.5;
 }
 </style>
