@@ -5,11 +5,8 @@
   >
     <div class="container">
       <h1 class="title has-text-black">
-        Hero title
+        Commute
       </h1>
-      <h2 class="subtitle">
-        Hero subtitle
-      </h2>
     </div>
   </div>
 </template>
