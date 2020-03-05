@@ -1,7 +1,12 @@
 <template>
   <section class="hero is-info is-fullheight">
     <div class="hero-head">
-      <Navbar />
+      <Navbar>
+        <SpeechRecognition
+          :user-input="userInput"
+          @update:user-input="userInput = $event"
+        />
+      </Navbar>
     </div>
 
     <router-view
@@ -13,30 +18,31 @@
 
 <script>
 import Navbar from './components/Navbar.vue';
-import SpeechRecognition from './mixins/SpeechRecognition';
+import SpeechRecognition from './components/SpeechRecognition.vue';
 import SpeechRecognitionLogic from './mixins/SpeechRecognitionLogic';
 
 export default {
   components: {
     Navbar,
+    SpeechRecognition,
   },
-  mixins: [SpeechRecognition, SpeechRecognitionLogic],
+  mixins: [SpeechRecognitionLogic],
   data() {
     return {
       userInput: '',
     };
   },
   created() {
-    // this.$buefy.dialog.confirm({
-    //   message: 'This Page talks to you!',
-    //   type: 'is-success',
-    //   onConfirm: () => {
-    //     const utterance = new SpeechSynthesisUtterance('Hello my name is Gunter!');
-    //     utterance.rate = 1.3;
-    //     utterance.lang = 'en-US';
-    //     speechSynthesis.speak(utterance);
-    //   },
-    // });
+    this.$buefy.dialog.confirm({
+      message: 'This Page talks to you!',
+      type: 'is-success',
+      onConfirm: () => {
+        const utterance = new SpeechSynthesisUtterance('Hello my name is Gunter!');
+        utterance.rate = 1.3;
+        utterance.lang = 'en-US';
+        speechSynthesis.speak(utterance);
+      },
+    });
   },
 };
 </script>

@@ -59,6 +59,9 @@
           <span>Trainer</span>
         </router-link>
       </b-navbar-item>
+      <b-navbar-item tag="div">
+        <slot />
+      </b-navbar-item>
     </template>
   </b-navbar>
 </template>
