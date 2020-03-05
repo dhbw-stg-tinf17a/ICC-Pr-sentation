@@ -1,9 +1,8 @@
 <template>
-  <nav class="navbar">
-    <div class="container">
-      <div class="navbar-brand">
+  <b-navbar>
+    <template slot="brand">
+      <b-navbar-item tag="div">
         <router-link
-          id="logo"
           to="/"
         >
           <img
@@ -13,72 +12,62 @@
             alt="Logo"
           >
         </router-link>
-        <span
-          class="navbar-burger burger"
-          data-target="navbarMenu"
+      </b-navbar-item>
+    </template>
+    <template slot="end">
+      <b-navbar-item tag="div">
+        <router-link
+          class="button is-white is-outlined"
+          to="commute"
         >
-          <span />
-          <span />
-          <span />
-        </span>
-      </div>
-      <div
-        id="navbarMenu"
-        class="navbar-menu"
-      >
-        <div class="navbar-end">
-          <span class="navbar-item">
-            <router-link
-              class="button is-white is-outlined"
-              :to="{name: 'commute'}"
-            >
-              <span class="icon">
-                <i class="fas fa-train" />
-              </span>
-              <span>Commute</span>
-            </router-link>
+          <span class="icon">
+            <i class="fas fa-train" />
           </span>
-          <span class="navbar-item">
-            <router-link
-              class="button is-white is-outlined"
-              :to="{name: 'travel'}"
-            >
-              <span class="icon">
-                <i class="fas fa-plane-departure" />
-              </span>
-              <span>Travel</span>
-            </router-link>
+          <span>Commute</span>
+        </router-link>
+      </b-navbar-item>
+      <b-navbar-item tag="div">
+        <router-link
+          class="button is-white is-outlined"
+          to="travel"
+        >
+          <span class="icon">
+            <i class="fas fa-plane-departure" />
           </span>
-          <span class="navbar-item">
-            <router-link
-              class="button is-white is-outlined"
-              to="restaurant"
-            >
-              <span class="icon">
-                <i class="fas fa-utensils" />
-              </span>
-              <span>Restaurant</span>
-            </router-link>
+          <span>Travel</span>
+        </router-link>
+      </b-navbar-item>
+      <b-navbar-item tag="div">
+        <router-link
+          class="button is-white is-outlined"
+          to="restaurant"
+        >
+          <span class="icon">
+            <i class="fas fa-utensils" />
           </span>
-          <span class="navbar-item">
-            <router-link
-              class="button is-white is-outlined"
-              to="trainer"
-            >
-              <span class="icon">
-                <i class="fas fa-swimmer" />
-              </span>
-              <span>Trainer</span>
-            </router-link>
+          <span>Restaurant</span>
+        </router-link>
+      </b-navbar-item>
+      <b-navbar-item tag="div">
+        <router-link
+          class="button is-white is-outlined"
+          to="trainer"
+        >
+          <span class="icon">
+            <i class="fas fa-swimmer" />
           </span>
-        </div>
-      </div>
-    </div>
-  </nav>
+          <span>Trainer</span>
+        </router-link>
+      </b-navbar-item>
+    </template>
+  </b-navbar>
 </template>
 
 <style scoped>
-#logo {
-    padding-top: 1rem;
+.navbar-item img {
+  max-height: 4rem;
+}
+.navbar {
+  margin: 0 1rem 0 1rem;
 }
 </style>

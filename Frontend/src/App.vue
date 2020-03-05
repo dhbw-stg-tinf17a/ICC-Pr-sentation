@@ -31,9 +31,6 @@ export default {
 </script>
 
 <style scoped>
-#logo {
-    padding-top: 1rem;
-}
 .hero.is-info {
   background: linear-gradient(
       rgba(0, 0, 0, 0.5),
