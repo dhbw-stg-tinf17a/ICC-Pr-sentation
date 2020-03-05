@@ -1,7 +1,7 @@
 const alarmModule = {};
 
 const logger = require('pino')({ level: process.env.LOG_LEVEL || 'info' });
-const calendar = require('./calendarModule');
+const calendar = require('./calendar');
 const schedule = require('node-schedule');
 const dailyCommuteJobName = "CommuteWakeUpAlarm";
 alarmModule.dailyCommuteJob;

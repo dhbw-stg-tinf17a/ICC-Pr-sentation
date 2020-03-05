@@ -5,7 +5,7 @@
 const calendarModule = {};
 
 const logger = require('pino')({ level: process.env.LOG_LEVEL || 'info' });
-const User = require("../modules/userModule");
+const User = require("./user");
 const moment = require('moment');
 const timeFormat = "YYYY-MM-DD HH:mm:ss";
 logger.trace("calendarModule initialized - this is just a mock, please implement");

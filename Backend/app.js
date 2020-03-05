@@ -27,5 +27,5 @@ app.use(cookieParser());
 
 
 app.use('/api', require('./routes'));
-require('./modules/alarmModule');
+require('./modules/alarm');
 module.exports = app;
