@@ -3,6 +3,8 @@ const alarmModule = {};
 const logger = require('pino')({ level: process.env.LOG_LEVEL || 'info' });
 const calendar = require('./calendar');
 const schedule = require('node-schedule');
+const User = require("./user");
+const moment = require('moment');
 const dailyCommuteJobName = "CommuteWakeUpAlarm";
 alarmModule.dailyCommuteJob;
 
@@ -19,11 +21,17 @@ alarmModule.dailyCommuteCron = schedule.scheduleJob("CommuteGetDailyTime", '* * 
 setCommuteAlarm(); // Run when server restarts, no need to wait for next day
 
 function setCommuteAlarm() {
-	calendar.getTodaysFirstEvent()
-		.then((event) => {
-			if (alarmModule.dailyCommuteJob === undefined) alarmModule.dailyCommuteJob = schedule.scheduleJob(dailyCommuteJobName, event.start, wakeUpUser);
-			else alarmModule.dailyCommuteJob.reschedule(dailyCommuteJobName, event.start, wakeUpUser);
-			logger.trace("Setting alarm for event: " + event.summary);
+	
+	Promise.all([User.getUsersPreparationTime(), calendar.getTodaysFirstEvent()])
+		.then((promiseValues) => {
+			const preparationTimeInMinutes = promiseValues[0];
+			const event = promiseValues[1];
+
+			const wakeTime = moment(event.start).subtract(preparationTimeInMinutes, 'minutes').toDate();
+
+			if (alarmModule.dailyCommuteJob === undefined) alarmModule.dailyCommuteJob = schedule.scheduleJob(dailyCommuteJobName, wakeTime, wakeUpUser);
+			else alarmModule.dailyCommuteJob.reschedule(dailyCommuteJobName, wakeTime, wakeUpUser);
+			logger.trace("Setting alarm for event: " + event.summary + " at " + wakeTime.toLocaleTimeString('de-DE'));
 		})
 		.catch((error) => logger.error(error));
 }

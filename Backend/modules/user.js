@@ -22,5 +22,19 @@ userModule.getUserPreferences = function () {
 	});
 };
 
+userModule.getUsersPreparationTime = function () {
+	return new Promise ((resolve, reject) => {
+		this.getUserPreferences()
+			.then((preferences) => {
+				if (preferences.preparationTimeInMinutes === undefined) {
+					logger.trace("User hasn't set their preparationTime yet, using standard time of 1h");
+					return resolve(60);
+				}
+				resolve(preferences.preparationTimeInMinutes);
+			})
+			.catch((error) => reject(error));
+	});
+};
+
 
 module.exports = userModule;

@@ -54,9 +54,10 @@ function getUsersCalendarUrlFromUserPreferences() {
 	return new Promise((resolve, reject) => {
 		User.getUserPreferences()
 			.then((preferences) => {
-				if (preferences.calendarUrl === undefined) return reject({message: "User hasn't set they're calendar url yet."});
+				if (preferences.calendarUrl === undefined) return reject({message: "User hasn't set their calendar url yet."});
 				resolve(preferences.calendarUrl);
-			});
+			})
+			.catch((error) => reject(error));
 	});
 }
 

@@ -5,7 +5,8 @@
     "favouriteFood": "Jelly Beans",
     "loyal": true,
     "preferences": {
-      "calendarUrl": "https://calendar.google.com/calendar/ical/rroff00labrg6qt5gu3ol87ejo%40group.calendar.google.com/private-97ee3f8105c50679da64c381b7890270/basic.ics"
+      "calendarUrl": "https://calendar.google.com/calendar/ical/rroff00labrg6qt5gu3ol87ejo%40group.calendar.google.com/private-97ee3f8105c50679da64c381b7890270/basic.ics",
+      "preparationTimeInMinutes": "120" 
     },
     "events": [
       {
