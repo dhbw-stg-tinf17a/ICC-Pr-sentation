@@ -15,9 +15,11 @@
           <div class="field is-grouped">
             <p class="control is-expanded">
               <input
+                :value="userInput"
                 class="input"
                 type="text"
                 placeholder="Start speaking or typing"
+                @input="$emit('update:user-input', $event.target.value)"
               >
             </p>
           </div>
@@ -26,6 +28,18 @@
     </div>
   </div>
 </template>
+
+<script>
+export default {
+  props: {
+    userInput: {
+      type: String,
+      required: false,
+      default: '',
+    },
+  },
+};
+</script>
 
 <style scoped>
 #container {

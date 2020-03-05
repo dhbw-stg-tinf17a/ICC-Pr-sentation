@@ -4,28 +4,39 @@
       <Navbar />
     </div>
 
-    <router-view />
+    <router-view
+      :user-input="userInput"
+      @update:user-input="userInput = $event"
+    />
   </section>
 </template>
 
 <script>
 import Navbar from './components/Navbar.vue';
+import SpeechRecognition from './mixins/SpeechRecognition';
+import SpeechRecognitionLogic from './mixins/SpeechRecognitionLogic';
 
 export default {
   components: {
     Navbar,
   },
+  mixins: [SpeechRecognition, SpeechRecognitionLogic],
+  data() {
+    return {
+      userInput: '',
+    };
+  },
   created() {
-    this.$buefy.dialog.confirm({
-      message: 'This Page talks to you!',
-      type: 'is-success',
-      onConfirm: () => {
-        const utterance = new SpeechSynthesisUtterance('Hello my name is Gunter!');
-        utterance.rate = 1.3;
-        utterance.lang = 'en-US';
-        speechSynthesis.speak(utterance);
-      },
-    });
+    // this.$buefy.dialog.confirm({
+    //   message: 'This Page talks to you!',
+    //   type: 'is-success',
+    //   onConfirm: () => {
+    //     const utterance = new SpeechSynthesisUtterance('Hello my name is Gunter!');
+    //     utterance.rate = 1.3;
+    //     utterance.lang = 'en-US';
+    //     speechSynthesis.speak(utterance);
+    //   },
+    // });
   },
 };
 </script>
