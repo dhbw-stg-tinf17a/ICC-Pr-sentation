@@ -3,13 +3,11 @@ require('dotenv').config();
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
-const pino = require('pino');
 const helmet = require('helmet');
+// Initialize Pino-logging
+const logger = require('pino')({ level: process.env.LOG_LEVEL || 'info', redact: { paths: ['password'], censor: '**GDPR COMPLIANT**' } });
 
 const app = express();
-
-// Initialize Pino-logging
-const logger = pino({ level: process.env.LOG_LEVEL || 'info', redact: { paths: ['password'], censor: '**GDPR COMPLIANT**' } });
 
 const prod = process.env.PROD == 'true';
 logger.info(`Running in ${prod ? 'production' : 'development'}`);

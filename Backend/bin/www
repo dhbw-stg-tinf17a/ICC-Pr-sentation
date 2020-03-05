@@ -5,8 +5,7 @@
  */
 
 var app = require('../app');
-const pino = require('pino');
-const logger = pino({ level: process.env.LOG_LEVEL || 'info' });
+const logger = require('pino')({ level: process.env.LOG_LEVEL || 'info' });
 var http = require('http');
 
 /**
