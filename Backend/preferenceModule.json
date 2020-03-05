@@ -1,0 +1,10 @@
+{
+  "user": {
+    "name": "Gunter",
+    "age": 107,
+    "favouriteFood": "Jelly Beans",
+    "loyal": true,
+    "preferences": {}
+  },
+  "global": {}
+}
