@@ -1,38 +1,65 @@
-/**
- * This is currently just a mock
- */
-
 const calendarModule = {};
 
 const logger = require('pino')({ level: process.env.LOG_LEVEL || 'info' });
+const ical = require('node-ical');
 const User = require("./user");
 const moment = require('moment');
-const timeFormat = "YYYY-MM-DD HH:mm:ss";
 logger.trace("calendarModule initialized - this is just a mock, please implement");
 
 calendarModule.getTodaysFirstEvent = function() {
 	return new Promise((resolve, reject) => {
-		User.getUser()
-			.then((user) => {
-				if (!user.events || user.events.length == 0) return reject({message: "User hasn't set any alarms yet"});
 
-				let nextEvent;
+		fetchCalendarEvents()
+			.then((events) => {
+				if (!events || events.length == 0) return reject({message: "User hasn't set any events yet"});
+			
+				const eventArray = Object.values(events);
+				let firstEventToday;
+				let firstEventTomorrow;
+
 				const now = moment();
 				const today = now.dayOfYear();
+				const tomorrow = today + 1;
 
-				user.events.forEach(event => {
-					const eventDate = moment(event.date, timeFormat);
-					if (eventDate.dayOfYear() != today) return;
-					if (nextEvent === undefined || eventDate.isBefore(nextEvent.date)) nextEvent = event;
+				eventArray.forEach(event => {
+					if (event.type !== 'VEVENT') return;
+					const eventDate = moment(event.start);
+					const dayOfEvent = eventDate.dayOfYear();
+
+					if ( dayOfEvent !== today && dayOfEvent !== tomorrow) return;
+					if ( dayOfEvent === today && (firstEventToday === undefined || eventDate.isBefore(firstEventToday.start))) firstEventToday = event;
+					if ( dayOfEvent === tomorrow && (firstEventTomorrow === undefined || eventDate.isBefore(firstEventTomorrow.start))) firstEventTomorrow = event;
+					// logger.trace(`${event.summary} is in ${event.location} on the ${event.start.getDate()}. of ${months[event.start.getMonth()]} at ${event.start.toLocaleTimeString('de-DE')}`);
 				});
 
-				if (nextEvent == null) reject({message: "There are no events today"});
-				nextEvent.date = moment(nextEvent.date, timeFormat).toDate();
-				return resolve(nextEvent);
+				if (firstEventToday !== undefined && now.isBefore(firstEventToday.start)) return resolve(firstEventToday);
+				if (firstEventTomorrow !== undefined && now.isBefore(firstEventTomorrow.start)) return resolve(firstEventToday);
+				reject({message: "There are no events today"});
 			});
 
 	});
 };
+
+
+function fetchCalendarEvents() {
+	return new Promise((resolve, reject) => {
+		getUsersCalendarUrlFromUserPreferences()
+			.then((url) => ical.async.fromURL(url))
+			.then((events) => resolve(events))
+			.catch((error) => reject(error));
+	});
+}
+
+function getUsersCalendarUrlFromUserPreferences() {
+	return new Promise((resolve, reject) => {
+		User.getUserPreferences()
+			.then((preferences) => {
+				if (preferences.calendarUrl === undefined) return reject({message: "User hasn't set their calendar url yet."});
+				resolve(preferences.calendarUrl);
+			})
+			.catch((error) => reject(error));
+	});
+}
 
 
 module.exports = calendarModule;
