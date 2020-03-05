@@ -1,9 +1,6 @@
 const router = require('express').Router();
-
-const pino = require('pino');
-const logger = pino({ level: process.env.LOG_LEVEL || 'info' });
-
-const User = require("../modules/userModule");
+const logger = require('pino')({ level: process.env.LOG_LEVEL || 'info' });
+const User = require("../modules/user");
 
 /**********************
  * Get the user's info

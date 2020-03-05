@@ -4,7 +4,13 @@
     "age": 107,
     "favouriteFood": "Jelly Beans",
     "loyal": true,
-    "preferences": {}
+    "preferences": {},
+    "events": [
+      {
+        "title": "Party hard",
+        "date": "2020-03-05 14:10.00"
+      }
+    ]
   },
   "global": {}
 }
