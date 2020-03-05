@@ -1,9 +1,8 @@
-import Vue from 'vue';
 import Buefy from 'buefy';
+import 'buefy/dist/buefy.css';
+import Vue from 'vue';
 import App from './App.vue';
 import router from './router';
-
-import 'buefy/dist/buefy.css';
 
 Vue.config.productionTip = false;
 
@@ -13,3 +12,12 @@ new Vue({
   router,
   render: (h) => h(App),
 }).$mount('#app');
+
+window.addEventListener('load', async () => {
+  try {
+    const registration = await navigator.serviceWorker.register('/service-worker.js');
+    console.log('ServiceWorker registration successful with scope: ', registration.scope);
+  } catch (err) {
+    console.log('ServiceWorker registration failed: ', err);
+  }
+});
