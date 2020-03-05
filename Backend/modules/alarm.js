@@ -21,10 +21,11 @@ setCommuteAlarm(); // Run when server restarts, no need to wait for next day
 function setCommuteAlarm() {
 	calendar.getTodaysFirstEvent()
 		.then((event) => {
-			if (alarmModule.dailyCommuteJob === undefined) alarmModule.dailyCommuteJob = schedule.scheduleJob(dailyCommuteJobName, event.date, wakeUpUser);
-			else alarmModule.dailyCommuteJob.reschedule(dailyCommuteJobName, event.date, wakeUpUser);
+			if (alarmModule.dailyCommuteJob === undefined) alarmModule.dailyCommuteJob = schedule.scheduleJob(dailyCommuteJobName, event.start, wakeUpUser);
+			else alarmModule.dailyCommuteJob.reschedule(dailyCommuteJobName, event.start, wakeUpUser);
+			logger.trace("Setting alarm for event: " + event.summary);
 		})
-		.catch((error) => logger.trace(error.message));
+		.catch((error) => logger.error(error));
 }
 
 function wakeUpUser(event) {

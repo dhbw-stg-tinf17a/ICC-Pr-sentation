@@ -1,0 +1,17 @@
+{ 
+	"type": "VEVENT",
+	 "params": [],
+	 "start": { 2020-03-05T17: 00: 00.000Z tz: undefined },
+	 "datetype": "date-time",
+	 "end": { 2020-03-05T18: 00: 00.000Z tz: undefined },
+	 "dtstamp": { 2020-03-05T14: 41: 05.000Z tz: undefined },
+	 "uid": "7klspkps260gfhja54dhjb9d1qi6@google.com",
+	 "created": { 2020-03-05T14: 39: 43.000Z tz: undefined },
+	 "description": "",
+	 "lastmodified": { 2020-03-05T14: 39: 43.000Z tz: undefined },
+	 "location": "",
+	 "sequence": "0",
+	 "status": "CONFIRMED",
+	 "summary": "Practice Beatbox Yodeling",
+	 "transparency": "OPAQUE"
+}
