@@ -5,8 +5,8 @@ const request = require('axios');
 const User = require("./user");
 const quotesUrl = 'https://quotes.rest/qod';
 const defaultQuote = "Sometimes you must hurt in order to know, fall in order to grow, lose in order to gain because life’s greatest lessons are learned through pain.";
-const availableCategories = ['inspire', 'management', 'life', 'sports', 'funny', 'love', 'art', 'students'];
-const defaultCategory = 'inspire';
+const availableCategories = ['inspiration', 'management', 'life', 'sports', 'funny', 'love', 'art', 'students'];
+const defaultCategory = 'inspiration';
 
 
 quoteModule.getPreferredQuoteOfTheDay = function() {
@@ -33,7 +33,7 @@ function getUsersQuoteCategoryFromUserPreferences() {
 		User.getUsersQuoteCategory()
 			.then((category) => {
 				if (availableCategories.includes(category)) return resolve(category);
-				reject(defaultCategory);
+				reject(new Error("Quote category the user set is invalid"));
 			})
 			.catch((error) => reject(error));
 	});
