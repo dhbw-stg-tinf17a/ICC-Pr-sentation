@@ -23,6 +23,7 @@ export default {
         if (this.$router.currentRoute.name !== 'landingPage') this.$router.push({ name: 'landingPage' });
         this.userInput = '';
       }
+      // Whats the time?
     },
   },
 };
