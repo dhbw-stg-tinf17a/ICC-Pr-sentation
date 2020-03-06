@@ -12,7 +12,7 @@ weatherAPI.setAPPID(process.env.OPENWEATHER_API_KEY);
 
 weatherModule.getCurrentWeather = function () {
 	return new Promise((resolve, reject) => {
-		logger.trace("weather.js - getCurrenrWeather - start");
+		logger.trace("weather.js - getCurrentWeather - start");
 		getUsersCityFromUserPreferences()
 			.catch((error) => {
 				logger.error(error);
@@ -21,8 +21,11 @@ weatherModule.getCurrentWeather = function () {
 			.then((city) => weatherAPI.setCity(city))
 			.then(() => fetchCurrentWeather())
 			.then((weather) => resolve(weather))
-			.catch((error) => reject(error))
-			.finally(() => logger.trace("weather.js - getCurrenrWeather - finally"));
+			.catch((error) => {
+				logger.error(error);
+				reject(error);
+			})
+			.finally(() => logger.trace("weather.js - getCurrentWeather - finally"));
 	});
 };
 
@@ -40,13 +43,17 @@ function getUsersCityFromUserPreferences() {
 function fetchCurrentWeather() {
 	logger.trace("weather.js - fetchCurrentWeather - start");
 	return new Promise((resolve, reject) => {
-		weatherAPI.getSmartJSON(function(error, weatherData) {
-			logger.trace("weather.js - fetchCurrentWeather - fetchReturned: " + weatherData);
-			if (error) reject(error);
-			else resolve(weatherData);
+		weatherAPI.getAllWeather(function(error, weatherData) {
+			logger.trace("weather.js - fetchCurrentWeather - fetchReturned");
+			// logger.trace(weatherData);
+			if (error || (weatherData && weatherData.cod >= 400)) {
+				logger.trace("weather.js - fetchCurrentWeather - error with the openweather API");
+				logger.error(error);
+				reject( new Error('Error with the OpenWeather-API'));
+			} else resolve(weatherData);
 		});
 	});
 }
 
 module.exports = weatherModule;
-logger.trace("weatherModule initialized");
+logger.debug("weatherModule initialized");

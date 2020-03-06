@@ -44,4 +44,4 @@ function getUsersQuoteCategoryFromUserPreferences() {
 }
 
 module.exports = quoteModule;
-logger.trace("quoteModule initialized");
+logger.debug("quoteModule initialized");

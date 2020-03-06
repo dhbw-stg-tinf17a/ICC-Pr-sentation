@@ -13,5 +13,5 @@ available quote categories: `inspire`, `management`, `life`, `sports`, `funny`, 
 The format of a quote-event is shown in /templates/
 
 ### Current weather at preferred location
+We use the OpenWeatherMap.org API for this.
 The format of a weather-object is shown in /templates/.
-We use the smartobject for now
