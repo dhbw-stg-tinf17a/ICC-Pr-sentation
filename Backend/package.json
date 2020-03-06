@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
+    "test": "jest --forceExit | pino-pretty",
     "start": "node ./bin/www | pino-pretty",
     "start-dev": "nodemon 'node ./bin/www' | pino-pretty"
   },
@@ -29,5 +30,11 @@
     "jest": "^25.1.0",
     "nodemon": "^2.0.2",
     "supertest": "^4.0.2"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "coveragePathIgnorePatterns": [
+      "/node_modules/"
+    ]
   }
 }
