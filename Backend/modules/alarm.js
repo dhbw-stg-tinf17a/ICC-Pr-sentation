@@ -17,7 +17,7 @@ alarmModule.dailyCommuteJob;
     Months: 0-11 (Jan-Dec)
     Day of Week: 0-6 (Sun-Sat)
 */
-alarmModule.dailyCommuteCron = schedule.scheduleJob("CommuteGetDailyTime", '* * 0 * * *', setCommuteAlarm);
+alarmModule.dailyCommuteCron = schedule.scheduleJob("CommuteGetDailyTime", '0 0 0 * * *', setCommuteAlarm);
 setCommuteAlarm(); // Run when server restarts, no need to wait for next day
 
 function setCommuteAlarm() {
@@ -31,7 +31,7 @@ function setCommuteAlarm() {
 
 			if (alarmModule.dailyCommuteJob === undefined) alarmModule.dailyCommuteJob = schedule.scheduleJob(dailyCommuteJobName, wakeTime, wakeUpUser);
 			else alarmModule.dailyCommuteJob.reschedule(dailyCommuteJobName, wakeTime, wakeUpUser);
-			logger.trace("Setting alarm for event: " + event.summary + " at " + wakeTime.toLocaleTimeString('de-DE'));
+			logger.info("Setting alarm for event: " + event.summary + " at " + wakeTime.toLocaleTimeString('de-DE'));
 		})
 		.catch((error) => logger.error(error));
 }
@@ -42,4 +42,4 @@ function wakeUpUser(event) {
 
 
 module.exports = alarmModule;
-logger.trace("alarmModule initialized");
+logger.debug("alarmModule initialized");

@@ -1,19 +1,36 @@
 <template>
   <section class="hero is-info is-fullheight">
     <div class="hero-head">
-      <Navbar />
+      <Navbar>
+        <SpeechRecognition
+          :user-input="userInput"
+          @update:user-input="userInput = $event"
+        />
+      </Navbar>
     </div>
 
-    <router-view />
+    <router-view
+      :user-input="userInput"
+      @update:user-input="userInput = $event"
+    />
   </section>
 </template>
 
 <script>
 import Navbar from './components/Navbar.vue';
+import SpeechRecognition from './components/SpeechRecognition.vue';
+import SpeechRecognitionLogic from './mixins/SpeechRecognitionLogic';
 
 export default {
   components: {
     Navbar,
+    SpeechRecognition,
+  },
+  mixins: [SpeechRecognitionLogic],
+  data() {
+    return {
+      userInput: '',
+    };
   },
   created() {
     this.$buefy.dialog.confirm({
@@ -31,9 +48,6 @@ export default {
 </script>
 
 <style scoped>
-#logo {
-    padding-top: 1rem;
-}
 .hero.is-info {
   background: linear-gradient(
       rgba(0, 0, 0, 0.5),
