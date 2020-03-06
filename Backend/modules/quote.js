@@ -10,6 +10,7 @@ const defaultCategory = 'inspiration';
 
 
 quoteModule.getPreferredQuoteOfTheDay = function() {
+	logger.trace("quote.js - getPreferredQuoteOfTheDay - start");
 	return new Promise((resolve, reject) => {
 		getUsersQuoteCategoryFromUserPreferences()
 			.catch((error) => {
@@ -24,18 +25,21 @@ quoteModule.getPreferredQuoteOfTheDay = function() {
 			.catch((error) => {
 				logger.error(error);
 				resolve(defaultQuote);
-			});
+			})
+			.finally(() => logger.trace("quote.js - getPreferredQuoteOfTheDay - finally"));
 	});
 };
 
 function getUsersQuoteCategoryFromUserPreferences() {
+	logger.trace("quote.js - getUsersQuoteCategoryFromUserPreferences - start");
 	return new Promise((resolve, reject) => {
 		User.getUsersQuoteCategory()
 			.then((category) => {
 				if (availableCategories.includes(category)) return resolve(category);
 				reject(new Error("Quote category the user set is invalid"));
 			})
-			.catch((error) => reject(error));
+			.catch((error) => reject(error))
+			.finally(() => logger.trace("quote.js - getUsersQuoteCategoryFromUserPreferences - finally"));
 	});
 }
 
