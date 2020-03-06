@@ -11,7 +11,7 @@
         @click="stopSpeechRecognition"
       >
         <span class="icon">
-          <i class="fas fa-microphone-slash" />
+          <i class="fas fa-microphone" />
         </span>
       </button>
     </b-tooltip>
@@ -26,7 +26,7 @@
         @click="startSpeechRecognition"
       >
         <span class="icon">
-          <i class="fas fa-microphone" />
+          <i class="fas fa-microphone-slash" />
         </span>
       </button>
     </b-tooltip>
