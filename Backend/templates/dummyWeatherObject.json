@@ -1,0 +1,44 @@
+{
+    "coord": {
+        "lon": 9.18,
+        "lat": 48.78
+    },
+    "weather": [
+        {
+            "id": 500,
+            "main": "Rain",
+            "description": "light rain",
+            "icon": "10d"
+        }
+    ],
+    "base": "stations",
+    "main": {
+        "temp": 278.82,
+        "feels_like": 272.54,
+        "temp_min": 277.59,
+        "temp_max": 280.37,
+        "pressure": 994,
+        "humidity": 80
+    },
+    "visibility": 10000,
+    "wind": {
+        "speed": 6.7,
+        "deg": 230,
+        "gust": 12.3
+    },
+    "clouds": {
+        "all": 75
+    },
+    "dt": 1583486549,
+    "sys": {
+        "type": 1,
+        "id": 1274,
+        "country": "DE",
+        "sunrise": 1583474085,
+        "sunset": 1583514869
+    },
+    "timezone": 3600,
+    "id": 2825297,
+    "name": "Stuttgart",
+    "cod": 200
+}

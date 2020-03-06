@@ -11,3 +11,7 @@ The format of an event-object is shown in /templates/
 available quote categories: `inspire`, `management`, `life`, `sports`, `funny`, `love`, `art`, `students`
 -> There is a ratelimit of 10 requests per hour
 The format of a quote-event is shown in /templates/
+---
+### Current weather at preferred location
+The format of a weather-object is shown in /templates/.
+We use the smartobject for now
