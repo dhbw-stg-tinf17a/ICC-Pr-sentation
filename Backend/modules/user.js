@@ -6,7 +6,7 @@ userModule.getUser = function () {
 	logger.trace("userModule - getUser - called");
 	return new Promise((resolve, reject) => {
 		const user = preferenceModule.get("user").value();
-		if (user === undefined) return reject({message: "User could not be fetched."});
+		if (user === undefined) return reject(new Error("User could not be fetched."));
 		resolve(user);
 	});
 };
@@ -15,7 +15,7 @@ userModule.getUserPreferences = function () {
 	return new Promise ((resolve, reject) => {
 		this.getUser()
 			.then((user) => {
-				if (user.preferences === undefined) return reject({message: "User has no preferences set."});
+				if (user.preferences === undefined) return reject(new Error("User has no preferences set."));
 				resolve(user.preferences);
 			})
 			.catch((error) => reject(error));
@@ -36,5 +36,20 @@ userModule.getUsersPreparationTime = function () {
 	});
 };
 
+userModule.getUsersQuoteCategory = function () {
+	return new Promise ((resolve, reject) => {
+		this.getUserPreferences()
+			.then((preferences) => {
+				if (preferences.quoteCategory === undefined) {
+					logger.trace("User hasn't set their favourite quote category yet, using standard category");
+					return reject(new Error ("User hasn't set their favourite quote category yet, using standard category"));
+				}
+				resolve(preferences.quoteCategory);
+			})
+			.catch((error) => reject(error));
+	});
+};
+
 
 module.exports = userModule;
+logger.trace("userModule initialized");

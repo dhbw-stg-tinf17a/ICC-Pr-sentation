@@ -4,7 +4,6 @@ const logger = require('pino')({ level: process.env.LOG_LEVEL || 'info' });
 const ical = require('node-ical');
 const User = require("./user");
 const moment = require('moment');
-logger.trace("calendarModule initialized - this is just a mock, please implement");
 
 calendarModule.getTodaysFirstEvent = function() {
 	return new Promise((resolve, reject) => {
@@ -36,7 +35,6 @@ calendarModule.getTodaysFirstEvent = function() {
 				if (firstEventTomorrow !== undefined && now.isBefore(firstEventTomorrow.start)) return resolve(firstEventToday);
 				reject({message: "There are no events today"});
 			});
-
 	});
 };
 
@@ -63,3 +61,4 @@ function getUsersCalendarUrlFromUserPreferences() {
 
 
 module.exports = calendarModule;
+logger.trace("calendarModule initialized");
