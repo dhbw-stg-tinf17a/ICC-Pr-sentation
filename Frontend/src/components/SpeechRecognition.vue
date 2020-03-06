@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div id="speechRecognition">
     <b-tooltip
       label="Mute"
       position="is-bottom"
@@ -152,3 +152,11 @@ export default {
 };
 
 </script>
+
+<style scoped>
+#speechRecognition {
+  position: absolute;
+  bottom:1rem;
+  left:1rem;
+}
+</style>
