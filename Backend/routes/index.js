@@ -9,5 +9,6 @@ router.get('/', (req, res) => {
 });
 
 router.use('/user', require('./user'));
+router.use('/quote', require('./quote'));
 
 module.exports = router;

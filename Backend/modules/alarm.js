@@ -17,7 +17,7 @@ alarmModule.dailyCommuteJob;
     Months: 0-11 (Jan-Dec)
     Day of Week: 0-6 (Sun-Sat)
 */
-alarmModule.dailyCommuteCron = schedule.scheduleJob("CommuteGetDailyTime", '* * 0 * * *', setCommuteAlarm);
+alarmModule.dailyCommuteCron = schedule.scheduleJob("CommuteGetDailyTime", '0 0 0 * * *', setCommuteAlarm);
 setCommuteAlarm(); // Run when server restarts, no need to wait for next day
 
 function setCommuteAlarm() {
