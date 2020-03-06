@@ -18,7 +18,6 @@ quoteModule.getPreferredQuoteOfTheDay = function() {
 			})
 			.then((category) => request.get(quotesUrl, {params: {category: category}}))
 			.then((response) => {
-				console.log(response);
 				const quote = response.data.contents.quotes[0];
 				resolve(quote);
 			})
