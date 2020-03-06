@@ -1,6 +1,12 @@
 const router = require('express').Router();
 const logger = require('pino')({ level: process.env.LOG_LEVEL || 'info' });
 
+
+router.use('/', (req, res, next) => {
+	logger.info('router - called route: ' + req.originalUrl);
+	next();
+});
+
 /** Landing page */
 router.get('/', (req, res) => {
 	logger.trace('router - index - GET called on /');

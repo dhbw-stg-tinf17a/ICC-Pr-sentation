@@ -66,4 +66,4 @@ userModule.getUsersCity = function () {
 
 
 module.exports = userModule;
-logger.trace("userModule initialized");
+logger.debug("userModule initialized");

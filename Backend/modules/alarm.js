@@ -31,7 +31,7 @@ function setCommuteAlarm() {
 
 			if (alarmModule.dailyCommuteJob === undefined) alarmModule.dailyCommuteJob = schedule.scheduleJob(dailyCommuteJobName, wakeTime, wakeUpUser);
 			else alarmModule.dailyCommuteJob.reschedule(dailyCommuteJobName, wakeTime, wakeUpUser);
-			logger.trace("Setting alarm for event: " + event.summary + " at " + wakeTime.toLocaleTimeString('de-DE'));
+			logger.info("Setting alarm for event: " + event.summary + " at " + wakeTime.toLocaleTimeString('de-DE'));
 		})
 		.catch((error) => logger.error(error));
 }
@@ -42,4 +42,4 @@ function wakeUpUser(event) {
 
 
 module.exports = alarmModule;
-logger.trace("alarmModule initialized");
+logger.debug("alarmModule initialized");
