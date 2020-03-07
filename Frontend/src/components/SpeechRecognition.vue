@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div id="speechRecognition">
     <b-tooltip
       label="Mute"
       position="is-bottom"
@@ -7,11 +7,11 @@
     >
       <button
         v-if="listening"
-        class="button is-white is-outlined"
+        class="button is-info"
         @click="stopSpeechRecognition"
       >
         <span class="icon">
-          <i class="fas fa-microphone" />
+          <i class="fas fa-microphone fa-2x" />
         </span>
       </button>
     </b-tooltip>
@@ -22,11 +22,11 @@
     >
       <button
         v-if="!listening"
-        class="button is-white is-outlined"
+        class="button is-info"
         @click="startSpeechRecognition"
       >
         <span class="icon">
-          <i class="fas fa-microphone-slash" />
+          <i class="fas fa-microphone-slash fa-2x" />
         </span>
       </button>
     </b-tooltip>

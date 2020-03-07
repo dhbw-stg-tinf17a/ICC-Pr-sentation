@@ -5,7 +5,7 @@ export default {
     },
   },
   methods: {
-    // checks, if userInput contains any use case name
+    // checks, if userInput contains any trigger word
     checkForUseCase(userInput) {
       if (userInput.toLowerCase().includes('trainer')) {
         if (this.$router.currentRoute.name !== 'trainer') this.$router.push({ name: 'trainer' });
@@ -22,8 +22,16 @@ export default {
       } else if (userInput.toLowerCase().includes('home')) {
         if (this.$router.currentRoute.name !== 'landingPage') this.$router.push({ name: 'landingPage' });
         this.userInput = '';
+      } else if (userInput.toLowerCase().includes('time')) {
+        const today = new Date();
+        const time = `${today.getHours()}:${today.getMinutes()}:${today.getSeconds()}`;
+
+        const utterance = new SpeechSynthesisUtterance(`Currently it is: ${time}`);
+        utterance.rate = 1.2;
+        utterance.lang = 'en-US';
+        speechSynthesis.speak(utterance);
+        this.userInput = '';
       }
-      // Whats the time?
     },
   },
 };

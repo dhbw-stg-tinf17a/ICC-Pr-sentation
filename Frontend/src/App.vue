@@ -1,18 +1,18 @@
 <template>
   <section class="hero is-info is-fullheight">
     <div class="hero-head">
-      <Navbar>
-        <SpeechRecognition
-          :user-input="userInput"
-          @update:user-input="userInput = $event"
-        />
-      </Navbar>
+      <Navbar />
     </div>
 
     <router-view
       :user-input="userInput"
       @update:user-input="userInput = $event"
-    />
+    >
+      <SpeechRecognition
+        :user-input="userInput"
+        @update:user-input="userInput = $event"
+      />
+    </router-view>
   </section>
 </template>
 
