@@ -52,7 +52,13 @@ function getTimeToLeave() {
 				logger.trace('Time to leave for event: ' + time.format("DD.MM HH:mm"));
 				resolve(event);
 			})
-			.catch((error) => reject(error))
+			.catch((error) => {
+				// ! TODO: reject normal reject again, just didn't want to push breaking changes on a weekend
+				logger.error(error);
+				event.timeToLeave = event.start;
+				resolve(event);
+				// reject(error);
+			})
 			.finally(() => logger.trace("alarm.js - getTimeToLeave - finally"));
 	});
 }
