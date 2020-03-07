@@ -17,12 +17,12 @@ googleMapsModule.getStreetFromCoordinates = function(coordinates) {
 			lng: parseFloat(latlngStr[1])
 		};
 
-		mapsClient.geocode({
+		mapsClient.reverseGeocode({
 			params: {
 				key: process.env.GOOGLE_MAPS_API_KEY,
 				language: 'de',
-				// ! TODO: this probably doesn't work
 				latlng: coordinatesObject,
+				result_type: ["street_address"]
 			},
 		})
 			.then((response) => {

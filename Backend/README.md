@@ -37,3 +37,9 @@ Parameters:
  * Route type: `?routeType=LEASTTIME|LEASTINTERCHANGE|LEASTWALKING`
  * exclude means of transport: `?excludedMeans=<ID>`
  * change walking speed: `?changeSpeed=normal|slow|fast`
+
+Costs:
+| Service           | Price in $ per 1k requests |
+|-------------------|----------------------------|
+| Place-Details     | 20                         |
+| Reverse Geocoding | 5                          |
