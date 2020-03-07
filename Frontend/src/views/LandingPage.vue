@@ -22,6 +22,9 @@
                 @input="$emit('update:user-input', $event.target.value)"
               >
             </p>
+            <p class="control">
+              <slot />
+            </p>
           </div>
         </div>
       </div>

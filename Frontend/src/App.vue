@@ -7,13 +7,12 @@
     <router-view
       :user-input="userInput"
       @update:user-input="userInput = $event"
-    />
-    <div class="hero-foot">
+    >
       <SpeechRecognition
         :user-input="userInput"
         @update:user-input="userInput = $event"
       />
-    </div>
+    </router-view>
   </section>
 </template>
 
@@ -58,8 +57,5 @@ export default {
   -moz-background-size: cover;
   -o-background-size: cover;
   background-size: cover;
-}
-.hero-foot {
-  position: relative;
 }
 </style>
