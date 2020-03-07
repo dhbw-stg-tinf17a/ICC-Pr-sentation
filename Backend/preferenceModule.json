@@ -8,7 +8,11 @@
       "calendarUrl": "https://calendar.google.com/calendar/ical/rroff00labrg6qt5gu3ol87ejo%40group.calendar.google.com/private-97ee3f8105c50679da64c381b7890270/basic.ics",
       "preparationTimeInMinutes": "120",
       "quoteCategory": "funny",
-      "weatherCity": "Stuttgart"
+      "weatherCity": "Stuttgart",
+      "currentLocationCoordinates": "48.809062,9.219187",
+      "currentLocationAddress": "Stuttgart, Schmidenerstraße 21",
+      "eventLocationCoordinates": "",
+      "eventLocationAddress": "Stuttgart, Rotebühlplatz 41"
     },
     "events": [
       {
