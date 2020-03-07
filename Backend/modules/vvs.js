@@ -30,7 +30,7 @@ const dateFormat = 'YYYYMMDD';
 const timeFormat = 'HHmm';
 
 
-vvsModule.getLastPossibleConnectionStartTime = function(eventStartTime) {
+vvsModule.getLastPossibleConnectionStartTime = function(eventStartTime, startCoordinates) {
 	logger.trace("vvs.js - getLastPossibleConnectionStartTime - start");
 	return new Promise((resolve, reject) => {
 		Promise.all([getUsersCurrentAddressFromUserPreferences(), getEventAddressFromUserPreferences()])
