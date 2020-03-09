@@ -17,6 +17,6 @@ router.get('/', (req, res) => {
 router.use('/user', require('./user'));
 router.use('/quote', require('./quote'));
 router.use('/weather', require('./weather'));
-router.use('/push', require('./push'));
+router.use('/notifications', require('./notifications'));
 
 module.exports = router;

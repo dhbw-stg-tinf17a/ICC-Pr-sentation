@@ -8,8 +8,8 @@ webpush.setVapidDetails(
 	process.env.PUSH_KEY_PRIVATE,
 );
 
-router.post('/subscribe', function (req, res) {
-	logger.trace("router - push - POST /subscribe");
+router.post('/enable', function (req, res) {
+	logger.trace("router - push - POST /enable");
 
 	// TODO store req.body in the database
 	const subscription = req.body;
