@@ -1,11 +1,8 @@
 /* eslint no-restricted-globals: 1 */
 
 self.addEventListener('push', async (event) => {
-  event.waitUntil(self.registration.showNotification('Gunter says hello', {
-    body: event.data.text(),
-    icon: '/favicon.jpg',
-    badge: '/bade.png',
-  }));
+  const data = event.data.json();
+  event.waitUntil(self.registration.showNotification(data.title, data.options));
 });
 
 self.addEventListener('notificationclick', (event) => {
