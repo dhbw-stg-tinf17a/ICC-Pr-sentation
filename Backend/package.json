@@ -5,7 +5,7 @@
   "scripts": {
     "test": "jest --coverage --forceExit | pino-pretty",
     "start": "node ./bin/www | pino-pretty",
-    "start-dev": "nodemon 'node ./bin/www' | pino-pretty"
+    "start-dev": "nodemon 'node ./bin/www' --ignore db/ | pino-pretty"
   },
   "dependencies": {
     "@googlemaps/google-maps-services-js": "^2.1.2",
