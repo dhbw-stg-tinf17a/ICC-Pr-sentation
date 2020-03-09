@@ -20,7 +20,7 @@
           v-model="notificationsEnabled"
           @input="toggleNotifications"
         >
-          Send notifications
+          Send notifications to this device
         </b-checkbox>
       </div>
 
@@ -146,7 +146,7 @@ export default {
         const notificationPermission = await Notification.requestPermission();
         if (notificationPermission !== 'granted') {
           this.$buefy.snackbar.open({
-            message: 'Unfortunately, Gunter doesn\'t have permission to send you notifications. Please check your browser settings.',
+            message: 'Unfortunately, Gunter doesn\'t have permission to send you notifications on this device. Please check your browser settings.',
             type: 'is-danger',
           });
           this.notificationsEnabled = false;
@@ -170,7 +170,7 @@ export default {
       } catch (err) {
         console.error(err);
         this.$buefy.snackbar.open({
-          message: 'Unfortunately, Gunter couldn\'t enable notifications for you. He doesn\'t know why and is truly sorry.',
+          message: 'Unfortunately, Gunter couldn\'t enable notifications for you on this device. He doesn\'t know why and is truly sorry.',
           type: 'is-danger',
         });
         this.notificationsEnabled = false;
@@ -189,7 +189,7 @@ export default {
       } catch (err) {
         console.error(err);
         this.$buefy.snackbar.open({
-          message: 'Unfortunately, Gunter couldn\'t disable notifications for you. He doesn\'t know why and is truly sorry.',
+          message: 'Unfortunately, Gunter couldn\'t disable notifications for you on this device. He doesn\'t know why and is truly sorry.',
           type: 'is-danger',
         });
         this.notificationsEnabled = true;
