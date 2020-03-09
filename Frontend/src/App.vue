@@ -43,6 +43,20 @@ export default {
         speechSynthesis.speak(utterance);
       },
     });
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(this.showPosition, this.error);
+    } else {
+      console.error('Geolocation is not supported by this browser.');
+    }
+  },
+  methods: {
+    showPosition(position) {
+      console.log(`Latitude: ${position.coords.latitude
+      } Longitude: ${position.coords.longitude}`);
+    },
+    error(err) {
+      console.warn(`ERROR(${err.code}): ${err.message}`);
+    },
   },
 };
 </script>
