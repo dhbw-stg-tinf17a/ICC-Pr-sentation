@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'https://gunter.felixsz.de/api/',
+  baseURL: '/api/',
 });
 
 const functions = {
