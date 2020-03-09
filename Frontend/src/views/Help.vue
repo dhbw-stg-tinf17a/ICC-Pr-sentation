@@ -34,7 +34,7 @@
           <table class="table">
             <thead>
               <tr>
-                <th>Commands</th>
+                <th>Command</th>
                 <th>Result</th>
               </tr>
             </thead>
