@@ -25,6 +25,7 @@ export default {
       }
     },
   },
+
   methods: {
     async enableNotifications() {
       try {
@@ -50,13 +51,10 @@ export default {
           body: JSON.stringify(pushSubscription),
         });
         if (!response.ok) {
-          this.$buefy.snackbar.open({
-            message: 'Unfortunately, Gunter couldn\'t enable notifications for you. He doesn\'t know why and is truly sorry.',
-            type: 'is-danger',
-          });
-          this.notificationsEnabled = false;
+          throw await response.text();
         }
       } catch (err) {
+        console.error(err);
         this.$buefy.snackbar.open({
           message: 'Unfortunately, Gunter couldn\'t enable notifications for you. He doesn\'t know why and is truly sorry.',
           type: 'is-danger',
@@ -64,8 +62,24 @@ export default {
         this.notificationsEnabled = false;
       }
     },
+
     async disableNotifications() {
-      // TOOD
+      try {
+        const response = await fetch('/api/notifications/disable', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+        });
+        if (!response.ok) {
+          throw await response.text();
+        }
+      } catch (err) {
+        console.error(err);
+        this.$buefy.snackbar.open({
+          message: 'Unfortunately, Gunter couldn\'t enable notifications for you. He doesn\'t know why and is truly sorry.',
+          type: 'is-danger',
+        });
+        this.notificationsEnabled = false;
+      }
     },
   },
 };
