@@ -15,7 +15,7 @@ router.post('/subscribe', function (req, res) {
 	const subscription = req.body;
 
 	setTimeout(() => {
-		webpush.sendNotification(subscription, "hello world");
+		webpush.sendNotification(subscription, 'Hello world');
 	}, 1000);
 
 	res.status(200).send({});
