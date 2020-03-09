@@ -1,13 +1,7 @@
-const request = require('supertest');
-const app = require('../app');
 const User = require('../modules/user');
 
 describe('UserModule', () => {
 	const preferenceFile = require("../preferenceModule.json");
-
-	beforeAll(async () => {
-
-	});
 
 	it('should return the right city from the users preferences', async () => {
 		const city = await User.getUsersCity();

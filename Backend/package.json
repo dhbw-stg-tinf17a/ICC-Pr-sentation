@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "test": "jest --forceExit | pino-pretty",
+    "test": "jest --coverage --forceExit | pino-pretty",
     "start": "node ./bin/www | pino-pretty",
     "start-dev": "nodemon 'node ./bin/www' | pino-pretty"
   },
