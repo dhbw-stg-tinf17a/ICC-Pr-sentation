@@ -8,3 +8,15 @@
     </h1>
   </div>
 </template>
+
+<script>
+import UserService from '../services/User';
+
+export default {
+  created() {
+    UserService.getUser().then((result) => {
+      console.log(result);
+    });
+  },
+};
+</script>
