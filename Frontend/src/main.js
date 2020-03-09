@@ -14,8 +14,6 @@ new Vue({
 }).$mount('#app');
 
 window.addEventListener('load', async () => {
-  console.log(process.env.PUSH_KEY_PUBLIC);
-
   try {
     const serviceWorkerRegistration = await navigator.serviceWorker.register('/service-worker.js');
     console.log('Service worker ✔');
