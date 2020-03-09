@@ -5,3 +5,7 @@ self.addEventListener('push', async event => {
     badge: '/bade.png'
   }));
 });
+
+self.addEventListener('notificationclick', function (event) {
+  event.notification.close();
+});
