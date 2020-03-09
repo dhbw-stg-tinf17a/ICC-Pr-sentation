@@ -16,7 +16,10 @@
       </h1>
 
       <div class="field">
-        <b-checkbox v-model="notificationsEnabled">
+        <b-checkbox
+          v-model="notificationsEnabled"
+          @input="toggleNotifications"
+        >
           Send notifications
         </b-checkbox>
       </div>
@@ -102,16 +105,6 @@ export default {
     };
   },
 
-  watch: {
-    async notificationsEnabled() {
-      if (this.notificationsEnabled) {
-        await this.enableNotifications();
-      } else {
-        await this.disableNotifications();
-      }
-    },
-  },
-
   created() {
     const utterance = new SpeechSynthesisUtterance('Edit your Preferences.');
     utterance.rate = 1.3;
@@ -138,6 +131,14 @@ export default {
       utterance.rate = 1.3;
       utterance.lang = 'en-US';
       speechSynthesis.speak(utterance);
+    },
+
+    async toggleNotifications() {
+      if (this.notificationsEnabled) {
+        await this.enableNotifications();
+      } else {
+        await this.disableNotifications();
+      }
     },
 
     async enableNotifications() {
@@ -188,10 +189,10 @@ export default {
       } catch (err) {
         console.error(err);
         this.$buefy.snackbar.open({
-          message: 'Unfortunately, Gunter couldn\'t enable notifications for you. He doesn\'t know why and is truly sorry.',
+          message: 'Unfortunately, Gunter couldn\'t disable notifications for you. He doesn\'t know why and is truly sorry.',
           type: 'is-danger',
         });
-        this.notificationsEnabled = false;
+        this.notificationsEnabled = true;
       }
     },
   },
