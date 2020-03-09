@@ -45,19 +45,21 @@ function getTimeToLeave() {
 		calendar.getTodaysFirstEvent()
 			.then((calendarEvent) => {
 				event = calendarEvent;
-				return vvs.getLastPossibleConnectionStartTime(event.start);
+				logger.trace('alarm.js - getTimeToLeave: Event starts at: ' + moment(event.start).format("DD.MM HH:mm"));
+				if (event.location) return vvs.getLastPossibleConnectionStartTime(event.start, event.location);
+				else {
+					logger.trace('alarm.js - getTimeToLeave: Event has no set location.');
+					return event.start;
+				}
 			})
 			.then((time) => {
 				event.timeToLeave = time;
-				logger.trace('Time to leave for event: ' + time.format("DD.MM HH:mm"));
+				logger.trace('alarm.js - getTimeToLeave: Time to leave for event: ' + time.format("DD.MM HH:mm"));
 				resolve(event);
 			})
 			.catch((error) => {
-				// ! TODO: reject normal reject again, just didn't want to push breaking changes on a weekend
 				logger.error(error);
-				event.timeToLeave = event.start;
-				resolve(event);
-				// reject(error);
+				reject(error);
 			})
 			.finally(() => logger.trace("alarm.js - getTimeToLeave - finally"));
 	});
