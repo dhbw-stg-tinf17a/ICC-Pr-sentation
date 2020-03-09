@@ -1,10 +1,11 @@
 <template>
   <div
+    v-if="user"
     id="preferences"
     class="hero-body"
   >
     <h1 class="title">
-      Preferences
+      Preferences for {{ user.name }}
     </h1>
   </div>
 </template>
@@ -13,9 +14,14 @@
 import UserService from '../services/User';
 
 export default {
+  data() {
+    return {
+      user: null,
+    };
+  },
   created() {
     UserService.getUser().then((result) => {
-      console.log(result);
+      this.user = result.data.data;
     });
   },
 };
