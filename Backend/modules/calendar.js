@@ -61,4 +61,4 @@ function getUsersCalendarUrlFromUserPreferences() {
 
 
 module.exports = calendarModule;
-logger.trace("calendarModule initialized");
+logger.debug("calendarModule initialized");

@@ -50,6 +50,20 @@ userModule.getUsersQuoteCategory = function () {
 	});
 };
 
+userModule.getUsersCity = function () {
+	return new Promise ((resolve, reject) => {
+		this.getUserPreferences()
+			.then((preferences) => {
+				if (preferences.weatherCity === undefined) {
+					logger.trace("User hasn't set their city yet, using Stuttgart as fallback");
+					return reject(new Error ("User hasn't set their city yet, using Stuttgart as fallback"));
+				}
+				resolve(preferences.weatherCity);
+			})
+			.catch((error) => reject(error));
+	});
+};
+
 
 module.exports = userModule;
-logger.trace("userModule initialized");
+logger.debug("userModule initialized");
