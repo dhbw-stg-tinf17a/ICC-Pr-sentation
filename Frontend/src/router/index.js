@@ -6,6 +6,9 @@ const Commute = () => import('../views/CommuteUseCase.vue');
 const Restaurant = () => import('../views/RestaurantUseCase.vue');
 const Trainer = () => import('../views/TrainerUseCase.vue');
 const Travel = () => import('../views/TravelUseCase.vue');
+const Help = () => import('../views/Help.vue');
+const Default404 = () => import('../views/Default404.vue');
+const Preferences = () => import('../views/Preferences.vue');
 
 Vue.use(VueRouter);
 
@@ -34,6 +37,21 @@ const routes = [
     path: '/travel',
     name: 'travel',
     component: Travel,
+  },
+  {
+    path: '/help',
+    name: 'help',
+    component: Help,
+  },
+  {
+    path: '/preferences',
+    name: 'preferences',
+    component: Preferences,
+  },
+  {
+    path: '*',
+    name: 'Default404',
+    component: Default404,
   },
 ];
 

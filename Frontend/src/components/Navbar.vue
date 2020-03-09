@@ -17,7 +17,8 @@
     <template slot="end">
       <b-navbar-item tag="div">
         <router-link
-          class="button is-white is-outlined"
+          class="button is-white"
+          :class="{'is-outlined': currentRoute !== 'commute'}"
           to="commute"
         >
           <span class="icon">
@@ -28,7 +29,8 @@
       </b-navbar-item>
       <b-navbar-item tag="div">
         <router-link
-          class="button is-white is-outlined"
+          class="button is-white"
+          :class="{'is-outlined': currentRoute !== 'travel'}"
           to="travel"
         >
           <span class="icon">
@@ -39,7 +41,8 @@
       </b-navbar-item>
       <b-navbar-item tag="div">
         <router-link
-          class="button is-white is-outlined"
+          class="button is-white"
+          :class="{'is-outlined': currentRoute !== 'restaurant'}"
           to="restaurant"
         >
           <span class="icon">
@@ -50,7 +53,8 @@
       </b-navbar-item>
       <b-navbar-item tag="div">
         <router-link
-          class="button is-white is-outlined"
+          class="button is-white"
+          :class="{'is-outlined': currentRoute !== 'trainer'}"
           to="trainer"
         >
           <span class="icon">
@@ -60,11 +64,42 @@
         </router-link>
       </b-navbar-item>
       <b-navbar-item tag="div">
-        <slot />
+        <router-link
+          class="button is-white"
+          :class="{'is-outlined': currentRoute !== 'preferences'}"
+          to="preferences"
+        >
+          <span class="icon">
+            <i class="fas fa-cog" />
+          </span>
+          <span>Preferences</span>
+        </router-link>
+      </b-navbar-item>
+      <b-navbar-item tag="div">
+        <router-link
+          class="button is-white"
+          :class="{'is-outlined': currentRoute !== 'help'}"
+          to="help"
+        >
+          <span class="icon">
+            <i class="fas fa-question-circle" />
+          </span>
+          <span>Help</span>
+        </router-link>
       </b-navbar-item>
     </template>
   </b-navbar>
 </template>
+
+<script>
+export default {
+  computed: {
+    currentRoute() {
+      return this.$route.name;
+    },
+  },
+};
+</script>
 
 <style scoped>
 .navbar-item img {
