@@ -25,4 +25,8 @@ router.post('/enable', async (req, res) => {
 	res.status(200).send({});
 });
 
+router.post('/disable', async () => {
+	// TODO
+});
+
 module.exports = router;
