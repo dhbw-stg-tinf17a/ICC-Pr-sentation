@@ -6,7 +6,7 @@ const api = axios.create({
 
 const functions = {
   sendPosition(location) {
-    return api.post('location', location);
+    return api.put('coordinates', location);
   },
 };
 
