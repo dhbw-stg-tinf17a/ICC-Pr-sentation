@@ -12,6 +12,7 @@
     "axios": "^0.19.2",
     "buefy": "^0.8.12",
     "core-js": "^3.6.4",
+    "querystring": "^0.2.0",
     "vue": "^2.6.11",
     "vue-localstorage": "^0.6.2",
     "vue-persistent-state": "^0.2.1",
