@@ -8,17 +8,25 @@ webpush.setVapidDetails(
 	process.env.PUSH_KEY_PRIVATE,
 );
 
-router.post('/subscribe', function (req, res) {
-	logger.trace("router - push - POST /subscribe");
+router.post('/enable', async (req, res) => {
+	logger.trace("router - push - POST /enable");
 
 	// TODO store req.body in the database
 	const subscription = req.body;
 
-	setTimeout(() => {
-		webpush.sendNotification(subscription, "hello world");
-	}, 1000);
+	await webpush.sendNotification(subscription, JSON.stringify({
+		title: 'A notification from Gunter!', options: {
+			body: 'It works :)',
+			icon: '/favicon.jpg',
+			badge: '/bade.png',
+		},
+	}));
 
 	res.status(200).send({});
+});
+
+router.post('/disable', async () => {
+	// TODO
 });
 
 module.exports = router;
