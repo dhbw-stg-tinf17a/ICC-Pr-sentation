@@ -167,7 +167,6 @@ export default {
           throw await response.text();
         }
       } catch (err) {
-        console.error(err);
         this.$buefy.snackbar.open({
           message: 'Unfortunately, Gunter couldn\'t enable notifications for you. He doesn\'t know why and is truly sorry.',
           type: 'is-danger',
@@ -186,7 +185,6 @@ export default {
           throw await response.text();
         }
       } catch (err) {
-        console.error(err);
         this.$buefy.snackbar.open({
           message: 'Unfortunately, Gunter couldn\'t enable notifications for you. He doesn\'t know why and is truly sorry.',
           type: 'is-danger',
