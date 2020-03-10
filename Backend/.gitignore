@@ -79,6 +79,3 @@ typings/
 *.njsproj
 *.sln
 *.sw?
-
-# Database files
-db/
