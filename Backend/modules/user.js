@@ -33,7 +33,7 @@ userModule.setCoordinates = (coordinatesObject) => new Promise((resolve, reject)
 });
 
 userModule.getUserPreferences = () => new Promise((resolve, reject) => {
-  this.getUser()
+  userModule.getUser()
     .then((user) => {
       if (user.preferences === undefined) {
         reject(new Error('User has no preferences set.'));
@@ -45,7 +45,7 @@ userModule.getUserPreferences = () => new Promise((resolve, reject) => {
 });
 
 userModule.getUsersPreparationTime = () => new Promise((resolve, reject) => {
-  this.getUserPreferences()
+  userModule.getUserPreferences()
     .then((preferences) => {
       if (preferences.preparationTimeInMinutes === undefined) {
         logger.trace("User hasn't set their preparationTime yet, using standard time of 1h");
@@ -58,7 +58,7 @@ userModule.getUsersPreparationTime = () => new Promise((resolve, reject) => {
 });
 
 userModule.getUsersQuoteCategory = () => new Promise((resolve, reject) => {
-  this.getUserPreferences()
+  userModule.getUserPreferences()
     .then((preferences) => {
       if (preferences.quoteCategory === undefined) {
         logger.trace("User hasn't set their favourite quote category yet, using standard category");
@@ -71,7 +71,7 @@ userModule.getUsersQuoteCategory = () => new Promise((resolve, reject) => {
 });
 
 userModule.getUsersCity = () => new Promise((resolve, reject) => {
-  this.getUserPreferences()
+  userModule.getUserPreferences()
     .then((preferences) => {
       if (preferences.weatherCity === undefined) {
         logger.trace("User hasn't set their city yet, using Stuttgart as fallback");
