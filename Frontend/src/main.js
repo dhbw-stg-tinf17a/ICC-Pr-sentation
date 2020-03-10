@@ -11,6 +11,7 @@ Vue.use(Buefy);
 
 Vue.use(persistentState, {
   notificationsEnabled: true,
+  notificationEndpoint: '',
 });
 
 new Vue({
