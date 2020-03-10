@@ -72,7 +72,7 @@
               to="calendar"
             >
               <span class="icon">
-                <i class="far fa-calendar-alt" />
+                <i class="far fa-calendar-alt fa-2x" />
               </span>
             </router-link>
           </p>
@@ -83,7 +83,7 @@
               to="preferences"
             >
               <span class="icon">
-                <i class="fas fa-cog" />
+                <i class="fas fa-cog fa-2x" />
               </span>
             </router-link>
           </p>
@@ -94,7 +94,7 @@
               to="help"
             >
               <span class="icon">
-                <i class="fas fa-question-circle" />
+                <i class="fas fa-question-circle fa-2x" />
               </span>
             </router-link>
           </div>
