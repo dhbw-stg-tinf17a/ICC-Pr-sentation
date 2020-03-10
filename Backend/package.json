@@ -5,7 +5,8 @@
   "scripts": {
     "test": "jest --coverage --forceExit | pino-pretty",
     "start": "node ./bin/www | pino-pretty",
-    "start-dev": "nodemon 'node ./bin/www' | pino-pretty"
+    "start-dev": "nodemon 'node ./bin/www' --ignore db/ | pino-pretty",
+    "lint": "eslint ."
   },
   "dependencies": {
     "@googlemaps/google-maps-services-js": "^2.1.2",
@@ -31,6 +32,8 @@
   },
   "devDependencies": {
     "eslint": "^6.8.0",
+    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-plugin-import": "^2.20.1",
     "jest": "^25.1.0",
     "nodemon": "^2.0.2",
     "supertest": "^4.0.2"

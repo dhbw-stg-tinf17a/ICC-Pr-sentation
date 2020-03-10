@@ -83,8 +83,11 @@
         </div>
         <div class="column">
           <div class="field">
-            <b-checkbox v-model="notificationsEnabled">
-              Send notifications
+            <b-checkbox
+              v-model="notificationsEnabled"
+              @input="toggleNotifications"
+            >
+              Send notifications to this device
             </b-checkbox>
           </div>
         </div>
@@ -102,16 +105,6 @@ export default {
       user: null,
       loading: true,
     };
-  },
-
-  watch: {
-    async notificationsEnabled() {
-      if (this.notificationsEnabled) {
-        await this.enableNotifications();
-      } else {
-        await this.disableNotifications();
-      }
-    },
   },
 
   created() {
@@ -140,12 +133,20 @@ export default {
       speechSynthesis.speak(utterance);
     },
 
+    async toggleNotifications() {
+      if (this.notificationsEnabled) {
+        await this.enableNotifications();
+      } else {
+        await this.disableNotifications();
+      }
+    },
+
     async enableNotifications() {
       try {
         const notificationPermission = await Notification.requestPermission();
         if (notificationPermission !== 'granted') {
           this.$buefy.snackbar.open({
-            message: 'Unfortunately, Gunter doesn\'t have permission to send you notifications. Please check your browser settings.',
+            message: 'Unfortunately, Gunter doesn\'t have permission to send you notifications on this device. Please check your browser settings.',
             type: 'is-danger',
           });
           this.notificationsEnabled = false;
@@ -167,9 +168,8 @@ export default {
           throw await response.text();
         }
       } catch (err) {
-        console.error(err);
         this.$buefy.snackbar.open({
-          message: 'Unfortunately, Gunter couldn\'t enable notifications for you. He doesn\'t know why and is truly sorry.',
+          message: 'Unfortunately, Gunter couldn\'t enable notifications for you on this device. He doesn\'t know why and is truly sorry.',
           type: 'is-danger',
         });
         this.notificationsEnabled = false;
@@ -186,12 +186,11 @@ export default {
           throw await response.text();
         }
       } catch (err) {
-        console.error(err);
         this.$buefy.snackbar.open({
-          message: 'Unfortunately, Gunter couldn\'t enable notifications for you. He doesn\'t know why and is truly sorry.',
+          message: 'Unfortunately, Gunter couldn\'t disable notifications for you on this device. He doesn\'t know why and is truly sorry.',
           type: 'is-danger',
         });
-        this.notificationsEnabled = false;
+        this.notificationsEnabled = true;
       }
     },
   },
