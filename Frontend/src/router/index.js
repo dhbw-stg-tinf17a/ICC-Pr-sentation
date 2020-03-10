@@ -9,6 +9,7 @@ const Travel = () => import('../views/TravelUseCase.vue');
 const Help = () => import('../views/Help.vue');
 const Default404 = () => import('../views/Default404.vue');
 const Preferences = () => import('../views/Preferences.vue');
+const Calendar = () => import('../views/Calendar.vue');
 
 Vue.use(VueRouter);
 
@@ -38,6 +39,7 @@ const routes = [
     name: 'travel',
     component: Travel,
   },
+
   {
     path: '/help',
     name: 'help',
@@ -47,6 +49,11 @@ const routes = [
     path: '/preferences',
     name: 'preferences',
     component: Preferences,
+  },
+  {
+    path: '/calendar',
+    name: 'calendar',
+    component: Calendar,
   },
   {
     path: '*',

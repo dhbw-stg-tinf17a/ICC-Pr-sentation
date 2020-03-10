@@ -66,6 +66,18 @@
       <b-navbar-item tag="div">
         <router-link
           class="button is-white"
+          :class="{'is-outlined': currentRoute !== 'calendar'}"
+          to="calendar"
+        >
+          <span class="icon">
+            <i class="far fa-calendar-alt" />
+          </span>
+          <span>Calendar</span>
+        </router-link>
+      </b-navbar-item>
+      <b-navbar-item tag="div">
+        <router-link
+          class="button is-white"
           :class="{'is-outlined': currentRoute !== 'preferences'}"
           to="preferences"
         >
