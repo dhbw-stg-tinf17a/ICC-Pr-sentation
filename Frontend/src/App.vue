@@ -20,6 +20,7 @@
 import Navbar from './components/Navbar.vue';
 import SpeechRecognition from './components/SpeechRecognition.vue';
 import SpeechRecognitionLogic from './mixins/SpeechRecognitionLogic';
+import LocationService from './services/Location';
 
 export default {
   components: {
@@ -43,6 +44,8 @@ export default {
         speechSynthesis.speak(utterance);
       },
     });
+  },
+  beforeUpdate() {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(this.showPosition, this.error);
     } else {
@@ -51,8 +54,10 @@ export default {
   },
   methods: {
     showPosition(position) {
-      console.log(`Latitude: ${position.coords.latitude
-      } Longitude: ${position.coords.longitude}`);
+      LocationService.sendPosition({
+        lat: position.coords.latitude,
+        lon: position.coords.longitude,
+      }).catch((error) => console.error(error));
     },
     error(err) {
       console.warn(`ERROR(${err.code}): ${err.message}`);
