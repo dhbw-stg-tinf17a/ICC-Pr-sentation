@@ -113,8 +113,6 @@ export default {
   },
   methods: {
     savePreferences() {
-      console.log('SAVE');
-
       this.$buefy.toast.open({
         message: 'Data theoretically saved! (Not yet implemented.)',
         duration: 3000,

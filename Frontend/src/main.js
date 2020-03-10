@@ -14,18 +14,18 @@ new Vue({
 }).$mount('#app');
 
 window.addEventListener('load', async () => {
-  console.log(process.env.PUSH_KEY_PUBLIC);
+  // console.log(process.env.PUSH_KEY_PUBLIC);
 
   try {
     const serviceWorkerRegistration = await navigator.serviceWorker.register('/service-worker.js');
-    console.log('Service worker ✔');
+    // console.log('Service worker ✔');
 
     // not necessarily required, implied by serviceWorkerRegistration.pushManager.subscribe
     const notificationPermission = await Notification.requestPermission();
     if (notificationPermission === 'granted') {
-      console.log('Notification permission ✔');
+      // console.log('Notification permission ✔');
     } else {
-      console.log('Notification permission ✘');
+      // console.log('Notification permission ✘');
       return;
     }
 
@@ -33,15 +33,15 @@ window.addEventListener('load', async () => {
       userVisibleOnly: true,
       applicationServerKey: 'BBauGh8G3IdDf28vFQD0-Nn-8wniZUsCjvRa0F0MbRUTmy0NDDGQCT-OD3M5k8c54DNsyw9-_SwibbBXxWYG_nk',
     });
-    console.log('Push subscription ✔');
+    // console.log('Push subscription ✔');
 
     await fetch('/api/push/subscribe', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(pushSubscription),
     });
-    console.log('Push subscription sent to server ✔');
+    // console.log('Push subscription sent to server ✔');
   } catch (err) {
-    console.log('Something went wrong: ', err);
+    // console.log('Something went wrong: ', err);
   }
 });

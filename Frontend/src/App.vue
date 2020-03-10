@@ -49,7 +49,11 @@ export default {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(this.showPosition, this.error);
     } else {
-      console.error('Geolocation is not supported by this browser.');
+      this.$buefy.toast.open({
+        message: 'Geolocation is not supported by this browser.',
+        duration: 3000,
+        type: 'is-danger',
+      });
     }
   },
   methods: {
@@ -57,10 +61,18 @@ export default {
       LocationService.sendPosition({
         lat: position.coords.latitude,
         lon: position.coords.longitude,
-      }).catch((error) => console.error(error));
+      }).catch((error) => this.$buefy.toast.open({
+        message: error,
+        duration: 3000,
+        type: 'is-danger',
+      }));
     },
     error(err) {
-      console.warn(`ERROR(${err.code}): ${err.message}`);
+      this.$buefy.toast.open({
+        message: `ERROR(${err.code}): ${err.message}`,
+        duration: 3000,
+        type: 'is-danger',
+      });
     },
   },
 };
