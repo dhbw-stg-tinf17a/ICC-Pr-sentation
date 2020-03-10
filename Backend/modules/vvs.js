@@ -1,8 +1,8 @@
-const vvsModule = {};
-
 const logger = require('pino')({ level: process.env.LOG_LEVEL || 'info' });
 
-const type_of = (object) => Object.prototype.toString.call(object).slice(8, -1).toLowerCase();
+const vvsModule = {};
+
+const typeOf = (object) => Object.prototype.toString.call(object).slice(8, -1).toLowerCase();
 const request = require('axios');
 const moment = require('moment');
 const User = require('./user');
@@ -33,8 +33,26 @@ const parameters = {
 const dateFormat = 'YYYYMMDD';
 const timeFormat = 'HHmm';
 
+function getUsersCurrentAddressFromUserPreferences() {
+  logger.trace('vvs.js - getUsersCurrentAddressFromUserPreferences - start');
+  return new Promise((resolve, reject) => {
+    User.getUserPreferences()
+      .then((preferences) => {
+        if (preferences.currentLocationCoordinates !== undefined && preferences.currentLocationCoordinates !== '') {
+          reverseGeocoder.getStreetFromCoordinates(preferences.currentLocationCoordinates)
+            .then((address) => resolve(address))
+            .catch((error) => reject(error));
+          return;
+          // resolve(preferences.currentLocationAddress);
+        }
+        reject(new Error('Couldn\'t load current location address'));
+      })
+      .catch((error) => reject(error))
+      .finally(() => logger.trace('vvs.js - getUsersCurrentAddressFromUserPreferences - finally'));
+  });
+}
 
-vvsModule.getLastPossibleConnectionStartTime = function (eventStartTime, eventLocation) {
+vvsModule.getLastPossibleConnectionStartTime = (eventStartTime, eventLocation) => {
   logger.trace('vvs.js - getLastPossibleConnectionStartTime - start');
   return new Promise((resolve, reject) => {
     getUsersCurrentAddressFromUserPreferences()
@@ -52,15 +70,16 @@ vvsModule.getLastPossibleConnectionStartTime = function (eventStartTime, eventLo
         const { trips } = response.data;
 
         let tripInfo;
-        switch (type_of(trips)) {
+        switch (typeOf(trips)) {
           case 'array':
-            tripInfo = trips[0];
+            [tripInfo] = trips;
             break;
           case 'object':
             tripInfo = trips.trip;
             break;
           default:
-            return reject(new Error('Error retrieving trip information'));
+            reject(new Error('Error retrieving trip information'));
+            return;
         }
         logger.trace(`vvs.js - getLastPossibleConnectionStartTime: trip duration = ${tripInfo.duration}`);
         const startDateTimeObject = tripInfo.legs[0].points[0].dateTime;
@@ -75,42 +94,25 @@ vvsModule.getLastPossibleConnectionStartTime = function (eventStartTime, eventLo
   });
 };
 
-function getUsersCurrentAddressFromUserPreferences() {
-  logger.trace('vvs.js - getUsersCurrentAddressFromUserPreferences - start');
+/*
+function getEventAddressFromUserPreferences() {
+  logger.trace("vvs.js - getEventAddressFromUserPreferences - start");
   return new Promise((resolve, reject) => {
     User.getUserPreferences()
       .then((preferences) => {
-        if (preferences.currentLocationCoordinates !== undefined && preferences.currentLocationCoordinates !== '') {
-          return reverseGeocoder.getStreetFromCoordinates(preferences.currentLocationCoordinates)
-            .then((address) => resolve(address))
-            .catch((error) => reject(error));
-          // resolve(preferences.currentLocationAddress);
-        }
-        reject(new Error('Couldn\'t load current location address'));
+        if (preferences.eventLocationCoordinates !== undefined &&
+          preferences.eventLocationCoordinates !== "") {
+          setTimeout(() => {
+            return reverseGeocoder.getStreetFromCoordinates(preferences.eventLocationCoordinates)
+              .then((address) => resolve(address))
+              .catch((error) => reject(error));
+            // return resolve(preferences.eventLocationAddress);
+          }, 1000);
+        } else reject(new Error('Couldn\'t load events location address'));
       })
       .catch((error) => reject(error))
-      .finally(() => logger.trace('vvs.js - getUsersCurrentAddressFromUserPreferences - finally'));
+      .finally(() => logger.trace("vvs.js - getEventAddressFromUserPreferences - finally"));
   });
-}
-
-/*
-function getEventAddressFromUserPreferences() {
-	logger.trace("vvs.js - getEventAddressFromUserPreferences - start");
-	return new Promise((resolve, reject) => {
-		User.getUserPreferences()
-			.then((preferences) => {
-				if (preferences.eventLocationCoordinates !== undefined && preferences.eventLocationCoordinates !== "") {
-					setTimeout(() => {
-						return reverseGeocoder.getStreetFromCoordinates(preferences.eventLocationCoordinates)
-							.then((address) => resolve(address))
-							.catch((error) => reject(error));
-						// return resolve(preferences.eventLocationAddress);
-					}, 1000);
-				} else reject(new Error('Couldn\'t load events location address'));
-			})
-			.catch((error) => reject(error))
-			.finally(() => logger.trace("vvs.js - getEventAddressFromUserPreferences - finally"));
-	});
 }
 */
 

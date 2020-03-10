@@ -1,8 +1,7 @@
 const User = require('../modules/user');
+const preferenceFile = require('../preferenceModule.json');
 
 describe('UserModule', () => {
-  const preferenceFile = require('../preferenceModule.json');
-
   it('should return the right city from the users preferences', async () => {
     const city = await User.getUsersCity();
     expect(city).toEqual(preferenceFile.user.preferences.weatherCity);

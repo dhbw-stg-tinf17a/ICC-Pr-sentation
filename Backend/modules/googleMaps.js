@@ -1,14 +1,12 @@
-const googleMapsModule = {};
-
 const logger = require('pino')({ level: process.env.LOG_LEVEL || 'info' });
 const GoogleMapsClient = require('@googlemaps/google-maps-services-js').Client;
-const request = require('axios');
-const User = require('./user');
+
+const googleMapsModule = {};
 
 // Initiate new maps Client
 const mapsClient = new GoogleMapsClient({});
 
-googleMapsModule.getStreetFromCoordinates = function (coordinates) {
+googleMapsModule.getStreetFromCoordinates = (coordinates) => {
   logger.trace('googleMaps.js - getStreetFromCoordinates - start');
   return new Promise((resolve, reject) => {
     const latlngStr = coordinates.split(',', 2);

@@ -3,10 +3,10 @@ const FileAsync = require('lowdb/adapters/FileAsync');
 
 let db;
 
-(async function () {
+(async () => {
   const adapter = new FileAsync('db/notifications.json');
   db = await (await low(adapter)).defaults({ subscriptions: [] });
-}());
+})();
 
 module.exports.addSubscription = async (subscription) => {
   const subscriptions = db.get('subscriptions');
@@ -23,4 +23,4 @@ module.exports.removeSubscription = async (endpoint) => {
   await db.get('subscriptions').remove({ endpoint }).write();
 };
 
-module.exports.getSubscriptions = async () => await db.get('subscriptions').value();
+module.exports.getSubscriptions = () => db.get('subscriptions').value();

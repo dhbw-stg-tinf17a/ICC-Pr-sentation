@@ -1,14 +1,7 @@
-const reverseGeocoderModule = {};
-
 const logger = require('pino')({ level: process.env.LOG_LEVEL || 'info' });
-const NodeGeocoder = require('node-geocoder');
 const request = require('axios');
-const User = require('./user');
 
-const geocoder = NodeGeocoder({
-  provider: 'openstreetmap',
-  language: 'de',
-});
+const reverseGeocoderModule = {};
 const reverseGeocodeUrl = 'https://nominatim.openstreetmap.org/reverse';
 
 const reverseGeocodeParams = {
@@ -17,7 +10,7 @@ const reverseGeocodeParams = {
   lon: 0,
 };
 
-reverseGeocoderModule.getStreetFromCoordinates = function (coordinates) {
+reverseGeocoderModule.getStreetFromCoordinates = (coordinates) => {
   logger.trace('reverseGeocoder.js - getStreetFromCoordinates - start');
   return new Promise((resolve, reject) => {
     const latlngStr = coordinates.split(',', 2);

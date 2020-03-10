@@ -9,7 +9,7 @@ const logger = require('pino')({ level: process.env.LOG_LEVEL || 'info', redact:
 
 const app = express();
 
-const prod = process.env.PROD == 'true';
+const prod = process.env.PROD === 'true';
 logger.info(`Running in ${prod ? 'production' : 'development'}`);
 
 // Initialize cors
