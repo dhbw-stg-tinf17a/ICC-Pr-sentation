@@ -135,7 +135,6 @@ export default {
 
     UserService.getUser().then((result) => {
       this.user = result.data.data;
-      console.log(this.user);
       this.loading = false;
     });
   },
