@@ -32,7 +32,21 @@ userModule.setCoordinates = (coordinatesObject) => new Promise((resolve, reject)
     .finally(() => logger.trace('userModule - setCoordinates - finally'));
 });
 
+userModule.getUserCoordinates = () => new Promise((resolve, reject) => {
+  logger.trace('userModule - getUserCoordinates - start');
+  userModule.getUserPreferences()
+    .then((preferences) => {
+      if (preferences.currentLocationCoordinates === undefined) {
+        logger.trace("We don't have the user's coordinates yet");
+        return reject(new Error("We don't have the user's coordinates yet"));
+      }
+      resolve(preferences.currentLocationCoordinates);
+    })
+    .catch((error) => reject(error));
+});
+
 userModule.getUserPreferences = () => new Promise((resolve, reject) => {
+  logger.trace('userModule - getUserPreferences - start');
   userModule.getUser()
     .then((user) => {
       if (user.preferences === undefined) {
