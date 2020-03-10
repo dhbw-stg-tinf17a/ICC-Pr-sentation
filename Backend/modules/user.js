@@ -1,5 +1,6 @@
 const logger = require('pino')({ level: process.env.LOG_LEVEL || 'info' });
 const preferenceModule = require('./preferences');
+const validationHandler = require('../utilities/validationHandler');
 const userModule = {};
 
 userModule.getUser = function () {
@@ -8,6 +9,23 @@ userModule.getUser = function () {
 		const user = preferenceModule.get("user").value();
 		if (user === undefined) return reject(new Error("User could not be fetched."));
 		resolve(user);
+	});
+};
+
+userModule.setCoordinates = function (coordinatesObject) {
+	return new Promise ((resolve, reject) => {
+		logger.trace('userModule - setCoordinates with coordinates:');
+		logger.trace(coordinatesObject);
+
+		validationHandler.validateCoordinate(coordinatesObject)
+			.then((validatedCoordinatesObject) => (validatedCoordinatesObject.lat + "," + validatedCoordinatesObject.lon))
+			.then((coordinates) => preferenceModule.set('user.preferences.currentLocationCoordinates', coordinates).write())
+			.then(() => resolve("Your current coordinates have been set successfully"))
+			.catch((error) => {
+				logger.error(error);
+				reject(error);
+			})
+			.finally(() => logger.trace('userModule - setCoordinates - finally'));
 	});
 };
 
