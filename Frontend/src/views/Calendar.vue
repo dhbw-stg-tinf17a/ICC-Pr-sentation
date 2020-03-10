@@ -3,15 +3,21 @@
     id="help"
     class="hero-body"
   >
+    <b-loading
+
+      :is-full-page="false"
+      :active.sync="iframeLoading"
+      :can-cancel="true"
+    />
     <div class="container">
       <iframe
+        v-show="!iframeLoading"
         id="idIframe"
         src="https://calendar.google.com/calendar/embed?src=rroff00labrg6qt5gu3ol87ejo%40group.calendar.google.com&ctz=Europe%2FBerlin"
         style="border: 0"
         width="1200"
         frameborder="0"
         scrolling="no"
-        @onload="iframeLoaded()"
       />
     </div>
   </div>
@@ -19,15 +25,15 @@
 
 <script>
 export default {
-  methods: {
-    iframeLoaded() {
-      const iFrameID = document.getElementById('idIframe');
-      if (iFrameID) {
-        // here you can make the height, I delete it first, then I make it again
-        iFrameID.height = '';
-        iFrameID.height = `${iFrameID.contentWindow.document.body.scrollHeight}px`;
-      }
-    },
+  data() {
+    return {
+      iframeLoading: true,
+    };
+  },
+  mounted() {
+    document.getElementById('idIframe').addEventListener('load', () => {
+      this.iframeLoading = false;
+    });
   },
 };
 </script>
