@@ -5,7 +5,7 @@ let db;
 
 (async () => {
   const adapter = new FileAsync('db/notifications.json');
-  db = await (await low(adapter)).defaults({ subscriptions: [] });
+  db = (await low(adapter)).defaults({ subscriptions: [] });
 })();
 
 module.exports.addSubscription = async (subscription) => {
