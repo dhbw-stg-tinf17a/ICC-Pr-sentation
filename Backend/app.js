@@ -14,8 +14,8 @@ logger.info(`Running in ${prod ? 'production' : 'development'}`);
 
 // Initialize cors
 app.use(cors({
-	origin: prod ? process.env.PROD_URL : 'http://localhost:4200',
-	credentials: true
+  origin: prod ? process.env.PROD_URL : 'http://localhost:4200',
+  credentials: true,
 }));
 
 app.use(helmet());
@@ -26,4 +26,5 @@ app.use(cookieParser());
 
 app.use('/api', require('./routes'));
 require('./modules/alarm');
+
 module.exports = app;
