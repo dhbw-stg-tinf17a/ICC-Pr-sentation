@@ -64,28 +64,41 @@
         </router-link>
       </b-navbar-item>
       <b-navbar-item tag="div">
-        <router-link
-          class="button is-white"
-          :class="{'is-outlined': currentRoute !== 'preferences'}"
-          to="preferences"
-        >
-          <span class="icon">
-            <i class="fas fa-cog" />
-          </span>
-          <span>Preferences</span>
-        </router-link>
-      </b-navbar-item>
-      <b-navbar-item tag="div">
-        <router-link
-          class="button is-white"
-          :class="{'is-outlined': currentRoute !== 'help'}"
-          to="help"
-        >
-          <span class="icon">
-            <i class="fas fa-question-circle" />
-          </span>
-          <span>Help</span>
-        </router-link>
+        <div class="field has-addons">
+          <p class="control">
+            <router-link
+              class="button is-white"
+              :class="{'is-outlined': currentRoute !== 'calendar'}"
+              to="calendar"
+            >
+              <span class="icon">
+                <i class="far fa-calendar-alt fa-2x" />
+              </span>
+            </router-link>
+          </p>
+          <p class="control">
+            <router-link
+              class="button is-white"
+              :class="{'is-outlined': currentRoute !== 'preferences'}"
+              to="preferences"
+            >
+              <span class="icon">
+                <i class="fas fa-cog fa-2x" />
+              </span>
+            </router-link>
+          </p>
+          <div class="control">
+            <router-link
+              class="button is-white"
+              :class="{'is-outlined': currentRoute !== 'help'}"
+              to="help"
+            >
+              <span class="icon">
+                <i class="fas fa-question-circle fa-2x" />
+              </span>
+            </router-link>
+          </div>
+        </div>
       </b-navbar-item>
     </template>
   </b-navbar>
@@ -107,5 +120,11 @@ export default {
 }
 .navbar {
   margin: 0 1rem 0 1rem;
+}
+</style>
+
+<style>
+.navbar-burger, .navbar-burger:hover {
+  background-color: white;
 }
 </style>

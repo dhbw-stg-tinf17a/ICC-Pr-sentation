@@ -20,6 +20,7 @@
 import Navbar from './components/Navbar.vue';
 import SpeechRecognition from './components/SpeechRecognition.vue';
 import SpeechRecognitionLogic from './mixins/SpeechRecognitionLogic';
+import LocationService from './services/Location';
 
 export default {
   components: {
@@ -43,19 +44,35 @@ export default {
         speechSynthesis.speak(utterance);
       },
     });
+  },
+  beforeUpdate() {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(this.showPosition, this.error);
     } else {
-      console.error('Geolocation is not supported by this browser.');
+      this.$buefy.toast.open({
+        message: 'Geolocation is not supported by this browser.',
+        duration: 3000,
+        type: 'is-danger',
+      });
     }
   },
   methods: {
     showPosition(position) {
-      console.log(`Latitude: ${position.coords.latitude
-      } Longitude: ${position.coords.longitude}`);
+      LocationService.sendPosition({
+        lat: position.coords.latitude,
+        lon: position.coords.longitude,
+      }).catch((error) => this.$buefy.toast.open({
+        message: error,
+        duration: 3000,
+        type: 'is-danger',
+      }));
     },
     error(err) {
-      console.warn(`ERROR(${err.code}): ${err.message}`);
+      this.$buefy.toast.open({
+        message: `ERROR(${err.code}): ${err.message}`,
+        duration: 3000,
+        type: 'is-danger',
+      });
     },
   },
 };

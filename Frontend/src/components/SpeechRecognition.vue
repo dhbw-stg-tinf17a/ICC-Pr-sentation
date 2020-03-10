@@ -100,7 +100,11 @@ export default {
           case 'service-not-allowed':
           // if permission to use the mic is denied, turn off auto-restart
             this.autoRestart = false;
-            console.error(event.error);
+            this.$buefy.toast.open({
+              message: event.error,
+              duration: 3000,
+              type: 'is-danger',
+            });
             break;
           default:
         }
