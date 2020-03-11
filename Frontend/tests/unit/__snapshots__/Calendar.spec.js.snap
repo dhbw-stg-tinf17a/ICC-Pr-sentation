@@ -1,0 +1,11 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Calendar.vue Elements are rendered correctly Component renders 1`] = `
+<div id="help" class="hero-body">
+  <div class="loading-overlay is-active">
+    <div class="loading-background"></div>
+    <div class="loading-icon"></div>
+  </div>
+  <div class="container"><iframe src="https://calendar.google.com/calendar/embed?src=rroff00labrg6qt5gu3ol87ejo%40group.calendar.google.com&amp;ctz=Europe%2FBerlin" width="1200" frameborder="0" scrolling="no" style="border: 0px; display: none;"></iframe></div>
+</div>
+`;

@@ -1,0 +1,25 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Navbar.vue Elements are rendered correctly Component renders 1`] = `
+<nav role="navigation" aria-label="main navigation" class="navbar">
+  <div class="navbar-brand">
+    <div class="navbar-item"><a href="#/" class="router-link-exact-active router-link-active"><img src="../assets/logo.jpg" width="150" height="150" alt="Logo"></a></div><a role="button" aria-label="menu" class="navbar-burger burger"><span aria-hidden="true"></span> <span aria-hidden="true"></span> <span aria-hidden="true"></span></a>
+  </div>
+  <div class="navbar-menu">
+    <div class="navbar-start"></div>
+    <div class="navbar-end">
+      <div class="navbar-item"><a href="#/commute" class="button is-white is-outlined"><span class="icon"><i class="fas fa-train"></i></span> <span>Commute</span></a></div>
+      <div class="navbar-item"><a href="#/travel" class="button is-white is-outlined"><span class="icon"><i class="fas fa-plane-departure"></i></span> <span>Travel</span></a></div>
+      <div class="navbar-item"><a href="#/restaurant" class="button is-white is-outlined"><span class="icon"><i class="fas fa-utensils"></i></span> <span>Restaurant</span></a></div>
+      <div class="navbar-item"><a href="#/trainer" class="button is-white is-outlined"><span class="icon"><i class="fas fa-swimmer"></i></span> <span>Trainer</span></a></div>
+      <div class="navbar-item">
+        <div class="field has-addons">
+          <p class="control"><a href="#/calendar" class="button is-white is-outlined"><span class="icon"><i class="far fa-calendar-alt fa-2x"></i></span></a></p>
+          <p class="control"><a href="#/preferences" class="button is-white is-outlined"><span class="icon"><i class="fas fa-cog fa-2x"></i></span></a></p>
+          <div class="control"><a href="#/help" class="button is-white is-outlined"><span class="icon"><i class="fas fa-question-circle fa-2x"></i></span></a></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+`;
