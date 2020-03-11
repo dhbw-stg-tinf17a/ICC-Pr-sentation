@@ -7,12 +7,17 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-node@v1
-    - run: cd Frontend
     - run: npm ci
+      working-directory: ./Frontend
     - run: npm run lint
+      working-directory: ./Frontend
     - run: npm run build
+      working-directory: ./Frontend
     - run: npm run test
-    - run: cd ../Backend
+      working-directory: ./Frontend
     - run: npm ci
+      working-directory: ./Backend
     - run: npm run lint
+      working-directory: ./Backend
     - run: npm run test
+      working-directory: ./Backend
