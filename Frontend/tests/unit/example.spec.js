@@ -1,20 +1,17 @@
-import { shallowMount, createLocalVue } from '@vue/test-utils';
+import Navbar from '@/components/Navbar.vue';
+import { createLocalVue, shallowMount } from '@vue/test-utils';
 import Buefy from 'buefy';
 import VueRouter from 'vue-router';
-import Navbar from '@/components/Navbar.vue';
 
 const localVue = createLocalVue();
 localVue.use(Buefy);
 localVue.use(VueRouter);
 
+const router = new VueRouter();
 
-describe('HelloWorld.vue', () => {
-  it('renders props.msg when passed', () => {
-    const msg = 'new message';
-    const wrapper = shallowMount(Navbar, {
-      localVue,
-      propsData: { msg },
-    });
+describe('Navbar.vue', () => {
+  it('renders navigation links', async () => {
+    const wrapper = shallowMount(Navbar, { localVue, router });
     expect(wrapper.text()).toMatch('Commute  Travel  Restaurant  Trainer');
   });
 });
