@@ -12,12 +12,11 @@
 </template>
 
 <script>
+import SpeechService from '@/services/SpeechSynthesis';
+
 export default {
   created() {
-    const utterance = new SpeechSynthesisUtterance('Trainer Use Cases.');
-    utterance.rate = 1.2;
-    utterance.lang = 'en-US';
-    speechSynthesis.speak(utterance);
+    SpeechService.speak('Trainer Use Cases');
   },
 };
 </script>

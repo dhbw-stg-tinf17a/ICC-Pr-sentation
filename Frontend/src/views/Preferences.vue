@@ -117,6 +117,7 @@
 </template>
 
 <script>
+import SpeechService from '@/services/SpeechSynthesis';
 import UserService from '../services/User';
 
 export default {
@@ -128,10 +129,7 @@ export default {
   },
 
   created() {
-    const utterance = new SpeechSynthesisUtterance('Edit your Preferences.');
-    utterance.rate = 1.3;
-    utterance.lang = 'en-US';
-    speechSynthesis.speak(utterance);
+    SpeechService.speak('Edit your Preferences');
 
     UserService.getUser().then((result) => {
       this.user = result.data.data;
@@ -147,10 +145,7 @@ export default {
         type: 'is-success',
       });
 
-      const utterance = new SpeechSynthesisUtterance('Saved successfully.');
-      utterance.rate = 1.3;
-      utterance.lang = 'en-US';
-      speechSynthesis.speak(utterance);
+      SpeechService.speak('Saved successfully.');
     },
 
     async toggleNotifications() {

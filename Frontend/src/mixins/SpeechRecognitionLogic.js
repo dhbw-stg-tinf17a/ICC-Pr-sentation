@@ -1,3 +1,5 @@
+import SpeechService from '@/services/SpeechSynthesis';
+
 export default {
   watch: {
     userInput() {
@@ -26,10 +28,7 @@ export default {
         const today = new Date();
         const time = `${today.getHours()}:${today.getMinutes()}:${today.getSeconds()}`;
 
-        const utterance = new SpeechSynthesisUtterance(`Currently it is: ${time}`);
-        utterance.rate = 1.2;
-        utterance.lang = 'en-US';
-        speechSynthesis.speak(utterance);
+        SpeechService.speak(`Currently it is: ${time}`);
         this.userInput = '';
       }
     },

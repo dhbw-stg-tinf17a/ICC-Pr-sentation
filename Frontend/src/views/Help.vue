@@ -76,13 +76,12 @@
 </template>
 
 <script>
+import SpeechService from '@/services/SpeechSynthesis';
+
 export default {
   created() {
-    const utterance = new SpeechSynthesisUtterance('This is the help section. '
+    SpeechService.speak('This is the help section. '
     + 'Here you can see an overview of what I can do!');
-    utterance.rate = 1.4;
-    utterance.lang = 'en-US';
-    speechSynthesis.speak(utterance);
   },
 };
 </script>
