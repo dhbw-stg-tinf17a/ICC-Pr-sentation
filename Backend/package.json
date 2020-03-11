@@ -3,10 +3,10 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "test": "jest --coverage --forceExit | pino-pretty",
     "start": "node ./bin/www | pino-pretty",
     "start-dev": "nodemon 'node ./bin/www' --ignore db/ | pino-pretty",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "test": "jest --coverage --forceExit | pino-pretty"
   },
   "dependencies": {
     "@googlemaps/google-maps-services-js": "^2.1.2",
