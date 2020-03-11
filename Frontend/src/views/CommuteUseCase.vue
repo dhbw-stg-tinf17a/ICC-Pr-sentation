@@ -12,12 +12,11 @@
 </template>
 
 <script>
+import SpeechService from '@/services/SpeechSynthesis';
+
 export default {
   created() {
-    const utterance = new SpeechSynthesisUtterance('Commute Use Cases.');
-    utterance.rate = 1.2;
-    utterance.lang = 'en-US';
-    speechSynthesis.speak(utterance);
+    SpeechService.speak('Commute Use Cases');
   },
 };
 </script>

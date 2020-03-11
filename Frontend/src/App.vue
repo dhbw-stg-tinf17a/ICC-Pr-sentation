@@ -17,6 +17,7 @@
 </template>
 
 <script>
+import SpeechService from '@/services/SpeechSynthesis';
 import Navbar from './components/Navbar.vue';
 import SpeechRecognition from './components/SpeechRecognition.vue';
 import SpeechRecognitionLogic from './mixins/SpeechRecognitionLogic';
@@ -38,10 +39,7 @@ export default {
       message: 'This Page talks to you!',
       type: 'is-success',
       onConfirm: () => {
-        const utterance = new SpeechSynthesisUtterance('Hello my name is Gunter!');
-        utterance.rate = 1.3;
-        utterance.lang = 'en-US';
-        speechSynthesis.speak(utterance);
+        SpeechService.speak('Hello my name is Gunter!');
       },
     });
   },

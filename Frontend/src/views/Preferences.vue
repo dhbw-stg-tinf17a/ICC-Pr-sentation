@@ -12,8 +12,17 @@
       v-if="!loading"
       class="container"
     >
-      <h1 class="title">
+      <h1
+        v-if="user.name"
+        class="title"
+      >
         Preferences for {{ user.name }}
+      </h1>
+      <h1
+        v-else
+        class="title"
+      >
+        Preferences for User
       </h1>
       <div class="columns">
         <div class="column">
@@ -61,7 +70,28 @@
               >
             </div>
           </div>
-
+        </div>
+        <div class="column">
+          <div class="field">
+            <label class="label has-text-white">Current Location</label>
+            <div class="control">
+              <input
+                v-model="user.preferences.currentLocationCoordinates"
+                disabled
+                class="input"
+                type="text"
+                placeholder="Current Location"
+              >
+            </div>
+          </div>
+          <div class="field">
+            <b-checkbox
+              v-model="notificationsEnabled"
+              @input="toggleNotifications"
+            >
+              Send notifications to this device
+            </b-checkbox>
+          </div>
           <div class="field is-grouped is-grouped-right">
             <p class="control">
               <router-link
@@ -81,22 +111,13 @@
             </p>
           </div>
         </div>
-        <div class="column">
-          <div class="field">
-            <b-checkbox
-              v-model="notificationsEnabled"
-              @input="toggleNotifications"
-            >
-              Send notifications to this device
-            </b-checkbox>
-          </div>
-        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import SpeechService from '@/services/SpeechSynthesis';
 import UserService from '../services/User';
 
 export default {
@@ -108,10 +129,7 @@ export default {
   },
 
   created() {
-    const utterance = new SpeechSynthesisUtterance('Edit your Preferences.');
-    utterance.rate = 1.3;
-    utterance.lang = 'en-US';
-    speechSynthesis.speak(utterance);
+    SpeechService.speak('Edit your Preferences');
 
     UserService.getUser().then((result) => {
       this.user = result.data.data;
@@ -127,10 +145,7 @@ export default {
         type: 'is-success',
       });
 
-      const utterance = new SpeechSynthesisUtterance('Saved successfully.');
-      utterance.rate = 1.3;
-      utterance.lang = 'en-US';
-      speechSynthesis.speak(utterance);
+      SpeechService.speak('Saved successfully.');
     },
 
     async toggleNotifications() {

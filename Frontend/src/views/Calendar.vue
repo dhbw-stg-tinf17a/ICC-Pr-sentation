@@ -12,7 +12,7 @@
     <div class="container">
       <iframe
         v-show="!iframeLoading"
-        id="idIframe"
+        ref="iframe"
         src="https://calendar.google.com/calendar/embed?src=rroff00labrg6qt5gu3ol87ejo%40group.calendar.google.com&ctz=Europe%2FBerlin"
         style="border: 0"
         width="1200"
@@ -31,8 +31,10 @@ export default {
     };
   },
   mounted() {
-    document.getElementById('idIframe').addEventListener('load', () => {
-      this.iframeLoading = false;
+    this.$nextTick(() => {
+      this.$refs.iframe.addEventListener('load', () => {
+        this.iframeLoading = false;
+      });
     });
   },
 };
