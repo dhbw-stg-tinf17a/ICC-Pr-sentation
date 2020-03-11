@@ -40,7 +40,7 @@ userModule.getUserCoordinates = () => new Promise((resolve, reject) => {
         logger.trace("We don't have the user's coordinates yet");
         return reject(new Error("We don't have the user's coordinates yet"));
       }
-      resolve(preferences.currentLocationCoordinates);
+      return resolve(preferences.currentLocationCoordinates);
     })
     .catch((error) => reject(error));
 });
