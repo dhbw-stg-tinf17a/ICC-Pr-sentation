@@ -5,19 +5,28 @@ jobs:
     name: Lint, build, and test
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-node@v1
-    - run: npm ci
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Setup Node
+      uses: actions/setup-node@v1
+    - name: Install frontend requirements
+      run: npm ci
       working-directory: ./Frontend
-    - run: npm run lint
+    - name: Lint frontend
+      run: npm run lint
       working-directory: ./Frontend
-    - run: npm run build
+    - name: Build frontend
+      run: npm run build
       working-directory: ./Frontend
-    - run: npm run test
+    - name: Test frontend
+      run: npm run test
       working-directory: ./Frontend
-    - run: npm ci
+    - name: Install backend requirements
+      run: npm ci
       working-directory: ./Backend
-    - run: npm run lint
+    - name: Lint backend
+      run: npm run lint
       working-directory: ./Backend
-    - run: npm run test
+    - name: Test backend
+      run: npm run test
       working-directory: ./Backend
