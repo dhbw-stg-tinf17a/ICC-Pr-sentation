@@ -52,8 +52,8 @@ function getUsersCurrentAddressFromUserPreferences() {
   });
 }
 
-vvsModule.getLastPossibleConnectionStartTime = (eventStartTime, eventLocation) => {
-  logger.trace('vvs.js - getLastPossibleConnectionStartTime - start');
+vvsModule.getLastConnectionStartTime = (eventStartTime, eventLocation) => {
+  logger.trace('vvs.js - getLastConnectionStartTime - start');
   return new Promise((resolve, reject) => {
     getUsersCurrentAddressFromUserPreferences()
       .then((address) => {
@@ -63,7 +63,7 @@ vvsModule.getLastPossibleConnectionStartTime = (eventStartTime, eventLocation) =
         const event = moment(eventStartTime);
         parameters.itdDate = event.format(dateFormat);
         parameters.itdTime = event.format(timeFormat);
-        // console.log(parameters);
+        parameters.itdTripDateTimeDepArr = 'arr';
       })
       .then(() => request.get(vvsUrl, { params: parameters }))
       .then((response) => {
@@ -81,7 +81,7 @@ vvsModule.getLastPossibleConnectionStartTime = (eventStartTime, eventLocation) =
             reject(new Error('Error retrieving trip information'));
             return;
         }
-        logger.trace(`vvs.js - getLastPossibleConnectionStartTime: trip duration = ${tripInfo.duration}`);
+        logger.trace(`vvs.js - getLastConnectionStartTime: trip duration = ${tripInfo.duration}`);
         const startDateTimeObject = tripInfo.legs[0].points[0].dateTime;
         const startTime = moment(`${startDateTimeObject.date} ${startDateTimeObject.time}`, 'DD.MM.YYYY HH:mm');
         resolve(startTime);
@@ -90,7 +90,63 @@ vvsModule.getLastPossibleConnectionStartTime = (eventStartTime, eventLocation) =
         logger.error(error);
         reject(error);
       })
-      .finally(() => logger.trace('vvs.js - getLastPossibleConnectionStartTime - finally'));
+      .finally(() => logger.trace('vvs.js - getLastConnectionStartTime - finally'));
+  });
+};
+vvsModule.getNextConnection = (startTime, startLocation, endLocation) => {
+  logger.trace('vvs.js - getNextConnection - start');
+  return new Promise((resolve, reject) => {
+    parameters.name_origin = startLocation;
+    parameters.name_destination = endLocation;
+
+    const event = moment(startTime);
+    parameters.itdDate = event.format(dateFormat);
+    parameters.itdTime = event.format(timeFormat);
+    parameters.itdTripDateTimeDepArr = 'dep';
+    request.get(vvsUrl, { params: parameters })
+      .then((response) => {
+        const { trips } = response.data;
+
+        let tripInfo;
+        switch (typeOf(trips)) {
+          case 'array':
+            [tripInfo] = trips;
+            break;
+          case 'object':
+            tripInfo = trips.trip;
+            break;
+          default:
+            reject(new Error('Error retrieving trip information'));
+            return;
+        }
+
+        logger.trace(`vvs.js - getNextConnection: trip duration = ${tripInfo.duration}`);
+        const durationArray = tripInfo.duration.split(':', 2); // ['HH', 'mm']
+        const tripPoints = [];
+        tripInfo.legs.forEach((leg) => {
+          leg.points.forEach((point) => {
+            tripPoints.push({
+              name: point.name,
+              placeId: point.placeID,
+              time: `${point.dateTime.date} ${point.dateTime.time}`,
+            });
+          });
+        });
+        const tripStartTime = moment(tripPoints[0].time, 'DD.MM.YYYY HH:mm');
+
+        const trip = {
+          duration: tripInfo.duration,
+          startTime: tripStartTime.toISOString(true),
+          arrivalTime: tripStartTime.add(durationArray[0], 'hours').add(durationArray[1], 'hours').toISOString(true),
+          points: tripPoints,
+        };
+        resolve(trip);
+      })
+      .catch((error) => {
+        logger.error(error);
+        reject(error);
+      })
+      .finally(() => logger.trace('vvs.js - getNextConnection - finally'));
   });
 };
 

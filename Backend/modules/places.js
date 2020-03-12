@@ -6,6 +6,21 @@ const User = require('./user');
 const searchUrl = 'https://nominatim.openstreetmap.org/search/';
 const placesModule = {};
 
+/*
+placesModule.getRestaurantsNearUser = async () => {
+  const coordinates = await User.getUserCoordinates();
+  const area = await reverseGeocoder.getAreaFromCoordinates(coordinates);
+  const entries = await request.get(...);
+  return entries.data.filter(...);
+}
+
+placesModule.getRestaurantsNearUser = () => {
+  return User.getUserCoordinates()
+    .then((coordinates) => reverseGeocoder.getAreaFromCoordinates(coordinates))
+    .then((area) => request.get(`${searchUrl}restaurant ${area}`, { params: { format: 'jsonv2' } }))
+    .then((entries) => entries.data.filter((entry) => entry.type === 'restaurant'));
+}
+*/
 
 placesModule.getRestaurantsNearUser = () => {
   logger.trace('placesModule - getRestaurantsNearUser - start');
