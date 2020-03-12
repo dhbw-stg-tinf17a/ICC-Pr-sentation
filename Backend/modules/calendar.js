@@ -49,9 +49,7 @@ calendarModule.getTodaysFirstEvent = () => new Promise((resolve, reject) => {
         const eventDate = moment(event.start);
         const dayOfEvent = eventDate.dayOfYear();
 
-        if (dayOfEvent !== today && dayOfEvent !== tomorrow) {
-          return;
-        }
+        if (dayOfEvent !== today && dayOfEvent !== tomorrow) return;
         if (dayOfEvent === today
           && (firstEventToday === undefined || eventDate.isBefore(firstEventToday.start))) {
           firstEventToday = event;
@@ -63,13 +61,12 @@ calendarModule.getTodaysFirstEvent = () => new Promise((resolve, reject) => {
         // logger.trace(`${event.summary} is in ${event.location} on the ${event.start.getDate()}.
         // of ${months[event.start.getMonth()]} at ${event.start.toLocaleTimeString('de-DE')}`);
       });
-
       if (firstEventToday !== undefined && now.isBefore(firstEventToday.start)) {
         resolve(firstEventToday);
         return;
       }
       if (firstEventTomorrow !== undefined && now.isBefore(firstEventTomorrow.start)) {
-        resolve(firstEventToday);
+        resolve(firstEventTomorrow);
         return;
       }
       reject(new Error('There are no events today'));

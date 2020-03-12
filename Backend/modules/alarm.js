@@ -16,12 +16,10 @@ function getTimeToLeave() {
       .then((calendarEvent) => {
         event = calendarEvent;
         logger.trace(`alarm.js - getTimeToLeave: Event starts at: ${moment(event.start).format('DD.MM HH:mm')}`);
-        if (event.location) {
-          return vvs.getLastPossibleConnectionStartTime(event.start, event.location);
-        }
+        if (event.location) return vvs.getLastConnectionStartTime(event.start, event.location);
 
         logger.trace('alarm.js - getTimeToLeave: Event has no set location.');
-        return event.start;
+        return moment(event.start);
       })
       .then((time) => {
         event.timeToLeave = time;
