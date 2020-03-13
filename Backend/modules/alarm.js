@@ -10,30 +10,26 @@ const { getSubscriptions } = require('./notifications');
 const alarmModule = {};
 const dailyCommuteJobName = 'CommuteWakeUpAlarm';
 
-function getTimeToLeave() {
-  logger.trace('alarm.js - getTimeToLeave - start');
-  return new Promise((resolve, reject) => {
-    let event;
-    calendar.getTodaysFirstEvent()
-      .then((calendarEvent) => {
-        event = calendarEvent;
-        logger.trace(`alarm.js - getTimeToLeave: Event starts at: ${moment(event.start).format('DD.MM HH:mm')}`);
-        if (event.location) return vvs.getLastConnectionStartTime(event.start, event.location);
+async function getFirstEventWithTimeToLeave() {
+  logger.trace('alarm.js - getFirstEventWithTimeToLeave - start');
 
-        logger.trace('alarm.js - getTimeToLeave: Event has no set location.');
-        return moment(event.start);
-      })
-      .then((time) => {
-        event.timeToLeave = time;
-        logger.trace(`alarm.js - getTimeToLeave: Time to leave for event: ${time.format('DD.MM HH:mm')}`);
-        resolve(event);
-      })
-      .catch((error) => {
-        logger.error(error);
-        reject(error);
-      })
-      .finally(() => logger.trace('alarm.js - getTimeToLeave - finally'));
-  });
+  try {
+    const event = await calendar.getTodaysFirstEvent();
+    logger.trace(`alarm.js - getFirstEventWithTimeToLeave: Event starts at: ${moment(event.start).format('DD.MM HH:mm')}`);
+
+    if (event.location) {
+      logger.trace('alarm.js - getFirstEventWithTimeToLeave: Event has a location - fetching last connection');
+      event.timeToLeave = await vvs.getLastConnectionStartTime(event.start, event.location);
+    } else {
+      logger.trace('alarm.js - getFirstEventWithTimeToLeave: Event has no set location.');
+      event.timeToLeave = moment(event.start);
+    }
+
+    return Promise.resolve(event);
+  } catch (error) {
+    logger.error(error);
+    return Promise.reject(error);
+  }
 }
 
 async function wakeUpUser(event) {
@@ -52,7 +48,7 @@ async function wakeUpUser(event) {
 
 function setCommuteAlarm() {
   logger.trace('alarm.js - setCommuteAlarm - start');
-  Promise.all([User.getUsersPreparationTime(), getTimeToLeave()])
+  Promise.all([User.getUsersPreparationTime(), getFirstEventWithTimeToLeave()])
     .then((promiseValues) => {
       const preparationTimeInMinutes = promiseValues[0];
       const event = promiseValues[1];
