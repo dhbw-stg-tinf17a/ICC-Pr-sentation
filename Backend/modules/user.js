@@ -1,5 +1,6 @@
 const logger = require('pino')({ level: process.env.LOG_LEVEL || 'info' });
 const preferenceModule = require('./preferences');
+const reverseGeocoder = require('./reverseGeocoder');
 const validationHandler = require('../utilities/validationHandler');
 
 const userModule = {};
@@ -17,20 +18,17 @@ userModule.getUser = () => {
   });
 };
 
-userModule.setCoordinates = (coordinatesObject) => new Promise((resolve, reject) => {
+userModule.setCoordinates = async (coordinatesObject) => {
   logger.trace('userModule - setCoordinates with coordinates:');
   logger.trace(coordinatesObject);
 
-  validationHandler.validateCoordinate(coordinatesObject)
-    .then((validatedCoordinatesObject) => (`${validatedCoordinatesObject.lat},${validatedCoordinatesObject.lon}`))
-    .then((coordinates) => preferenceModule.set('user.preferences.currentLocationCoordinates', coordinates).write())
-    .then(() => resolve('Your current coordinates have been set successfully'))
-    .catch((error) => {
-      logger.error(error);
-      reject(error);
-    })
-    .finally(() => logger.trace('userModule - setCoordinates - finally'));
-});
+  const validatedCoordinatesObject = await validationHandler.validateCoordinate(coordinatesObject);
+  const coordinatesString = `${validatedCoordinatesObject.lat},${validatedCoordinatesObject.lon}`;
+  preferenceModule.set('user.preferences.currentLocationCoordinates', coordinatesString).write();
+  const coordinateArea = await reverseGeocoder.getStreetFromCoordinates(validatedCoordinatesObject);
+  preferenceModule.set('user.preferences.weatherCity', coordinateArea).write();
+  return Promise.resolve('Your current coordinates have been set successfully');
+};
 
 userModule.getUserCoordinates = () => new Promise((resolve, reject) => {
   logger.trace('userModule - getUserCoordinates - start');

@@ -22,6 +22,15 @@ validationHandler.validateCoordinate = (coordinates) => new Promise((resolve, re
     .finally(() => logger.trace('validationHandler - validateCoordinates - finally'));
 });
 
+validationHandler.validateCity = (city) => new Promise((resolve, reject) => {
+  logger.trace(`validationHandler - validateCity - with city: ${city}`);
+
+  validate(city, validationSchemas.city)
+    .then((validatedCity) => resolve(validatedCity))
+    .catch((error) => reject(new Error(error.message)))
+    .finally(() => logger.trace('validationHandler - validateCity - finally'));
+});
+
 
 module.exports = validationHandler;
 logger.debug('validationHandler initialized');
