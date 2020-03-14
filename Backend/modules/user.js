@@ -58,18 +58,25 @@ userModule.getUsersPreparationTime = async () => {
   }
 };
 
-userModule.getUsersQuoteCategory = () => new Promise((resolve, reject) => {
-  userModule.getUserPreferences()
-    .then((preferences) => {
-      if (preferences.quoteCategory === undefined) {
-        logger.trace("User hasn't set their favourite quote category yet, using standard category");
-        reject(new Error("User hasn't set their favourite quote category yet, using standard category"));
-        return;
-      }
-      resolve(preferences.quoteCategory);
-    })
-    .catch((error) => reject(error));
-});
+userModule.getUsersQuoteCategory = async () => {
+  const availableCategories = ['inspiration', 'management', 'life', 'sports', 'funny', 'love', 'art', 'students'];
+  const defaultCategory = 'inspire';
+  try {
+    const preferences = await userModule.getUserPreferences();
+    if (preferences.quoteCategory === undefined) {
+      logger.error("User hasn't set their favourite quote category yet, using default category");
+      return defaultCategory;
+    }
+    if (!availableCategories.includes(preferences.quoteCategory)) {
+      logger.error("User's set category is faulty, using default category");
+      return defaultCategory;
+    }
+    return preferences.quoteCategory;
+  } catch (error) {
+    logger.error('User has no preferences, using standard category');
+    return defaultCategory;
+  }
+};
 
 userModule.getUsersCity = () => new Promise((resolve, reject) => {
   userModule.getUserPreferences()
