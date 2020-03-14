@@ -10,7 +10,7 @@ const { getSubscriptions } = require('./notifications');
 const alarmModule = {};
 const dailyCommuteJobName = 'CommuteWakeUpAlarm';
 
-async function getFirstEventWithTimeToLeave() {
+alarmModule.getFirstEventWithTimeToLeave = async () => {
   logger.trace('alarm.js - getFirstEventWithTimeToLeave - start');
 
   const event = await calendar.getTodaysFirstEvent();
@@ -25,7 +25,7 @@ async function getFirstEventWithTimeToLeave() {
   }
 
   return event;
-}
+};
 
 async function wakeUpUser(event) {
   logger.debug(`Hey, listen. Please wake up, there is an event you wanted to attend: ${event.title}`);
@@ -43,7 +43,7 @@ async function wakeUpUser(event) {
 
 function setCommuteAlarm() {
   logger.trace('alarm.js - setCommuteAlarm - start');
-  Promise.all([User.getUsersPreparationTime(), getFirstEventWithTimeToLeave()])
+  Promise.all([User.getUsersPreparationTime(), alarmModule.getFirstEventWithTimeToLeave()])
     .then((promiseValues) => {
       const preparationTimeInMinutes = promiseValues[0];
       const event = promiseValues[1];
