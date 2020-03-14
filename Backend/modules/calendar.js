@@ -19,7 +19,7 @@ async function fetchCalendarEvents() {
 
 calendarModule.getTodaysFirstEvent = async () => {
   const events = await fetchCalendarEvents();
-  if (!events || events.length === 0) throw new Error("User hasn't set any events yet");
+  if (!events || events.length === 0) throw new Error('There are no events');
 
   const eventArray = Object.values(events);
   let firstEventToday;
@@ -47,7 +47,7 @@ calendarModule.getTodaysFirstEvent = async () => {
 
   if (firstEventToday && now.isBefore(firstEventToday.start)) return firstEventToday;
   if (firstEventTomorrow && now.isBefore(firstEventTomorrow.start)) return firstEventTomorrow;
-  throw new Error('There are no events today');
+  throw new Error('There are no events');
 };
 
 module.exports = calendarModule;
