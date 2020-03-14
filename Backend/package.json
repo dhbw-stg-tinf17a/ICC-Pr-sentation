@@ -9,7 +9,6 @@
     "test": "jest --forceExit"
   },
   "dependencies": {
-    "@googlemaps/google-maps-services-js": "^2.1.2",
     "@hapi/joi": "^17.1.0",
     "axios": "^0.19.2",
     "cookie-parser": "~1.4.4",
@@ -42,6 +41,9 @@
       "/tests/"
     ],
     "collectCoverage": true,
-    "collectCoverageFrom": ["**/*.js", "!**/node_modules/**"]
+    "collectCoverageFrom": [
+      "**/*.js",
+      "!**/node_modules/**"
+    ]
   }
 }
