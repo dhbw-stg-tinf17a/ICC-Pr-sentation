@@ -4,7 +4,10 @@ const User = require('./user');
 
 const quoteModule = {};
 const quotesUrl = 'https://quotes.rest/qod';
-const defaultQuote = 'Sometimes you must hurt in order to know, fall in order to grow, lose in order to gain because life’s greatest lessons are learned through pain.';
+/* const defaultQuote = `Sometimes you must hurt in order to know,
+fall in order to grow,
+lose in order to gain because life’s greatest lessons are learned through pain.`; */
+
 
 quoteModule.getPreferredQuoteOfTheDay = async () => {
   logger.trace('quote.js - getPreferredQuoteOfTheDay - called');
