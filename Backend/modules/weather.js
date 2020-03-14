@@ -21,7 +21,6 @@ const fetchCurrentWeather = () => new Promise((resolve, reject) => {
   });
 });
 
-// TODO test
 weatherModule.getCurrentWeatherForUserLocation = async () => {
   logger.trace('weather.js - getCurrentWeatherForUserLocation - start');
   weatherAPI.setCity(null);
@@ -42,17 +41,12 @@ weatherModule.getCurrentWeatherForUserLocation = async () => {
 
 weatherModule.getCurrentWeatherForCity = async (city) => {
   logger.trace('weather.js - getCurrentWeatherForCity - start');
-  try {
-    const validatedCity = await validationHandler.validateCity(city);
+  const validatedCity = await validationHandler.validateCity(city);
 
-    weatherAPI.setCoordinate({ lat: null, lon: null });
-    weatherAPI.setCity(validatedCity);
+  weatherAPI.setCoordinate({ lat: null, lon: null });
+  weatherAPI.setCity(validatedCity);
 
-    return fetchCurrentWeather();
-  } catch (error) {
-    logger.error(error);
-    return Promise.reject(error);
-  }
+  return fetchCurrentWeather();
 };
 
 module.exports = weatherModule;

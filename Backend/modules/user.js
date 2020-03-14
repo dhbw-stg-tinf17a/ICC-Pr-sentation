@@ -5,17 +5,11 @@ const validationHandler = require('../utilities/validationHandler');
 
 const userModule = {};
 
-userModule.getUser = () => {
+userModule.getUser = async () => {
   logger.trace('userModule - getUser - called');
-  return new Promise((resolve, reject) => {
-    const user = preferenceModule.get('user').value();
-    if (user === undefined) {
-      reject(new Error('User could not be fetched.'));
-      return;
-    }
-
-    resolve(user);
-  });
+  const user = preferenceModule.get('user').value();
+  if (user === undefined) throw new Error('There is no user set in the preferenceModule.');
+  return user;
 };
 
 userModule.setCoordinates = async (coordinatesObject) => {
@@ -43,31 +37,26 @@ userModule.getUserCoordinates = () => new Promise((resolve, reject) => {
     .catch((error) => reject(error));
 });
 
-userModule.getUserPreferences = () => new Promise((resolve, reject) => {
+userModule.getUserPreferences = async () => {
   logger.trace('userModule - getUserPreferences - start');
-  userModule.getUser()
-    .then((user) => {
-      if (user.preferences === undefined) {
-        reject(new Error('User has no preferences set.'));
-        return;
-      }
-      resolve(user.preferences);
-    })
-    .catch((error) => reject(error));
-});
 
-userModule.getUsersPreparationTime = () => new Promise((resolve, reject) => {
-  userModule.getUserPreferences()
-    .then((preferences) => {
-      if (preferences.preparationTimeInMinutes === undefined) {
-        logger.trace("User hasn't set their preparationTime yet, using standard time of 1h");
-        resolve(60);
-        return;
-      }
-      resolve(preferences.preparationTimeInMinutes);
-    })
-    .catch((error) => reject(error));
-});
+  const user = await userModule.getUser();
+  if (user.preferences === undefined) throw new Error('User has no preferences set.');
+  return user.preferences;
+};
+
+userModule.getUsersPreparationTime = async () => {
+  try {
+    const preferences = await userModule.getUserPreferences();
+    if (preferences.preparationTimeInMinutes === undefined) {
+      logger.trace("User hasn't set their preparationTime yet, using standard time of 1h");
+      return 60;
+    }
+    return preferences.preparationTimeInMinutes;
+  } catch (error) {
+    return 60;
+  }
+};
 
 userModule.getUsersQuoteCategory = () => new Promise((resolve, reject) => {
   userModule.getUserPreferences()

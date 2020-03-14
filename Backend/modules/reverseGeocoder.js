@@ -10,44 +10,36 @@ const reverseGeocodeParams = {
   lon: 0,
 };
 
-reverseGeocoderModule.getStreetFromCoordinates = (coordinates) => {
-  logger.trace('reverseGeocoderModule - getStreetFromCoordinates - start');
-  return new Promise((resolve, reject) => {
-    const latlngStr = coordinates.split(',', 2);
-    reverseGeocodeParams.lat = parseFloat(latlngStr[0]);
-    reverseGeocodeParams.lon = parseFloat(latlngStr[1]);
-    request.get(reverseGeocodeUrl, { params: reverseGeocodeParams })
-      .then((reverseGeocodeReturn) => {
-        const addressObject = reverseGeocodeReturn.data.address;
-        const houseNumber = addressObject.house_number || '';
-        const street = addressObject.road || addressObject.pedestrian;
-        const { city } = addressObject;
-        // const postcode = addressObject.postcode;
-        const address = `${city}, ${street} ${houseNumber}`;
-        logger.trace(`reverseGeocoderModule - getStreetFromCoordinates: Reverse geocoded ${coordinates} to: ${address}`);
-        resolve(address);
-      })
-      .catch((error) => reject(error))
-      .finally(() => logger.trace('reverseGeocoderModule - getStreetFromCoordinates - finally'));
-  });
+reverseGeocoderModule.getStreetFromCoordinates = async (coordinates) => {
+  logger.trace('reverseGeocoderModule - getStreetFromCoordinates - called');
+  const latlngStr = coordinates.split(',', 2);
+  reverseGeocodeParams.lat = parseFloat(latlngStr[0]);
+  reverseGeocodeParams.lon = parseFloat(latlngStr[1]);
+
+  const geocodeResponse = await request.get(reverseGeocodeUrl, { params: reverseGeocodeParams });
+
+  const addressObject = geocodeResponse.data.address;
+  const houseNumber = addressObject.house_number || '';
+  const street = addressObject.road || addressObject.pedestrian;
+  const { city } = addressObject;
+
+  const address = `${city}, ${street} ${houseNumber}`;
+  logger.trace(`reverseGeocoderModule - getStreetFromCoordinates: Reverse geocoded ${coordinates} to: ${address}`);
+  return address;
 };
 
-reverseGeocoderModule.getAreaFromCoordinates = (coordinates) => {
-  logger.trace('reverseGeocoderModule - getAreaFromCoordinates - start');
-  return new Promise((resolve, reject) => {
-    const latlngStr = coordinates.split(',', 2);
-    reverseGeocodeParams.lat = parseFloat(latlngStr[0]);
-    reverseGeocodeParams.lon = parseFloat(latlngStr[1]);
-    request.get(reverseGeocodeUrl, { params: reverseGeocodeParams })
-      .then((reverseGeocodeReturn) => {
-        const addr = reverseGeocodeReturn.data.address;
-        const area = addr.suburb || addr.city_district || addr.postcode || addr.city || addr.county;
-        logger.trace(`reverseGeocoderModule - getAreaFromCoordinates: Reverse geocoded ${coordinates} to: ${area}`);
-        resolve(area);
-      })
-      .catch((error) => reject(error))
-      .finally(() => logger.trace('reverseGeocoderModule - getAreaFromCoordinates - finally'));
-  });
+reverseGeocoderModule.getAreaFromCoordinates = async (coordinates) => {
+  logger.trace('reverseGeocoderModule - getAreaFromCoordinates - called');
+  const latlngStr = coordinates.split(',', 2);
+  reverseGeocodeParams.lat = parseFloat(latlngStr[0]);
+  reverseGeocodeParams.lon = parseFloat(latlngStr[1]);
+
+  const geocodeResponse = await request.get(reverseGeocodeUrl, { params: reverseGeocodeParams });
+
+  const addr = geocodeResponse.data.address;
+  const area = addr.suburb || addr.city_district || addr.postcode || addr.city || addr.county;
+  logger.trace(`reverseGeocoderModule - getAreaFromCoordinates: Reverse geocoded ${coordinates} to: ${area}`);
+  return area;
 };
 
 

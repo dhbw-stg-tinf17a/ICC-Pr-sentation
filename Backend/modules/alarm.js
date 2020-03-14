@@ -13,23 +13,18 @@ const dailyCommuteJobName = 'CommuteWakeUpAlarm';
 async function getFirstEventWithTimeToLeave() {
   logger.trace('alarm.js - getFirstEventWithTimeToLeave - start');
 
-  try {
-    const event = await calendar.getTodaysFirstEvent();
-    logger.trace(`alarm.js - getFirstEventWithTimeToLeave: Event starts at: ${moment(event.start).format('DD.MM HH:mm')}`);
+  const event = await calendar.getTodaysFirstEvent();
+  logger.trace(`alarm.js - getFirstEventWithTimeToLeave: Event starts at: ${moment(event.start).format('DD.MM HH:mm')}`);
 
-    if (event.location) {
-      logger.trace('alarm.js - getFirstEventWithTimeToLeave: Event has a location - fetching last connection');
-      event.timeToLeave = await vvs.getLastConnectionStartTime(event.start, event.location);
-    } else {
-      logger.trace('alarm.js - getFirstEventWithTimeToLeave: Event has no set location.');
-      event.timeToLeave = moment(event.start);
-    }
-
-    return Promise.resolve(event);
-  } catch (error) {
-    logger.error(error);
-    return Promise.reject(error);
+  if (event.location) {
+    logger.trace('alarm.js - getFirstEventWithTimeToLeave: Event has a location - fetching last connection');
+    event.timeToLeave = await vvs.getLastConnectionStartTime(event.start, event.location);
+  } else {
+    logger.trace('alarm.js - getFirstEventWithTimeToLeave: Event has no set location.');
+    event.timeToLeave = moment(event.start);
   }
+
+  return event;
 }
 
 async function wakeUpUser(event) {

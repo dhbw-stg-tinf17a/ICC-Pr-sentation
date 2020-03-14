@@ -9,7 +9,11 @@ router.get('/', (req, res) => {
   logger.trace('router - users - GET called on /');
   User.getUser()
     .then((user) => res.status(200).send({ status: 200, data: user }))
-    .catch((error) => res.status(500).send({ status: 500, error }));
+    .catch((error) => {
+      logger.error(error);
+      res.status(500).send({ status: 500, error: error.message });
+    })
+    .finally(() => logger.trace('router - /users/coordinates - responded'));
 });
 
 /** ********************
@@ -20,8 +24,11 @@ router.put('/coordinates', (req, res) => {
 
   User.setCoordinates(req.body)
     .then((message) => res.status(200).send({ status: 200, data: message }))
-    .catch((error) => res.status(500).send({ status: 500, error }))
-    .finally(() => logger.trace('router - users/coordinates - returned'));
+    .catch((error) => {
+      logger.error(error);
+      res.status(500).send({ status: 500, error });
+    })
+    .finally(() => logger.trace('router - /users - responded'));
 });
 
 module.exports = router;
