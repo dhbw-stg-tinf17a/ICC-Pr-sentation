@@ -1,0 +1,48 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Preferences.vue Elements are rendered correctly Component renders 1`] = `
+<div id="preferences" class="hero-body">
+  <div class="loading-overlay is-active fade-leave fade-leave-active">
+    <div class="loading-background"></div>
+    <div class="loading-icon"></div>
+  </div>
+  <!---->
+  <div class="container">
+    <h1 class="title">
+      Preferences for Gunter
+    </h1>
+    <div class="columns">
+      <div class="column">
+        <div class="field"><label class="label has-text-white">Name</label>
+          <div class="control"><input type="text" placeholder="Name" class="input"></div>
+        </div>
+        <div class="field"><label class="label has-text-white">Preparation Time in Minutes</label>
+          <div class="control"><input type="text" placeholder="Preparation Time in Minutes" class="input"></div>
+        </div>
+        <div class="field"><label class="label has-text-white">Favourite Quote Category</label>
+          <div class="control"><input type="text" placeholder="Favourite Quote Category" class="input"></div>
+        </div>
+        <div class="field"><label class="label has-text-white">Main City</label>
+          <div class="control"><input type="text" placeholder="Main City" class="input"></div>
+        </div>
+      </div>
+      <div class="column">
+        <div class="field"><label class="label has-text-white">Current Location</label>
+          <div class="control"><input disabled="disabled" type="text" placeholder="Current Location" class="input"></div>
+        </div>
+        <div class="field"><label class="b-checkbox checkbox"><input type="checkbox" true-value="true" value="false"> <span class="check"></span> <span class="control-label">
+            Send notifications to this device
+          </span></label></div>
+        <div class="field is-grouped is-grouped-right">
+          <p class="control"><a href="#/" class="button is-light router-link-exact-active router-link-active">
+              Cancel
+            </a></p>
+          <p class="control"><a class="button is-success">
+              Save
+            </a></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
