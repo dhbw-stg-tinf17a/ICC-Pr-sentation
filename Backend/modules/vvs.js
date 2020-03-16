@@ -57,6 +57,7 @@ vvsModule.getLastConnectionStartTime = async (eventStartTime, eventLocation) => 
   try {
     vvsResponse = await request.get(vvsUrl, { params: parameters });
   } catch (error) {
+    logger.error(error);
     throw new Error('There was an Error fetching the trip information from VVS');
   }
 
@@ -94,6 +95,7 @@ vvsModule.getNextConnection = async (startTime, startLocation, endLocation) => {
   try {
     vvsResponse = await request.get(vvsUrl, { params: parameters });
   } catch (error) {
+    logger.error(error);
     throw new Error('There was an Error fetching the trip information from VVS');
   }
 

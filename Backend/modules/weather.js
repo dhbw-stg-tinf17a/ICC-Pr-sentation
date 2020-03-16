@@ -16,6 +16,7 @@ const fetchCurrentWeather = () => new Promise((resolve, reject) => {
     if (error || (weatherData && weatherData.cod >= 400)) {
       logger.trace('weather.js - fetchCurrentWeather - error with the openweather API');
       logger.error(error);
+      logger.error(weatherData);
       reject(new Error('Error with the OpenWeather-API'));
     } else resolve(weatherData);
   });
@@ -23,7 +24,6 @@ const fetchCurrentWeather = () => new Promise((resolve, reject) => {
 
 weatherModule.getCurrentWeatherForUserLocation = async () => {
   logger.trace('weather.js - getCurrentWeatherForUserLocation - start');
-  weatherAPI.setCity(null);
 
   try {
     const userCoordinates = await User.getUserCoordinates();
