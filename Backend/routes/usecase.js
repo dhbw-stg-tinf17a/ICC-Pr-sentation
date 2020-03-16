@@ -14,7 +14,6 @@ router.get('/1', (req, res) => {
     Alarm.getFirstEventWithTimeToLeave(),
   ])
     .then((usecaseData) => {
-      console.log(usecaseData);
       const quote = usecaseData[0];
       const preparationTime = usecaseData[1];
       const weather = usecaseData[2];

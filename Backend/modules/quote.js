@@ -18,9 +18,8 @@ quoteModule.getPreferredQuoteOfTheDay = async () => {
     User.setFallbackQuote(quoteObject);
     return quoteObject;
   } catch (error) {
-    logger.error(error);
     if (error.response && error.response.status === 429) {
-      logger.error('Trying to use fallback quote of the day');
+      logger.error('Quote ratelimit reached -> trying to use fallback saved daily quote');
       try {
         const fallbackQuote = await User.getFallbackQuote();
         return fallbackQuote;
@@ -29,6 +28,7 @@ quoteModule.getPreferredQuoteOfTheDay = async () => {
         throw new Error('Couldn\'t fetch quote of the day');
       }
     }
+    logger.error(error);
     throw new Error('Couldn\'t fetch quote of the day');
   }
 };
