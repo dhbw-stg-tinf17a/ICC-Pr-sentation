@@ -78,6 +78,20 @@ userModule.getUsersQuoteCategory = async () => {
   }
 };
 
+userModule.getFallbackQuote = async () => {
+  logger.trace('userModule - getFallbackQuote - called');
+  const rateLimitBackups = preferenceModule.get('rateLimitBackups').value();
+  if (rateLimitBackups === undefined) throw new Error('There is no ratelimit-backup for this and the ratelimit is reached.');
+
+  if (rateLimitBackups && rateLimitBackups.dailyQuote) return rateLimitBackups.dailyQuote;
+  throw new Error('There is no ratelimit-backup for this and the ratelimit is reached.');
+};
+
+userModule.setFallbackQuote = async (quoteObject) => {
+  logger.trace('userModule - setFallbackQuote - called');
+  preferenceModule.set('rateLimitBackups.dailyQuote', quoteObject).write();
+};
+
 userModule.getUsersCity = () => new Promise((resolve, reject) => {
   userModule.getUserPreferences()
     .then((preferences) => {

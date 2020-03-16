@@ -9,17 +9,27 @@
       "preparationTimeInMinutes": "45",
       "quoteCategory": "funny",
       "weatherCity": "Stuttgart",
-      "currentLocationCoordinates": "48.773563,9.171063",
-      "currentLocationAddress": "Stuttgart, Schmidenerstraße 21",
-      "eventLocationCoordinates": "48.773563,9.171063",
-      "eventLocationAddress": "Stuttgart, Rotebühlplatz 41"
-    },
-    "events": [
-      {
-        "title": "Party hard",
-        "date": "2020-03-05 14:10.00"
-      }
-    ]
+      "currentLocationCoordinates": "48.809062,9.219187",
+      "currentLocationAddress": "Stuttgart, Schmidenerstraße 21"
+    }
   },
-  "global": {}
+  "rateLimitBackups": {
+    "dailyQuote": {
+      "quote": "If you respect yourself in stressful situations, it will help you see the positiveâ€¦ It will help you see the message in the mess.",
+      "length": "135",
+      "author": "Steve Maraboli",
+      "tags": [
+        "inspire",
+        "self-respect",
+        "stress"
+      ],
+      "category": "inspire",
+      "language": "en",
+      "date": "2020-02-02",
+      "permalink": "https://theysaidso.com/quote/steve-maraboli-if-you-respect-yourself-in-stressful-situations-it-will-help-you",
+      "id": "nwW3g7V0xszGDNIehz6yTgeF",
+      "background": "https://theysaidso.com/img/bgs/man_on_the_mountain.jpg",
+      "title": "Inspiring Quote of the day"
+    }
+  }
 }

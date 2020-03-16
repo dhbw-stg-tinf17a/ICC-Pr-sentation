@@ -19,5 +19,6 @@ router.use('/quote', require('./quote'));
 router.use('/weather', require('./weather'));
 router.use('/notifications', require('./notifications'));
 router.use('/places', require('./place'));
+router.use('/usecases', require('./usecase'));
 
 module.exports = router;
