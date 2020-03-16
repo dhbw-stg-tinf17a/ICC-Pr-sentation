@@ -7,6 +7,7 @@
     >
       <button
         v-if="listening"
+        id="muteButton"
         class="button is-info"
         @click="stopSpeechRecognition"
       >
@@ -22,6 +23,7 @@
     >
       <button
         v-if="!listening"
+        id="unmuteButton"
         class="button is-info"
         @click="startSpeechRecognition"
       >
@@ -62,9 +64,6 @@ export default {
     capitalize(s) {
       return s.replace(s.substr(0, 1), (m) => m.toUpperCase());
     },
-    linebreak(s) {
-      return s.replace(/\n\n/g, '<p></p>').replace(/\n/g, '<br>');
-    },
     startSpeechRecognition() {
       this.listening = true;
       this.recognition.lang = 'en-US';
@@ -85,7 +84,12 @@ export default {
     initSpeechRecognition() {
       let finalTranscript = '';
       window.SpeechRecognition = window.webkitSpeechRecognition || window.SpeechRecognition;
-      this.recognition = new window.SpeechRecognition();
+      if (window.SpeechRecognition) {
+        this.recognition = new window.SpeechRecognition();
+      } else {
+        // Provide object for unit tests, if window.SpeechRecognition is not available
+        this.recognition = { start: () => {}, end: () => {} };
+      }
 
       this.recognition.continuous = true;
       this.recognition.interimResults = true;
@@ -142,7 +146,7 @@ export default {
         }
 
         finalTranscript = this.capitalize(finalTranscript);
-        this.interimResult = this.linebreak(interimTranscript);
+        this.interimResult = interimTranscript;
         if (finalTranscript === '') {
           this.$emit('update:user-input', this.fixedUserInput + this.interimResult);
         } else {
