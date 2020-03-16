@@ -1,0 +1,43 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`App.vue Elements are rendered correctly Component renders 1`] = `
+<section class="hero is-info is-fullheight">
+  <div class="hero-head">
+    <navbar-stub></navbar-stub>
+  </div>
+  <section class="hero is-info is-fullheight" user-input="">
+    <div class="hero-head">
+      <navbar-stub></navbar-stub>
+    </div>
+    <!---->
+  </section>
+</section>
+`;
+
+exports[`App.vue error message is shown 1`] = `
+<section class="hero is-info is-fullheight">
+  <div class="hero-head">
+    <navbar-stub></navbar-stub>
+  </div>
+  <section class="hero is-info is-fullheight" user-input="">
+    <div class="hero-head">
+      <navbar-stub></navbar-stub>
+    </div>
+    <!---->
+  </section>
+</section>
+`;
+
+exports[`App.vue position is put successfully 1`] = `
+<section class="hero is-info is-fullheight">
+  <div class="hero-head">
+    <navbar-stub></navbar-stub>
+  </div>
+  <section class="hero is-info is-fullheight" user-input="">
+    <div class="hero-head">
+      <navbar-stub></navbar-stub>
+    </div>
+    <!---->
+  </section>
+</section>
+`;
