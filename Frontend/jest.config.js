@@ -8,7 +8,7 @@ module.exports = {
     '!public/service-worker.js', // not testable with unit tests; tested manually
     // SpeechSynthesisUtterance not defined in test run.
     // Mocking not useful. HTML speech api is already tested from creators, no need to test again.
-    '!/src/services/SpeechSynthesis.js',
+    '!src/services/SpeechSynthesis.js',
   ],
   coverageReporters: ['html', 'text'],
 };
