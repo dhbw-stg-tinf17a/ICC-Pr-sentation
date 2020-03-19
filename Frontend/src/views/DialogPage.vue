@@ -10,20 +10,18 @@
             :participants="participants"
             :myself="myself"
             :messages="messages"
-            :on-type="onType"
             :on-message-submit="onMessageSubmit"
-            :chat-title="chatTitle"
-            :placeholder="placeholder"
+            chat-title="Gunter PDA"
+            placeholder="Enter message"
             :colors="colors"
             :border-style="borderStyle"
-            :hide-close-button="hideCloseButton"
-            :close-button-icon-size="closeButtonIconSize"
-            :on-close="onClose"
-            :submit-icon-size="submitIconSize"
+            :hide-close-button="true"
+            close-button-icon-size="20px"
+            submit-icon-size="30px"
             :load-more-messages="toLoad.length > 0 ? loadMoreMessages : null"
-            :async-mode="asyncMode"
+            :async-mode="false"
             :scroll-bottom="scrollBottom"
-            :display-header="displayHeader"
+            :display-header="true"
           />
         </div>
         <div class="column">
@@ -60,7 +58,6 @@ export default {
   },
   data() {
     return {
-      visible: true,
       participants: [
         {
           name: 'Gunter',
@@ -73,32 +70,12 @@ export default {
       },
       messages: [
         {
-          content: 'New travel information available!\nDo you wanna see it?',
+          content: 'Hello my name is Gunter. Ask me for information about the use cases i provide!',
           myself: false,
           participantId: 1,
-          timestamp: {
-            year: 2019, month: 3, day: 5, hour: 20, minute: 10, second: 3, millisecond: 123,
-          },
-        },
-        {
-          content: 'Yes',
-          myself: true,
-          participantId: 2,
-          timestamp: {
-            year: 2019, month: 4, day: 5, hour: 19, minute: 10, second: 3, millisecond: 123,
-          },
-        },
-        {
-          content: 'The use case information is:\nBla bla bla\n\nShould i show more?',
-          myself: false,
-          participantId: 1,
-          timestamp: {
-            year: 2019, month: 5, day: 5, hour: 10, minute: 10, second: 3, millisecond: 123,
-          },
+          timestamp: this.getCurrentTimestamp(),
         },
       ],
-      chatTitle: 'My chat title',
-      placeholder: 'send your message',
       colors: {
         header: {
           bg: '#d30303',
@@ -125,71 +102,54 @@ export default {
         bottomLeft: '10px',
         bottomRight: '10px',
       },
-      hideCloseButton: false,
-      submitIconSize: '30px',
-      closeButtonIconSize: '20px',
-      asyncMode: false,
-      toLoad: [
-        {
-          content: 'Commute Use Case',
-          myself: true,
-          participantId: 2,
-          timestamp: {
-            year: 2010, month: 3, day: 5, hour: 10, minute: 10, second: 3, millisecond: 123,
-          },
-          uploaded: true,
-          viewed: true,
-        },
-        {
-          content: 'Commute: Tomorrow\nDeparture Time: 09.00am\nDepart from: Main Station\n\nQuote of the Day: It is cold at night!',
-          myself: false,
-          participantId: 1,
-          timestamp: {
-            year: 2011, month: 0, day: 5, hour: 19, minute: 10, second: 3, millisecond: 123,
-          },
-          uploaded: true,
-          viewed: true,
-        },
-      ],
+      toLoad: [],
       scrollBottom: {
         messageSent: true,
         messageReceived: false,
       },
-      displayHeader: true,
     };
   },
+  beforeRouteEnter(to, from, next) {
+    next((vm) => {
+      vm.onMessageSubmit({
+        content: to.query.usecase,
+        myself: true,
+        participantId: 2,
+        timestamp: vm.getCurrentTimestamp(),
+      });
+    });
+  },
+  beforeRouteUpdate(to, from, next) {
+    this.onMessageSubmit({
+      content: to.query.usecase,
+      myself: true,
+      participantId: 2,
+      timestamp: this.getCurrentTimestamp(),
+    });
+    next();
+  },
   methods: {
-    onType() {
-      // here you can set any behavior
+    getCurrentTimestamp() {
+      const date = new Date();
+      return {
+        year: date.getFullYear(),
+        month: date.getMonth() + 1,
+        day: date.getDate(),
+        hour: date.getHours(),
+        minute: date.getMinutes(),
+        second: date.getSeconds(),
+        millisecond: date.getMilliseconds(),
+      };
     },
     loadMoreMessages(resolve) {
       setTimeout(() => {
-        resolve(this.toLoad); // We end the loading state and add the messages
-        // Make sure the loaded messages are also added
-        // to our local messages copy or they will be lost
+        resolve(this.toLoad);
         this.messages.unshift(...this.toLoad);
         this.toLoad = [];
       }, 1000);
     },
     onMessageSubmit(message) {
-      /*
-            * example simulating an upload callback.
-            * It's important to notice that even when your message wasn't send
-            * yet to the server you have to add the message into the array
-            */
       this.messages.push(message);
-
-      /*
-            * you can update message state after the server response
-            */
-      // timeout simulating the request
-      setTimeout(() => {
-        // eslint-disable-next-line no-param-reassign
-        message.uploaded = true;
-      }, 2000);
-    },
-    onClose() {
-      this.visible = false;
     },
   },
 };
