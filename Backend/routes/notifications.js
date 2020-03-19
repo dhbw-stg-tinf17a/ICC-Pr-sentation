@@ -26,7 +26,7 @@ router.post('/enable', async (req, res) => {
       })),
     ]);
 
-    res.status(200).send({});
+    res.send({});
   } catch (err) {
     logger.error(err);
     res.status(500).send({
@@ -40,7 +40,7 @@ router.post('/disable', async (req, res) => {
 
   await removeSubscription(req.body.endpoint);
 
-  res.status(200).send({});
+  res.send({});
 });
 
 module.exports = router;
