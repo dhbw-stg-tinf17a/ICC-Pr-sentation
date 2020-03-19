@@ -2,14 +2,11 @@ import Vue from 'vue';
 import VueRouter from 'vue-router';
 
 const LandingPage = () => import('../views/LandingPage.vue');
-const Commute = () => import('../views/CommuteUseCase.vue');
-const Restaurant = () => import('../views/RestaurantUseCase.vue');
-const Trainer = () => import('../views/TrainerUseCase.vue');
-const Travel = () => import('../views/TravelUseCase.vue');
 const Help = () => import('../views/Help.vue');
 const Default404 = () => import('../views/Default404.vue');
 const Preferences = () => import('../views/Preferences.vue');
 const Calendar = () => import('../views/Calendar.vue');
+const DialogPage = () => import('../views/DialogPage.vue');
 
 Vue.use(VueRouter);
 
@@ -19,27 +16,6 @@ const routes = [
     name: 'landingPage',
     component: LandingPage,
   },
-  {
-    path: '/commute',
-    name: 'commute',
-    component: Commute,
-  },
-  {
-    path: '/restaurant',
-    name: 'restaurant',
-    component: Restaurant,
-  },
-  {
-    path: '/trainer',
-    name: 'trainer',
-    component: Trainer,
-  },
-  {
-    path: '/travel',
-    name: 'travel',
-    component: Travel,
-  },
-
   {
     path: '/help',
     name: 'help',
@@ -54,6 +30,11 @@ const routes = [
     path: '/calendar',
     name: 'calendar',
     component: Calendar,
+  },
+  {
+    path: '/dialog',
+    name: 'dialog',
+    component: DialogPage,
   },
   {
     path: '*',

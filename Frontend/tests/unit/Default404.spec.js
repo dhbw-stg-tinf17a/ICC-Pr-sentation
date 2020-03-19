@@ -1,7 +1,7 @@
 import { createLocalVue, mount } from '@vue/test-utils';
 import Buefy from 'buefy';
 import VueRouter from 'vue-router';
-import Navbar from '@/components/Navbar.vue';
+import Default404 from '@/views/Default404.vue';
 
 const localVue = createLocalVue();
 localVue.use(Buefy);
@@ -9,14 +9,9 @@ localVue.use(VueRouter);
 
 const routes = [
   {
-    path: '/',
+    path: '/default',
     name: 'landingPage',
-    component: Navbar,
-  },
-  {
-    path: '/dialog',
-    name: 'dialog',
-    component: Navbar,
+    component: Default404,
   },
 ];
 const router = new VueRouter({
@@ -24,30 +19,22 @@ const router = new VueRouter({
 });
 
 function factory() {
-  return mount(Navbar, {
+  return mount(Default404, {
     localVue,
     router,
   });
 }
 
-
-describe('Navbar.vue', () => {
+describe('Default404.vue', () => {
   describe('Elements are rendered correctly', () => {
     it('Component renders', () => {
       const wrapper = factory();
       expect(wrapper).toMatchSnapshot();
     });
 
-    it('Nav items render', () => {
+    it('Link to home page is displayed', () => {
       const wrapper = factory();
-      expect(wrapper.findAll('.navbar-item').length).toBe(6);
-    });
-  });
-
-  describe('Computed return expected value', () => {
-    it('currentRoute works', () => {
-      const wrapper = factory();
-      expect(wrapper.vm.currentRoute).toBe(routes[0].name);
+      expect(wrapper.find('.router-link').exists()).toBe(true);
     });
   });
 });

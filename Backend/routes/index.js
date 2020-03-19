@@ -20,5 +20,10 @@ router.use('/weather', require('./weather'));
 router.use('/notifications', require('./notifications'));
 router.use('/places', require('./place'));
 router.use('/db', require('./db'));
+router.use('/usecases', require('./usecase'));
+
+router.get('*', (req, res) => {
+  res.status(404).send({ status: 404, data: 'Route not found' });
+});
 
 module.exports = router;

@@ -1,0 +1,15 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Default404.vue Elements are rendered correctly Component renders 1`] = `
+<div id="Default404" class="hero-body">
+  <div class="container">
+    <h1 class="is-size-3">
+      Sorry. This page doesnt exist.
+    </h1> <a href="#/default" class="router-link">
+      <div class="button">
+        Back to Home
+      </div>
+    </a>
+  </div>
+</div>
+`;

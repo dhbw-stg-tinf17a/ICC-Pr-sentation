@@ -7,19 +7,14 @@ const searchUrl = 'https://nominatim.openstreetmap.org/search/';
 const placesModule = {};
 
 
-placesModule.getRestaurantsNearUser = () => {
+placesModule.getRestaurantsNearUser = async () => {
   logger.trace('placesModule - getRestaurantsNearUser - start');
-  return new Promise((resolve, reject) => {
-    User.getUserCoordinates()
-      .then((coordinates) => reverseGeocoder.getAreaFromCoordinates(coordinates))
-      .then((area) => request.get(`${searchUrl}restaurant ${area}`, { params: { format: 'jsonv2' } }))
-      .then((entries) => entries.data.filter((entry) => entry.type === 'restaurant'))
-      .then((restaurants) => resolve(restaurants))
-      .catch((error) => reject(error))
-      .finally(() => logger.trace('placesModule - getRestaurantsNearUser - finally'));
-  });
-};
 
+  const coordinates = await User.getUserCoordinates();
+  const area = await reverseGeocoder.getAreaFromCoordinates(coordinates);
+  const entries = await request.get(`${searchUrl}restaurant ${area}`, { params: { format: 'jsonv2' } });
+  return entries.data.filter((entry) => entry.type === 'restaurant');
+};
 
 module.exports = placesModule;
 logger.debug('placesModule initialized');

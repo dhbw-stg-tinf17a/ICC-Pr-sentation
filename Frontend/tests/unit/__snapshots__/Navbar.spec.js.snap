@@ -8,10 +8,10 @@ exports[`Navbar.vue Elements are rendered correctly Component renders 1`] = `
   <div class="navbar-menu">
     <div class="navbar-start"></div>
     <div class="navbar-end">
-      <div class="navbar-item"><a href="#/commute" class="button is-white is-outlined"><span class="icon"><i class="fas fa-train"></i></span> <span>Commute</span></a></div>
-      <div class="navbar-item"><a href="#/travel" class="button is-white is-outlined"><span class="icon"><i class="fas fa-plane-departure"></i></span> <span>Travel</span></a></div>
-      <div class="navbar-item"><a href="#/restaurant" class="button is-white is-outlined"><span class="icon"><i class="fas fa-utensils"></i></span> <span>Restaurant</span></a></div>
-      <div class="navbar-item"><a href="#/trainer" class="button is-white is-outlined"><span class="icon"><i class="fas fa-swimmer"></i></span> <span>Trainer</span></a></div>
+      <div class="navbar-item"><a href="#/dialog?usecase=commute" class="button is-white is-outlined"><span class="icon"><i class="fas fa-train"></i></span> <span>Commute</span></a></div>
+      <div class="navbar-item"><a href="#/dialog?usecase=travel" class="button is-white is-outlined"><span class="icon"><i class="fas fa-plane-departure"></i></span> <span>Travel</span></a></div>
+      <div class="navbar-item"><a href="#/dialog?usecase=restaurant" class="button is-white is-outlined"><span class="icon"><i class="fas fa-utensils"></i></span> <span>Restaurant</span></a></div>
+      <div class="navbar-item"><a href="#/dialog?usecase=trainer" class="button is-white is-outlined"><span class="icon"><i class="fas fa-swimmer"></i></span> <span>Trainer</span></a></div>
       <div class="navbar-item">
         <div class="field has-addons">
           <p class="control"><a href="#/calendar" class="button is-white is-outlined"><span class="icon"><i class="far fa-calendar-alt fa-2x"></i></span></a></p>

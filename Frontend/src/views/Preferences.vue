@@ -118,7 +118,7 @@
 
 <script>
 import SpeechService from '@/services/SpeechSynthesis';
-import UserService from '../services/User';
+import UserService from '@/services/User';
 
 export default {
   data() {
@@ -130,14 +130,16 @@ export default {
 
   created() {
     SpeechService.speak('Edit your Preferences');
-
-    UserService.getUser().then((result) => {
-      this.user = result.data.data;
-      this.loading = false;
-    });
+    this.getUser();
   },
 
   methods: {
+    getUser() {
+      UserService.getUser().then((result) => {
+        this.user = result.data.data;
+        this.loading = false;
+      });
+    },
     savePreferences() {
       this.$buefy.toast.open({
         message: 'Data theoretically saved! (Not yet implemented.)',
