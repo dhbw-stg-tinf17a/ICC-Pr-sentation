@@ -13,6 +13,11 @@ const routes = [
     name: 'landingPage',
     component: Navbar,
   },
+  {
+    path: '/dialog',
+    name: 'dialog',
+    component: Navbar,
+  },
 ];
 const router = new VueRouter({
   routes,
