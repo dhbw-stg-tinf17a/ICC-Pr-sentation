@@ -19,7 +19,7 @@
         <router-link
           class="button is-white"
           :class="{'is-outlined': currentRoute !== 'commute'}"
-          to="commute"
+          :to="{name: 'dialog', query: {usecase: 'commute'}}"
         >
           <span class="icon">
             <i class="fas fa-train" />
@@ -31,7 +31,7 @@
         <router-link
           class="button is-white"
           :class="{'is-outlined': currentRoute !== 'travel'}"
-          to="travel"
+          :to="{name: 'dialog', query: {usecase: 'travel'}}"
         >
           <span class="icon">
             <i class="fas fa-plane-departure" />
@@ -43,7 +43,7 @@
         <router-link
           class="button is-white"
           :class="{'is-outlined': currentRoute !== 'restaurant'}"
-          to="restaurant"
+          :to="{name: 'dialog', query: {usecase: 'restaurant'}}"
         >
           <span class="icon">
             <i class="fas fa-utensils" />
@@ -55,7 +55,7 @@
         <router-link
           class="button is-white"
           :class="{'is-outlined': currentRoute !== 'trainer'}"
-          to="trainer"
+          :to="{name: 'dialog', query: {usecase: 'trainer'}}"
         >
           <span class="icon">
             <i class="fas fa-swimmer" />
