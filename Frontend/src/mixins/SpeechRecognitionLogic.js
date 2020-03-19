@@ -10,19 +10,16 @@ export default {
     // checks, if userInput contains any trigger word
     checkForUseCase(userInput) {
       if (userInput.toLowerCase().includes('trainer')) {
-        if (this.$router.currentRoute.name !== 'trainer') this.$router.push({ name: 'trainer' });
+        if (this.$router.currentRoute.name !== 'trainer') this.$router.push({ name: 'dialog', query: { usecase: 'trainer' } });
         this.userInput = '';
       } else if (userInput.toLowerCase().includes('commute')) {
-        if (this.$router.currentRoute.name !== 'commute') this.$router.push({ name: 'commute' });
+        if (this.$router.currentRoute.name !== 'commute') this.$router.push({ name: 'dialog', query: { usecase: 'commute' } });
         this.userInput = '';
       } else if (userInput.toLowerCase().includes('restaurant')) {
-        if (this.$router.currentRoute.name !== 'restaurant') this.$router.push({ name: 'restaurant' });
+        if (this.$router.currentRoute.name !== 'restaurant') this.$router.push({ name: 'dialog', query: { usecase: 'restaurant' } });
         this.userInput = '';
       } else if (userInput.toLowerCase().includes('travel')) {
-        if (this.$router.currentRoute.name !== 'travel') this.$router.push({ name: 'travel' });
-        this.userInput = '';
-      } else if (userInput.toLowerCase().includes('home')) {
-        if (this.$router.currentRoute.name !== 'landingPage') this.$router.push({ name: 'landingPage' });
+        if (this.$router.currentRoute.name !== 'travel') this.$router.push({ name: 'dialog', query: { usecase: 'travel' } });
         this.userInput = '';
       } else if (userInput.toLowerCase().includes('time')) {
         const today = new Date();

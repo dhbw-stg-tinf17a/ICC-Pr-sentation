@@ -125,7 +125,6 @@ export default {
     return {
       user: null,
       loading: true,
-      notificationsEnabled: false,
     };
   },
 
