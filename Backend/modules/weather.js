@@ -27,10 +27,9 @@ weatherModule.getCurrentWeatherForUserLocation = async () => {
 
   try {
     const userCoordinates = await User.getUserCoordinates();
-    const userCoordinatesArray = userCoordinates.split(',', 2);
     weatherAPI.setCoordinate({
-      lat: userCoordinatesArray[0],
-      lon: userCoordinatesArray[1],
+      lat: userCoordinates.lat,
+      lon: userCoordinates.lon,
     });
     return fetchCurrentWeather();
   } catch (error) {

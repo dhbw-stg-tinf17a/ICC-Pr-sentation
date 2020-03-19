@@ -35,6 +35,7 @@
   },
   "jest": {
     "testEnvironment": "node",
+    "setupFiles": ["dotenv/config"],
     "coveragePathIgnorePatterns": [
       "/node_modules/",
       "/coverage/",

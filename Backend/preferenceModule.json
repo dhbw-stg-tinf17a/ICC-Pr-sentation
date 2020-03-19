@@ -9,27 +9,31 @@
       "preparationTimeInMinutes": "45",
       "quoteCategory": "funny",
       "weatherCity": "Stuttgart",
-      "currentLocationCoordinates": "48.809062,9.219187",
+      "currentLocationCoordinates": {
+        "lat": 48.809062,
+        "lon": 9.219187
+      },
       "currentLocationAddress": "Stuttgart, Schmidenerstraße 21"
     }
   },
   "rateLimitBackups": {
     "dailyQuote": {
-      "quote": "If you respect yourself in stressful situations, it will help you see the positiveâ€¦ It will help you see the message in the mess.",
-      "length": "135",
-      "author": "Steve Maraboli",
+      "quote": "I was married by a judge. I should have asked for a jury.",
+      "length": "57",
+      "author": "Groucho Marx",
       "tags": [
-        "inspire",
-        "self-respect",
-        "stress"
+        "funny",
+        "humor",
+        "judgement",
+        "marriage"
       ],
-      "category": "inspire",
+      "category": "funny",
       "language": "en",
-      "date": "2020-02-02",
-      "permalink": "https://theysaidso.com/quote/steve-maraboli-if-you-respect-yourself-in-stressful-situations-it-will-help-you",
-      "id": "nwW3g7V0xszGDNIehz6yTgeF",
-      "background": "https://theysaidso.com/img/bgs/man_on_the_mountain.jpg",
-      "title": "Inspiring Quote of the day"
+      "date": "2020-03-19",
+      "permalink": "https://theysaidso.com/quote/groucho-marx-i-was-married-by-a-judge-i-should-have-asked-for-a-jury",
+      "id": "7bKo7XSk3v38PuYw_SwizgeF",
+      "background": "https://theysaidso.com/img/qod/qod-funny.jpg",
+      "title": "Funny Quote of the day"
     }
   }
 }

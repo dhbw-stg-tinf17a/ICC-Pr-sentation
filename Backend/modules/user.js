@@ -12,14 +12,13 @@ userModule.getUser = async () => {
   return user;
 };
 
-userModule.setCoordinates = async (coordinatesObject) => {
+userModule.setCoordinates = async (coordinates) => {
   logger.trace('userModule - setCoordinates with coordinates:');
-  logger.trace(coordinatesObject);
+  logger.trace(coordinates);
 
-  const validatedCoordinatesObject = await validationHandler.validateCoordinate(coordinatesObject);
-  const coordinatesString = `${validatedCoordinatesObject.lat},${validatedCoordinatesObject.lon}`;
-  preferenceModule.set('user.preferences.currentLocationCoordinates', coordinatesString).write();
-  const coordinateArea = await reverseGeocoder.getStreetFromCoordinates(validatedCoordinatesObject);
+  const validatedCoordinates = await validationHandler.validateCoordinate(coordinates);
+  preferenceModule.set('user.preferences.currentLocationCoordinates', validatedCoordinates).write();
+  const coordinateArea = await reverseGeocoder.getStreetFromCoordinates(validatedCoordinates);
   preferenceModule.set('user.preferences.weatherCity', coordinateArea).write();
   return Promise.resolve('Your current coordinates have been set successfully');
 };

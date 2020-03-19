@@ -37,7 +37,11 @@ async function getUsersCurrentAddressFromUserPreferences() {
   logger.trace('vvsModule - getUsersCurrentAddressFromUserPreferences - called');
   const preferences = await User.getUserPreferences();
 
-  if (preferences.currentLocationCoordinates && preferences.currentLocationCoordinates !== '') return reverseGeocoder.getStreetFromCoordinates(preferences.currentLocationCoordinates);
+  if (preferences.currentLocationCoordinates
+    && preferences.currentLocationCoordinates.lat
+    && preferences.currentLocationCoordinates.lon) {
+    return reverseGeocoder.getStreetFromCoordinates(preferences.currentLocationCoordinates);
+  }
   throw new Error('Couldn\'t load current address from preferences');
 }
 
