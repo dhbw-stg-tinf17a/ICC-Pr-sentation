@@ -185,6 +185,8 @@ export default {
         if (!response.ok) {
           throw await response.text();
         }
+
+        this.notificationEndpoint = pushSubscription.endpoint;
       } catch (err) {
         this.$buefy.snackbar.open({
           message: 'Unfortunately, Gunter couldn\'t enable notifications for you on this device. He doesn\'t know why and is truly sorry.',
@@ -199,10 +201,15 @@ export default {
         const response = await fetch('/api/notifications/disable', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            endpoint: this.notificationEndpoint,
+          }),
         });
         if (!response.ok) {
           throw await response.text();
         }
+
+        this.notificationEndpoint = '';
       } catch (err) {
         this.$buefy.snackbar.open({
           message: 'Unfortunately, Gunter couldn\'t disable notifications for you on this device. He doesn\'t know why and is truly sorry.',

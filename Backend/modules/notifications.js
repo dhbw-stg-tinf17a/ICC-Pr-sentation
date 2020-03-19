@@ -19,8 +19,6 @@ module.exports.addSubscription = async (subscription) => {
   await subscriptions.push(subscription).write();
 };
 
-module.exports.removeSubscription = async (endpoint) => {
-  await db.get('subscriptions').remove({ endpoint }).write();
-};
+module.exports.removeSubscription = (endpoint) => db.get('subscriptions').remove({ endpoint }).write();
 
 module.exports.getSubscriptions = () => db.get('subscriptions').value();

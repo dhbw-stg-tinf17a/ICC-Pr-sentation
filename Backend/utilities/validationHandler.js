@@ -12,15 +12,18 @@ function validate(object, schema) {
   });
 }
 
-validationHandler.validateCoordinate = (coordinates) => new Promise((resolve, reject) => {
+validationHandler.validateCoordinate = async (coordinates) => {
   logger.trace('validationHandler - validateCoordinates - with coordinates:');
   logger.trace(coordinates);
 
-  validate(coordinates, validationSchemas.coordinates)
-    .then((validatedCoordinates) => resolve(validatedCoordinates))
-    .catch((error) => reject(new Error(error.message)))
-    .finally(() => logger.trace('validationHandler - validateCoordinates - finally'));
-});
+  return validate(coordinates, validationSchemas.coordinates);
+};
+
+validationHandler.validateCity = async (city) => {
+  logger.trace(`validationHandler - validateCity - with city: ${city}`);
+
+  return validate(city, validationSchemas.city);
+};
 
 
 module.exports = validationHandler;

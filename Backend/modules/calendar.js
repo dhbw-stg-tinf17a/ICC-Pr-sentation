@@ -5,76 +5,50 @@ const User = require('./user');
 
 const calendarModule = {};
 
-function getUsersCalendarUrlFromUserPreferences() {
-  return new Promise((resolve, reject) => {
-    User.getUserPreferences()
-      .then((preferences) => {
-        if (preferences.calendarUrl === undefined) {
-          reject(new Error("User hasn't set their calendar url yet."));
-          return;
-        }
-        resolve(preferences.calendarUrl);
-      })
-      .catch((error) => reject(error));
-  });
+async function getUsersCalendarUrlFromUserPreferences() {
+  const preferences = await User.getUserPreferences();
+
+  if (preferences.calendarUrl === undefined) throw new Error("User hasn't set their calendar url yet.");
+  return preferences.calendarUrl;
 }
 
-function fetchCalendarEvents() {
-  return new Promise((resolve, reject) => {
-    getUsersCalendarUrlFromUserPreferences()
-      .then((url) => ical.async.fromURL(url))
-      .then((events) => resolve(events))
-      .catch((error) => reject(error));
-  });
+async function fetchCalendarEvents() {
+  const calendarUrl = await getUsersCalendarUrlFromUserPreferences();
+  return ical.async.fromURL(calendarUrl);
 }
 
-calendarModule.getTodaysFirstEvent = () => new Promise((resolve, reject) => {
-  fetchCalendarEvents()
-    .then((events) => {
-      if (!events || events.length === 0) {
-        reject(new Error("User hasn't set any events yet"));
-        return;
-      }
+calendarModule.getTodaysFirstEvent = async () => {
+  const events = await fetchCalendarEvents();
+  if (!events || events.length === 0) throw new Error('There are no events');
 
-      const eventArray = Object.values(events);
-      let firstEventToday;
-      let firstEventTomorrow;
+  const eventArray = Object.values(events);
+  let firstEventToday;
+  let firstEventTomorrow;
 
-      const now = moment();
-      const today = now.dayOfYear();
-      const tomorrow = today + 1;
+  const now = moment();
+  const today = now.dayOfYear();
+  const tomorrow = today + 1;
 
-      eventArray.forEach((event) => {
-        if (event.type !== 'VEVENT') return;
-        const eventDate = moment(event.start);
-        const dayOfEvent = eventDate.dayOfYear();
+  eventArray.forEach((event) => {
+    if (event.type !== 'VEVENT') return;
+    const eventDate = moment(event.start);
+    const dayOfEvent = eventDate.dayOfYear();
 
-        if (dayOfEvent !== today && dayOfEvent !== tomorrow) {
-          return;
-        }
-        if (dayOfEvent === today
+    if (dayOfEvent !== today && dayOfEvent !== tomorrow) return;
+    if (dayOfEvent === today
           && (firstEventToday === undefined || eventDate.isBefore(firstEventToday.start))) {
-          firstEventToday = event;
-        }
-        if (dayOfEvent === tomorrow
+      firstEventToday = event;
+    }
+    if (dayOfEvent === tomorrow
           && (firstEventTomorrow === undefined || eventDate.isBefore(firstEventTomorrow.start))) {
-          firstEventTomorrow = event;
-        }
-        // logger.trace(`${event.summary} is in ${event.location} on the ${event.start.getDate()}.
-        // of ${months[event.start.getMonth()]} at ${event.start.toLocaleTimeString('de-DE')}`);
-      });
+      firstEventTomorrow = event;
+    }
+  });
 
-      if (firstEventToday !== undefined && now.isBefore(firstEventToday.start)) {
-        resolve(firstEventToday);
-        return;
-      }
-      if (firstEventTomorrow !== undefined && now.isBefore(firstEventTomorrow.start)) {
-        resolve(firstEventToday);
-        return;
-      }
-      reject(new Error('There are no events today'));
-    });
-});
+  if (firstEventToday && now.isBefore(firstEventToday.start)) return firstEventToday;
+  if (firstEventTomorrow && now.isBefore(firstEventTomorrow.start)) return firstEventTomorrow;
+  throw new Error('There are no events');
+};
 
 module.exports = calendarModule;
 logger.debug('calendarModule initialized');

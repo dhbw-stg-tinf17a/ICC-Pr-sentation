@@ -1,74 +1,95 @@
 const logger = require('pino')({ level: process.env.LOG_LEVEL || 'info' });
 const preferenceModule = require('./preferences');
+const reverseGeocoder = require('./reverseGeocoder');
 const validationHandler = require('../utilities/validationHandler');
 
 const userModule = {};
 
-userModule.getUser = () => {
+userModule.getUser = async () => {
   logger.trace('userModule - getUser - called');
-  return new Promise((resolve, reject) => {
-    const user = preferenceModule.get('user').value();
-    if (user === undefined) {
-      reject(new Error('User could not be fetched.'));
-      return;
-    }
-
-    resolve(user);
-  });
+  const user = preferenceModule.get('user').value();
+  if (user === undefined) throw new Error('There is no user set in the preferenceModule.');
+  return user;
 };
 
-userModule.setCoordinates = (coordinatesObject) => new Promise((resolve, reject) => {
+userModule.setCoordinates = async (coordinates) => {
   logger.trace('userModule - setCoordinates with coordinates:');
-  logger.trace(coordinatesObject);
+  logger.trace(coordinates);
 
-  validationHandler.validateCoordinate(coordinatesObject)
-    .then((validatedCoordinatesObject) => (`${validatedCoordinatesObject.lat},${validatedCoordinatesObject.lon}`))
-    .then((coordinates) => preferenceModule.set('user.preferences.currentLocationCoordinates', coordinates).write())
-    .then(() => resolve('Your current coordinates have been set successfully'))
-    .catch((error) => {
-      logger.error(error);
-      reject(error);
-    })
-    .finally(() => logger.trace('userModule - setCoordinates - finally'));
-});
+  const validatedCoordinates = await validationHandler.validateCoordinate(coordinates);
+  preferenceModule.set('user.preferences.currentLocationCoordinates', validatedCoordinates).write();
+  const coordinateArea = await reverseGeocoder.getStreetFromCoordinates(validatedCoordinates);
+  preferenceModule.set('user.preferences.weatherCity', coordinateArea).write();
+  return Promise.resolve('Your current coordinates have been set successfully');
+};
 
-userModule.getUserPreferences = () => new Promise((resolve, reject) => {
-  userModule.getUser()
-    .then((user) => {
-      if (user.preferences === undefined) {
-        reject(new Error('User has no preferences set.'));
-        return;
-      }
-      resolve(user.preferences);
-    })
-    .catch((error) => reject(error));
-});
-
-userModule.getUsersPreparationTime = () => new Promise((resolve, reject) => {
+userModule.getUserCoordinates = () => new Promise((resolve, reject) => {
+  logger.trace('userModule - getUserCoordinates - start');
   userModule.getUserPreferences()
     .then((preferences) => {
-      if (preferences.preparationTimeInMinutes === undefined) {
-        logger.trace("User hasn't set their preparationTime yet, using standard time of 1h");
-        resolve(60);
-        return;
+      if (preferences.currentLocationCoordinates === undefined) {
+        logger.trace("We don't have the user's coordinates yet");
+        return reject(new Error("We don't have the user's coordinates yet"));
       }
-      resolve(preferences.preparationTimeInMinutes);
+      return resolve(preferences.currentLocationCoordinates);
     })
     .catch((error) => reject(error));
 });
 
-userModule.getUsersQuoteCategory = () => new Promise((resolve, reject) => {
-  userModule.getUserPreferences()
-    .then((preferences) => {
-      if (preferences.quoteCategory === undefined) {
-        logger.trace("User hasn't set their favourite quote category yet, using standard category");
-        reject(new Error("User hasn't set their favourite quote category yet, using standard category"));
-        return;
-      }
-      resolve(preferences.quoteCategory);
-    })
-    .catch((error) => reject(error));
-});
+userModule.getUserPreferences = async () => {
+  logger.trace('userModule - getUserPreferences - start');
+
+  const user = await userModule.getUser();
+  if (user.preferences === undefined) throw new Error('User has no preferences set.');
+  return user.preferences;
+};
+
+userModule.getUsersPreparationTime = async () => {
+  try {
+    const preferences = await userModule.getUserPreferences();
+    if (preferences.preparationTimeInMinutes === undefined) {
+      logger.trace("User hasn't set their preparationTime yet, using standard time of 1h");
+      return 60;
+    }
+    return preferences.preparationTimeInMinutes;
+  } catch (error) {
+    return 60;
+  }
+};
+
+userModule.getUsersQuoteCategory = async () => {
+  const availableCategories = ['inspiration', 'management', 'life', 'sports', 'funny', 'love', 'art', 'students'];
+  const defaultCategory = 'inspire';
+  try {
+    const preferences = await userModule.getUserPreferences();
+    if (preferences.quoteCategory === undefined) {
+      logger.error("User hasn't set their favourite quote category yet, using default category");
+      return defaultCategory;
+    }
+    if (!availableCategories.includes(preferences.quoteCategory)) {
+      logger.error("User's set category is faulty, using default category");
+      return defaultCategory;
+    }
+    return preferences.quoteCategory;
+  } catch (error) {
+    logger.error('User has no preferences, using standard category');
+    return defaultCategory;
+  }
+};
+
+userModule.getFallbackQuote = async () => {
+  logger.trace('userModule - getFallbackQuote - called');
+  const rateLimitBackups = preferenceModule.get('rateLimitBackups').value();
+  if (rateLimitBackups === undefined) throw new Error('There is no ratelimit-backup for this and the ratelimit is reached.');
+
+  if (rateLimitBackups && rateLimitBackups.dailyQuote) return rateLimitBackups.dailyQuote;
+  throw new Error('There is no ratelimit-backup for this and the ratelimit is reached.');
+};
+
+userModule.setFallbackQuote = async (quoteObject) => {
+  logger.trace('userModule - setFallbackQuote - called');
+  preferenceModule.set('rateLimitBackups.dailyQuote', quoteObject).write();
+};
 
 userModule.getUsersCity = () => new Promise((resolve, reject) => {
   userModule.getUserPreferences()

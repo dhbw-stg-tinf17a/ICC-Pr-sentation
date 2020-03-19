@@ -1,48 +1,49 @@
 const logger = require('pino')({ level: process.env.LOG_LEVEL || 'info' });
 const schedule = require('node-schedule');
 const moment = require('moment');
+const webpush = require('web-push');
 const calendar = require('./calendar');
 const User = require('./user');
 const vvs = require('./vvs');
+const { getSubscriptions } = require('./notifications');
 
 const alarmModule = {};
 const dailyCommuteJobName = 'CommuteWakeUpAlarm';
 
-function getTimeToLeave() {
-  logger.trace('alarm.js - getTimeToLeave - start');
-  return new Promise((resolve, reject) => {
-    let event;
-    calendar.getTodaysFirstEvent()
-      .then((calendarEvent) => {
-        event = calendarEvent;
-        logger.trace(`alarm.js - getTimeToLeave: Event starts at: ${moment(event.start).format('DD.MM HH:mm')}`);
-        if (event.location) {
-          return vvs.getLastPossibleConnectionStartTime(event.start, event.location);
-        }
+alarmModule.getFirstEventWithTimeToLeave = async () => {
+  logger.trace('alarm.js - getFirstEventWithTimeToLeave - start');
 
-        logger.trace('alarm.js - getTimeToLeave: Event has no set location.');
-        return event.start;
-      })
-      .then((time) => {
-        event.timeToLeave = time;
-        logger.trace(`alarm.js - getTimeToLeave: Time to leave for event: ${time.format('DD.MM HH:mm')}`);
-        resolve(event);
-      })
-      .catch((error) => {
-        logger.error(error);
-        reject(error);
-      })
-      .finally(() => logger.trace('alarm.js - getTimeToLeave - finally'));
-  });
-}
+  const event = await calendar.getTodaysFirstEvent();
+  logger.trace(`alarm.js - getFirstEventWithTimeToLeave: Event starts at: ${moment(event.start).format('DD.MM HH:mm')}`);
 
-function wakeUpUser(event) {
+  if (event.location) {
+    logger.trace('alarm.js - getFirstEventWithTimeToLeave: Event has a location - fetching last connection');
+    event.timeToLeave = await vvs.getLastConnectionStartTime(event.start, event.location);
+  } else {
+    logger.trace('alarm.js - getFirstEventWithTimeToLeave: Event has no set location.');
+    event.timeToLeave = moment(event.start);
+  }
+
+  return event;
+};
+
+async function wakeUpUser(event) {
   logger.debug(`Hey, listen. Please wake up, there is an event you wanted to attend: ${event.title}`);
+
+  const subscriptions = await getSubscriptions();
+  subscriptions.forEach((subscription) => webpush.sendNotification(subscription, JSON.stringify({
+    title: 'A notification from Gunter!',
+    options: {
+      body: 'It works :)',
+      icon: '/favicon.jpg',
+      badge: '/badge.png',
+    },
+  })));
 }
 
 function setCommuteAlarm() {
   logger.trace('alarm.js - setCommuteAlarm - start');
-  Promise.all([User.getUsersPreparationTime(), getTimeToLeave()])
+  Promise.all([User.getUsersPreparationTime(), alarmModule.getFirstEventWithTimeToLeave()])
     .then((promiseValues) => {
       const preparationTimeInMinutes = promiseValues[0];
       const event = promiseValues[1];

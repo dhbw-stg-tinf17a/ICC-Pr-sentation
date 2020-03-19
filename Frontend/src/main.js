@@ -10,7 +10,8 @@ Vue.config.productionTip = false;
 Vue.use(Buefy);
 
 Vue.use(persistentState, {
-  notificationsEnabled: true,
+  notificationsEnabled: false,
+  notificationEndpoint: '',
 });
 
 new Vue({
