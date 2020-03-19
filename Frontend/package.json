@@ -10,10 +10,11 @@
   },
   "dependencies": {
     "axios": "^0.19.2",
+    "buefy": "^0.8.12",
     "querystring": "^0.2.0",
     "vue": "^2.6.11",
     "vue-persistent-state": "^0.2.1",
-    "buefy": "^0.8.12",
+    "vue-quick-chat": "^1.0.9",
     "vue-router": "^3.1.5"
   },
   "devDependencies": {
