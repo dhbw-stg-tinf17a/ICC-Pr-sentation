@@ -5,7 +5,6 @@ import DialogPage from '@/views/DialogPage.vue';
 const localVue = createLocalVue();
 localVue.use(Buefy);
 
-jest.mock('vue-quick-chat');
 jest.mock('vue-quick-chat/dist/vue-quick-chat.css', () => jest.fn());
 
 function factory() {
