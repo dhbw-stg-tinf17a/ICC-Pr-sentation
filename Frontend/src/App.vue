@@ -60,7 +60,7 @@ export default {
         lat: position.coords.latitude,
         lon: position.coords.longitude,
       }).catch((error) => this.$buefy.toast.open({
-        message: error,
+        message: `Error ${error.response.data.status}: ${error.response.data.error}`,
         duration: 3000,
         type: 'is-danger',
       }));
