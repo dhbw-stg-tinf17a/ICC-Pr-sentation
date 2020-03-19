@@ -2,16 +2,16 @@ const router = require('express').Router();
 const logger = require('pino')({ level: process.env.LOG_LEVEL || 'info' });
 const db = require('../modules/db');
 
-router.get('/', async (req, res) => {
+router.get('/connections', async (req, res) => {
   try {
-    const data = await db.getConnections({
+    const connections = await db.getConnections({
       start: '8000105',
       destination: '8011160',
-      date: new Date(),
+      datetime: '2020-04-10T22:00:00Z',
     });
-    res.send(data);
+    res.send(connections);
   } catch (err) {
-    logger.error(err, '/api/db/ - Error occurred');
+    logger.error(err, '/api/db/connections - Error occurred');
     res.status(500).send({ error: err.message });
   }
 });
