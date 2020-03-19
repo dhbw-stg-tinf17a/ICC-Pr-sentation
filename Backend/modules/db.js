@@ -1,5 +1,6 @@
 const axios = require('axios').default;
 const moment = require('moment');
+const stations = require('db-stations');
 
 const options = {
   c: 2, // class
@@ -13,75 +14,90 @@ const options = {
 
 const endpoint = 'https://ps.bahn.de/preissuche/preissuche/psc_service.go';
 
-module.exports = {
-  async getConnections({ start, destination, datetime }) {
-    const date = moment(datetime).tz('Europe/Berlin').format('DD.MM.YY');
-    const time = moment(datetime).tz('Europe/Berlin').format('HH:mm');
+async function getConnections({ start, destination, datetime }) {
+  const date = moment(datetime).tz('Europe/Berlin').format('DD.MM.YY');
+  const time = moment(datetime).tz('Europe/Berlin').format('HH:mm');
 
-    const params = {
-      data: JSON.stringify({
-        s: start,
-        d: destination,
-        dt: date,
-        t: time,
-        ...options,
-      }),
-      service: 'pscangebotsuche',
-    };
+  const params = {
+    data: JSON.stringify({
+      s: start,
+      d: destination,
+      dt: date,
+      t: time,
+      ...options,
+    }),
+    service: 'pscangebotsuche',
+  };
 
-    const response = await axios.get(endpoint, { params });
+  const response = await axios.get(endpoint, { params });
 
-    if (response.status !== 200) {
-      throw new Error(`Unexpected response from DB prices API: ${response.status} - ${response.statusText}`);
-    }
+  if (response.status !== 200) {
+    throw new Error(`Unexpected response from DB prices API: ${response.status} - ${response.statusText}`);
+  }
 
-    if (response.data.error) {
-      throw new Error(`Error returned by DB prices API: ${response.data.error.t} - ${response.data.error.tsys}`);
-    }
+  if (response.data.error) {
+    throw new Error(`Error returned by DB prices API: ${response.data.error.t} - ${response.data.error.tsys}`);
+  }
 
-    const connections = Object.values(response.data.verbindungen).map((connection) => {
-      const legs = connection.trains.map((leg) => ({
-        from: leg.sn,
-        to: leg.dn,
-        departure: new Date(Number(leg.dep.m)),
-        arrival: new Date(Number(leg.arr.m)),
-        trainNumber: leg.tn,
-      }));
-
-      const { departure } = legs[0];
-      const { arrival } = legs[legs.length - 1];
-      const duration = moment.duration(moment(arrival).diff(departure));
-
-      return {
-        legs,
-        departure,
-        arrival,
-        duration: {
-          hours: duration.hours(),
-          minutes: duration.minutes(),
-        },
-      };
-    });
-
-    const notes = {};
-    Object.entries(response.data.peTexte).forEach(([ref, note]) => {
-      notes[ref] = { name: note.name, text: note.hinweis.replace('<br/>', ' ') };
-    });
-
-    Object.values(response.data.angebote).forEach((offer) => offer.sids.forEach((id) => {
-      connections[Number(id)] = {
-        ...connections[Number(id)],
-        reducedPrice: offer.tt === 'SP',
-        price: Number(offer.p.replace(',', '.')),
-        boundToTrain: offer.zb === 'Y',
-      };
-
-      if (offer.pky in notes) {
-        connections[Number(id)].notes = notes[offer.pky];
-      }
+  const connections = Object.values(response.data.verbindungen).map((connection) => {
+    const legs = connection.trains.map((leg) => ({
+      from: leg.sn,
+      to: leg.dn,
+      departure: new Date(Number(leg.dep.m)),
+      arrival: new Date(Number(leg.arr.m)),
+      trainNumber: leg.tn,
     }));
 
+    const { departure } = legs[0];
+    const { arrival } = legs[legs.length - 1];
+    const duration = moment.duration(moment(arrival).diff(departure));
 
-    return connections;
-  },
+    return {
+      legs,
+      departure,
+      arrival,
+      duration: {
+        hours: duration.hours(),
+        minutes: duration.minutes(),
+      },
+    };
+  });
+
+  const notes = {};
+  Object.entries(response.data.peTexte).forEach(([ref, note]) => {
+    notes[ref] = { name: note.name, text: note.hinweis.replace('<br/>', ' ') };
+  });
+
+  Object.values(response.data.angebote).forEach((offer) => offer.sids.forEach((id) => {
+    connections[Number(id)] = {
+      ...connections[Number(id)],
+      reducedPrice: offer.tt === 'SP',
+      price: Number(offer.p.replace(',', '.')),
+      boundToTrain: offer.zb === 'Y',
+    };
+
+    if (offer.pky in notes) {
+      connections[Number(id)].notes = notes[offer.pky];
+    }
+  }));
+
+
+  return connections;
+}
+
+function getStation(name) {
+  return new Promise((resolve) => {
+    stations()
+      .on('data', (station) => {
+        if (station.name === name) {
+          resolve(station);
+        }
+      })
+      .on('end', () => resolve(null));
+  });
+}
+
+module.exports = {
+  getConnections,
+  getStation,
 };
