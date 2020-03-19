@@ -31,12 +31,12 @@ module.exports = {
 
     const response = await axios.get(endpoint, { params });
 
-    if (response.headers['content-type'] !== 'application/json; charset=UTF-8') {
-      throw new Error(`Unexpected content-type from DB prices API: ${response.headers['content-type']}`);
-    }
-
     if (response.status !== 200) {
       throw new Error(`Unexpected response from DB prices API: ${response.status} - ${response.statusText}`);
+    }
+
+    if (response.data.error) {
+      throw new Error(`Error returned by DB prices API: ${response.data.error.t} - ${response.data.error.tsys}`);
     }
 
     return response.data;
