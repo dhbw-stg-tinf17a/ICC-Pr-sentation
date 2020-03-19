@@ -16,23 +16,8 @@ const routes = [
     component: App,
   },
   {
-    path: '/trainer',
-    name: 'trainer',
-    component: App,
-  },
-  {
-    path: '/restaurant',
-    name: 'restaurant',
-    component: App,
-  },
-  {
-    path: '/commute',
-    name: 'commute',
-    component: App,
-  },
-  {
-    path: '/travel',
-    name: 'travel',
+    path: '/dialog',
+    name: 'dialog',
     component: App,
   },
 ];
@@ -93,10 +78,8 @@ describe('App.vue', () => {
       const wrapper = factory();
       for (let i = 0; i < keywords.length; i += 1) {
         wrapper.vm.checkForUseCase(keywords[i]);
-        expect(router.currentRoute.name).toBe(keywords[i]);
+        expect(router.currentRoute.name).toBe('dialog');
       }
-      wrapper.vm.checkForUseCase('home');
-      expect(router.currentRoute.name).toBe('landingPage');
     });
 
     it('time is read, when user inputs time keyword', () => {
