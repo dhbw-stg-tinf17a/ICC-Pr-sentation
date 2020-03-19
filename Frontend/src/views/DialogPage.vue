@@ -10,7 +10,7 @@
             :participants="participants"
             :myself="myself"
             :messages="messages"
-            :on-message-submit="onMessageSubmit"
+            :on-message-submit="submitMessage"
             chat-title="Gunter PDA"
             placeholder="Enter message"
             :colors="colors"
@@ -44,6 +44,8 @@
 <script>
 import { Chat } from 'vue-quick-chat';
 import 'vue-quick-chat/dist/vue-quick-chat.css';
+import UseCasesService from '@/services/UseCases';
+import SpeechService from '@/services/SpeechSynthesis';
 
 export default {
   components: {
@@ -111,21 +113,23 @@ export default {
   },
   beforeRouteEnter(to, from, next) {
     next((vm) => {
-      vm.onMessageSubmit({
+      vm.submitMessage({
         content: to.query.usecase,
         myself: true,
         participantId: 2,
         timestamp: vm.getCurrentTimestamp(),
       });
+      if (to.query.usecase === 'commute') vm.commuteUseCase();
     });
   },
   beforeRouteUpdate(to, from, next) {
-    this.onMessageSubmit({
+    this.submitMessage({
       content: to.query.usecase,
       myself: true,
       participantId: 2,
       timestamp: this.getCurrentTimestamp(),
     });
+    if (to.query.usecase === 'commute') this.commuteUseCase();
     next();
   },
   methods: {
@@ -141,6 +145,32 @@ export default {
         millisecond: date.getMilliseconds(),
       };
     },
+    commuteUseCase() {
+      UseCasesService.getCommuteUseCase().then((response) => {
+        const messageString = `Next Event: ${response.data.data.firstEvent.summary}\n`
+                                + `At: ${response.data.data.firstEvent.location}\n`
+                                + `Start: ${response.data.data.firstEvent.start}\n`
+                                + `Leave home: ${response.data.data.timeToLeave}\n\n`
+                                + `${response.data.data.weather.weather[0].description} `
+                                + `${response.data.data.weather.main.temp}°C\n\n`
+                                + `Quote of the day: ${response.data.data.quote.quote} - ${response.data.data.quote.author}`;
+        this.submitMessage({
+          content: messageString,
+          myself: false,
+          participantId: 1,
+          timestamp: this.getCurrentTimestamp(),
+        });
+        SpeechService.speak(`Next Event: ${response.data.data.firstEvent.summary}`
+                            + ` at ${response.data.data.firstEvent.start}.`
+                            + ` You have to leave at ${response.data.data.timeToLeave}`);
+      }).catch((error) => {
+        this.$buefy.toast.open({
+          message: `Error ${error.response.data.status}: ${error.response.data.error}`,
+          duration: 3000,
+          type: 'is-danger',
+        });
+      });
+    },
     loadMoreMessages(resolve) {
       setTimeout(() => {
         resolve(this.toLoad);
@@ -148,7 +178,7 @@ export default {
         this.toLoad = [];
       }, 1000);
     },
-    onMessageSubmit(message) {
+    submitMessage(message) {
       this.messages.push(message);
     },
   },
