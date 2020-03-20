@@ -14,11 +14,15 @@
         </router-link>
       </b-navbar-item>
     </template>
+    <template slot="start">
+      <b-navbar-item tag="div">
+        <slot />
+      </b-navbar-item>
+    </template>
     <template slot="end">
       <b-navbar-item tag="div">
         <router-link
-          class="button is-white"
-          :class="{'is-outlined': currentRoute !== 'commute'}"
+          class="button is-white is-outlined"
           :to="{name: 'dialog', query: {usecase: 'commute'}}"
         >
           <span class="icon">
@@ -29,8 +33,7 @@
       </b-navbar-item>
       <b-navbar-item tag="div">
         <router-link
-          class="button is-white"
-          :class="{'is-outlined': currentRoute !== 'travel'}"
+          class="button is-white is-outlined"
           :to="{name: 'dialog', query: {usecase: 'travel'}}"
         >
           <span class="icon">
@@ -41,8 +44,7 @@
       </b-navbar-item>
       <b-navbar-item tag="div">
         <router-link
-          class="button is-white"
-          :class="{'is-outlined': currentRoute !== 'restaurant'}"
+          class="button is-white is-outlined"
           :to="{name: 'dialog', query: {usecase: 'restaurant'}}"
         >
           <span class="icon">
@@ -53,8 +55,7 @@
       </b-navbar-item>
       <b-navbar-item tag="div">
         <router-link
-          class="button is-white"
-          :class="{'is-outlined': currentRoute !== 'trainer'}"
+          class="button is-white is-outlined"
           :to="{name: 'dialog', query: {usecase: 'trainer'}}"
         >
           <span class="icon">

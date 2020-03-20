@@ -1,6 +1,11 @@
 import SpeechService from '@/services/SpeechSynthesis';
 
 export default {
+  data() {
+    return {
+      usecase: ['commute', 'trainer', 'restaurant', 'travel'],
+    };
+  },
   watch: {
     userInput() {
       this.checkForUseCase(this.userInput);
@@ -9,17 +14,25 @@ export default {
   methods: {
     // checks, if userInput contains any trigger word
     checkForUseCase(userInput) {
-      if (userInput.toLowerCase().includes('trainer')) {
-        if (this.$router.currentRoute.name !== 'trainer') this.$router.push({ name: 'dialog', query: { usecase: 'trainer' } });
+      for (let i = 0; i < this.usecase.length; i += 1) {
+        if (userInput.toLowerCase().includes(this.usecase[i])) {
+          if (this.$route.query.usecase !== this.usecase[i]) this.$router.push({ name: 'dialog', query: { usecase: this.usecase[i] } });
+          else {
+            this.$refs.routerView.submitMyMessage(this.usecase[i]);
+            const functionName = `${this.usecase[i]}UseCase`;
+            this.$refs.routerView[functionName]();
+          }
+          this.userInput = '';
+        }
+      }
+      if (userInput.toLowerCase().includes('help')) {
+        if (this.$router.currentRoute.name !== 'help') this.$router.push({ name: 'help' });
         this.userInput = '';
-      } else if (userInput.toLowerCase().includes('commute')) {
-        if (this.$router.currentRoute.name !== 'commute') this.$router.push({ name: 'dialog', query: { usecase: 'commute' } });
+      } else if (userInput.toLowerCase().includes('preferences')) {
+        if (this.$router.currentRoute.name !== 'preferences') this.$router.push({ name: 'preferences' });
         this.userInput = '';
-      } else if (userInput.toLowerCase().includes('restaurant')) {
-        if (this.$router.currentRoute.name !== 'restaurant') this.$router.push({ name: 'dialog', query: { usecase: 'restaurant' } });
-        this.userInput = '';
-      } else if (userInput.toLowerCase().includes('travel')) {
-        if (this.$router.currentRoute.name !== 'travel') this.$router.push({ name: 'dialog', query: { usecase: 'travel' } });
+      } else if (userInput.toLowerCase().includes('calendar')) {
+        if (this.$router.currentRoute.name !== 'calendar') this.$router.push({ name: 'calendar' });
         this.userInput = '';
       } else if (userInput.toLowerCase().includes('time')) {
         const today = new Date();

@@ -4,11 +4,12 @@
     class="hero-body"
   >
     <div class="container">
-      <h1 class="title">
-        Help Section
-      </h1>
       <div class="columns">
         <div class="column">
+          <h1 class="title">
+            Help Section
+          </h1>
+          <br>
           <h2 class="subtitle">
             What is Gunter?
           </h2>
@@ -54,6 +55,10 @@
               <tr>
                 <th>Trainer</th>
                 <th>Switch to trainer use case</th>
+              </tr>
+              <tr>
+                <th>Calendar</th>
+                <th>Switch to calendar</th>
               </tr>
               <tr>
                 <th>Preferences</th>

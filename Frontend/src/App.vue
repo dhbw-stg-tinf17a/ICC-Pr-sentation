@@ -1,18 +1,20 @@
 <template>
   <section class="hero is-info is-fullheight">
     <div class="hero-head">
-      <Navbar />
+      <Navbar>
+        <SpeechRecognition
+          ref="speechRecognitionComponent"
+          :user-input="userInput"
+          @update:user-input="userInput = $event"
+        />
+      </Navbar>
     </div>
 
     <router-view
+      ref="routerView"
       :user-input="userInput"
       @update:user-input="userInput = $event"
-    >
-      <SpeechRecognition
-        :user-input="userInput"
-        @update:user-input="userInput = $event"
-      />
-    </router-view>
+    />
   </section>
 </template>
 
@@ -33,6 +35,12 @@ export default {
     return {
       userInput: '',
     };
+  },
+  watch: {
+    // eslint-disable-next-line func-names
+    '$route.name': function () {
+      this.userInput = '';
+    },
   },
   created() {
     this.$buefy.dialog.confirm({
@@ -60,7 +68,7 @@ export default {
         lat: position.coords.latitude,
         lon: position.coords.longitude,
       }).catch((error) => this.$buefy.toast.open({
-        message: error,
+        message: `Error ${error.response.data.status}: ${error.response.data.error}`,
         duration: 3000,
         type: 'is-danger',
       }));

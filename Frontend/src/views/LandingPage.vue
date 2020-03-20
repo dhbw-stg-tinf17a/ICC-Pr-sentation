@@ -12,20 +12,15 @@
           Worlds smartest PDA
         </h2>
         <div class="box">
-          <div class="field is-grouped">
-            <p class="control is-expanded">
-              <input
-                :value="userInput"
-                class="input"
-                type="text"
-                placeholder="Start speaking or typing"
-                @input="$emit('update:user-input', $event.target.value)"
-              >
-            </p>
-            <p class="control">
-              <slot />
-            </p>
-          </div>
+          <p class="control is-expanded">
+            <input
+              :value="userInput"
+              class="input"
+              type="text"
+              placeholder="Start speaking or typing"
+              @input="$emit('update:user-input', $event.target.value)"
+            >
+          </p>
         </div>
       </div>
     </div>
