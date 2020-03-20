@@ -1,11 +1,18 @@
 import { createLocalVue, mount } from '@vue/test-utils';
 import Buefy from 'buefy';
 import VueRouter from 'vue-router';
+import persistentState from 'vue-persistent-state';
 import SpeechRecognition from '@/components/SpeechRecognition.vue';
 
 const localVue = createLocalVue();
 localVue.use(Buefy);
 localVue.use(VueRouter);
+localVue.use(persistentState, {
+  soundEnabled: true,
+  microphoneEnabled: true,
+  notificationsEnabled: false,
+  notificationEndpoint: '',
+});
 
 const routes = [
   {

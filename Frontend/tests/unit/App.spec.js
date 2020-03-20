@@ -2,12 +2,19 @@ import { createLocalVue, mount } from '@vue/test-utils';
 import Buefy from 'buefy';
 import VueRouter from 'vue-router';
 import mockAxios from 'axios';
+import persistentState from 'vue-persistent-state';
 import SpeechService from '@/services/SpeechSynthesis';
 import App from '@/App.vue';
 
 const localVue = createLocalVue();
 localVue.use(Buefy);
 localVue.use(VueRouter);
+localVue.use(persistentState, {
+  soundEnabled: true,
+  microphoneEnabled: true,
+  notificationsEnabled: false,
+  notificationEndpoint: '',
+});
 
 const routes = [
   {

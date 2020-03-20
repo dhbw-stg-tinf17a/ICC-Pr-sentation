@@ -40,7 +40,7 @@ describe('Navbar.vue', () => {
 
     it('Nav items render', () => {
       const wrapper = factory();
-      expect(wrapper.findAll('.navbar-item').length).toBe(7);
+      expect(wrapper.findAll('.navbar-item').length).toBe(8);
     });
   });
 
