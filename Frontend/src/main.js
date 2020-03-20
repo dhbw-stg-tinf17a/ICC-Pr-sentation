@@ -10,6 +10,8 @@ Vue.config.productionTip = false;
 Vue.use(Buefy);
 
 Vue.use(persistentState, {
+  soundEnabled: true,
+  microphoneEnabled: true,
   notificationsEnabled: false,
   notificationEndpoint: '',
 });

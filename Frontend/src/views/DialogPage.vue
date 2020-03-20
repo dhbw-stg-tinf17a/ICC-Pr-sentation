@@ -158,16 +158,18 @@ export default {
           participantId: 1,
           timestamp: this.getCurrentTimestamp(),
         });
-        SpeechService.speak(`Next Event: ${response.data.data.firstEvent.summary}`
+        if (this.$store.get('soundEnabled')) {
+          SpeechService.speak(`Next Event: ${response.data.data.firstEvent.summary}`
                             + ` at ${response.data.data.firstEvent.start}.`
                             + ` You have to leave at ${response.data.data.timeToLeave}`);
+        }
       }).catch((error) => {
         this.$buefy.toast.open({
           message: `Error ${error.response.data.status}: ${error.response.data.error}`,
           duration: 3000,
           type: 'is-danger',
         });
-        SpeechService.speak(`${error.response.data.error}. Sorry!`);
+        if (this.$store.get('soundEnabled')) SpeechService.speak(`${error.response.data.error}. Sorry!`);
         this.submitMessage({
           content: `Error ${error.response.data.status}: ${error.response.data.error}`,
           myself: false,
