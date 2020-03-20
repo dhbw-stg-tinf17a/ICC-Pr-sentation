@@ -6,7 +6,9 @@ exports[`Navbar.vue Elements are rendered correctly Component renders 1`] = `
     <div class="navbar-item"><a href="#/" class="router-link-exact-active router-link-active"><img src="../assets/logo.jpg" width="150" height="150" alt="Logo"></a></div><a role="button" aria-label="menu" class="navbar-burger burger"><span aria-hidden="true"></span> <span aria-hidden="true"></span> <span aria-hidden="true"></span></a>
   </div>
   <div class="navbar-menu">
-    <div class="navbar-start"></div>
+    <div class="navbar-start">
+      <div class="navbar-item"></div>
+    </div>
     <div class="navbar-end">
       <div class="navbar-item"><a href="#/dialog?usecase=commute" class="button is-white is-outlined"><span class="icon"><i class="fas fa-train"></i></span> <span>Commute</span></a></div>
       <div class="navbar-item"><a href="#/dialog?usecase=travel" class="button is-white is-outlined"><span class="icon"><i class="fas fa-plane-departure"></i></span> <span>Travel</span></a></div>

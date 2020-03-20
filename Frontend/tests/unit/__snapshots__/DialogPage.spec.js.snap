@@ -5,9 +5,7 @@ exports[`DialogPage.vue Elements are rendered correctly Component renders 1`] = 
   <div id="container" class="container has-text-centered">
     <div class="columns">
       <div class="column">
-        <chat-stub participants="[object Object]" messages="[object Object]" myself="[object Object]" chattitle="Gunter PDA" placeholder="Enter message" ontype="function _default() {
-        return false;
-      }" onmessagesubmit="function () { [native code] }" colors="[object Object]" borderstyle="[object Object]" hideclosebutton="true" submiticonsize="30px" closebuttoniconsize="20px" onclose="function _default() {
+        <chat-stub participants="[object Object]" messages="[object Object]" myself="[object Object]" chattitle="Gunter PDA" placeholder="Enter message" ontype="function () { [native code] }" onmessagesubmit="function () { [native code] }" colors="[object Object]" borderstyle="[object Object]" hideclosebutton="true" submiticonsize="30px" closebuttoniconsize="20px" onclose="function _default() {
         return false;
       }" scrollbottom="[object Object]" displayheader="true"></chat-stub>
       </div>

@@ -3,11 +3,15 @@
 exports[`App.vue Elements are rendered correctly Component renders 1`] = `
 <section class="hero is-info is-fullheight">
   <div class="hero-head">
-    <navbar-stub></navbar-stub>
+    <navbar-stub>
+      <div id="speechRecognition"><span data-label="Mute" class="is-light is-bottom is-medium b-tooltip" style="transition-delay: 0ms;"><button id="muteButton" class="button is-info"><span class="icon"><i class="fas fa-microphone fa-2x"></i></span></button></span> <span data-label="Unmute" class="is-light is-bottom is-medium b-tooltip" style="transition-delay: 0ms;"></span></div>
+    </navbar-stub>
   </div>
   <section class="hero is-info is-fullheight" user-input="">
     <div class="hero-head">
-      <navbar-stub></navbar-stub>
+      <navbar-stub>
+        <div id="speechRecognition"><span data-label="Mute" class="is-light is-bottom is-medium b-tooltip" style="transition-delay: 0ms;"><button id="muteButton" class="button is-info"><span class="icon"><i class="fas fa-microphone fa-2x"></i></span></button></span> <span data-label="Unmute" class="is-light is-bottom is-medium b-tooltip" style="transition-delay: 0ms;"></span></div>
+      </navbar-stub>
     </div>
     <!---->
   </section>
@@ -17,11 +21,15 @@ exports[`App.vue Elements are rendered correctly Component renders 1`] = `
 exports[`App.vue error message is shown 1`] = `
 <section class="hero is-info is-fullheight">
   <div class="hero-head">
-    <navbar-stub></navbar-stub>
+    <navbar-stub>
+      <div id="speechRecognition"><span data-label="Mute" class="is-light is-bottom is-medium b-tooltip" style="transition-delay: 0ms;"><button id="muteButton" class="button is-info"><span class="icon"><i class="fas fa-microphone fa-2x"></i></span></button></span> <span data-label="Unmute" class="is-light is-bottom is-medium b-tooltip" style="transition-delay: 0ms;"></span></div>
+    </navbar-stub>
   </div>
   <section class="hero is-info is-fullheight" user-input="">
     <div class="hero-head">
-      <navbar-stub></navbar-stub>
+      <navbar-stub>
+        <div id="speechRecognition"><span data-label="Mute" class="is-light is-bottom is-medium b-tooltip" style="transition-delay: 0ms;"><button id="muteButton" class="button is-info"><span class="icon"><i class="fas fa-microphone fa-2x"></i></span></button></span> <span data-label="Unmute" class="is-light is-bottom is-medium b-tooltip" style="transition-delay: 0ms;"></span></div>
+      </navbar-stub>
     </div>
     <!---->
   </section>
@@ -31,11 +39,15 @@ exports[`App.vue error message is shown 1`] = `
 exports[`App.vue position is put successfully 1`] = `
 <section class="hero is-info is-fullheight">
   <div class="hero-head">
-    <navbar-stub></navbar-stub>
+    <navbar-stub>
+      <div id="speechRecognition"><span data-label="Mute" class="is-light is-bottom is-medium b-tooltip" style="transition-delay: 0ms;"><button id="muteButton" class="button is-info"><span class="icon"><i class="fas fa-microphone fa-2x"></i></span></button></span> <span data-label="Unmute" class="is-light is-bottom is-medium b-tooltip" style="transition-delay: 0ms;"></span></div>
+    </navbar-stub>
   </div>
   <section class="hero is-info is-fullheight" user-input="">
     <div class="hero-head">
-      <navbar-stub></navbar-stub>
+      <navbar-stub>
+        <div id="speechRecognition"><span data-label="Mute" class="is-light is-bottom is-medium b-tooltip" style="transition-delay: 0ms;"><button id="muteButton" class="button is-info"><span class="icon"><i class="fas fa-microphone fa-2x"></i></span></button></span> <span data-label="Unmute" class="is-light is-bottom is-medium b-tooltip" style="transition-delay: 0ms;"></span></div>
+      </navbar-stub>
     </div>
     <!---->
   </section>
