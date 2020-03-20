@@ -17,7 +17,7 @@
     <template slot="end">
       <b-navbar-item tag="div">
         <router-link
-          class="button is-white"
+          class="button is-white is-outlined"
           :to="{name: 'dialog', query: {usecase: 'commute'}}"
         >
           <span class="icon">
@@ -28,7 +28,7 @@
       </b-navbar-item>
       <b-navbar-item tag="div">
         <router-link
-          class="button is-white"
+          class="button is-white is-outlined"
           :to="{name: 'dialog', query: {usecase: 'travel'}}"
         >
           <span class="icon">
@@ -39,7 +39,7 @@
       </b-navbar-item>
       <b-navbar-item tag="div">
         <router-link
-          class="button is-white"
+          class="button is-white is-outlined"
           :to="{name: 'dialog', query: {usecase: 'restaurant'}}"
         >
           <span class="icon">
@@ -50,7 +50,7 @@
       </b-navbar-item>
       <b-navbar-item tag="div">
         <router-link
-          class="button is-white"
+          class="button is-white is-outlined"
           :to="{name: 'dialog', query: {usecase: 'trainer'}}"
         >
           <span class="icon">
