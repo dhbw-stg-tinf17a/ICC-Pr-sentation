@@ -69,7 +69,7 @@ export default {
       this.recognition.lang = 'en-US';
       this.recognition.start();
       this.interimResult = '';
-      if (this.userInput !== '') {
+      if (this.userInput.slice(-1) !== ' ') {
         this.$emit('update:user-input', `${this.userInput} `);
       }
       this.lastStartedAt = new Date().getTime();

@@ -9,6 +9,7 @@
       @update:user-input="userInput = $event"
     >
       <SpeechRecognition
+        ref="speechRecognitionComponent"
         :user-input="userInput"
         @update:user-input="userInput = $event"
       />
@@ -33,6 +34,14 @@ export default {
     return {
       userInput: '',
     };
+  },
+  watch: {
+    // eslint-disable-next-line func-names
+    '$route.name': function () {
+      if (this.$refs.speechRecognitionComponent !== undefined) {
+        this.$refs.speechRecognitionComponent.stopSpeechRecognition();
+      }
+    },
   },
   created() {
     this.$buefy.dialog.confirm({
