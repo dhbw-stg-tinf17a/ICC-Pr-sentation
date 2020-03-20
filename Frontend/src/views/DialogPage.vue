@@ -10,6 +10,7 @@
             :participants="participants"
             :myself="myself"
             :messages="messages"
+            :on-type="onType"
             :on-message-submit="submitMessage"
             chat-title="Gunter PDA"
             placeholder="Enter message"
@@ -85,8 +86,8 @@ export default {
         },
         message: {
           myself: {
-            bg: '#fff',
-            text: '#bdb8b8',
+            bg: 'rgb(200, 200, 200)',
+            text: '#000000',
           },
           others: {
             bg: '#fb4141',
@@ -107,28 +108,25 @@ export default {
       toLoad: [],
       scrollBottom: {
         messageSent: true,
-        messageReceived: false,
+        messageReceived: true,
       },
     };
   },
+  watch: {
+    userInput() {
+      if (document.getElementsByClassName('message-input')[0].innerText !== this.userInput) {
+        document.getElementsByClassName('message-input')[0].innerText = this.userInput;
+      }
+    },
+  },
   beforeRouteEnter(to, from, next) {
     next((vm) => {
-      vm.submitMessage({
-        content: to.query.usecase,
-        myself: true,
-        participantId: 2,
-        timestamp: vm.getCurrentTimestamp(),
-      });
+      vm.submitMyMessage(to.query.usecase);
       if (to.query.usecase === 'commute') vm.commuteUseCase();
     });
   },
   beforeRouteUpdate(to, from, next) {
-    this.submitMessage({
-      content: to.query.usecase,
-      myself: true,
-      participantId: 2,
-      timestamp: this.getCurrentTimestamp(),
-    });
+    this.submitMyMessage(to.query.usecase);
     if (to.query.usecase === 'commute') this.commuteUseCase();
     next();
   },
@@ -169,7 +167,41 @@ export default {
           duration: 3000,
           type: 'is-danger',
         });
+        SpeechService.speak(`${error.response.data.error}. Sorry!`);
+        this.submitMessage({
+          content: `Error ${error.response.data.status}: ${error.response.data.error}`,
+          myself: false,
+          participantId: 1,
+          timestamp: this.getCurrentTimestamp(),
+        });
       });
+    },
+    travelUseCase() {
+      this.submitMessage({
+        content: 'Coming soon. I promise...',
+        myself: false,
+        participantId: 1,
+        timestamp: this.getCurrentTimestamp(),
+      });
+    },
+    restaurantUseCase() {
+      this.submitMessage({
+        content: 'Coming soon. I promise...',
+        myself: false,
+        participantId: 1,
+        timestamp: this.getCurrentTimestamp(),
+      });
+    },
+    trainerUseCase() {
+      this.submitMessage({
+        content: 'Coming soon. I promise...',
+        myself: false,
+        participantId: 1,
+        timestamp: this.getCurrentTimestamp(),
+      });
+    },
+    onType(event) {
+      this.$emit('update:user-input', event.target.innerText);
     },
     loadMoreMessages(resolve) {
       setTimeout(() => {
@@ -180,6 +212,14 @@ export default {
     },
     submitMessage(message) {
       this.messages.push(message);
+    },
+    submitMyMessage(messageContent) {
+      this.submitMessage({
+        content: messageContent,
+        myself: true,
+        participantId: 2,
+        timestamp: this.getCurrentTimestamp(),
+      });
     },
   },
 };

@@ -1,19 +1,20 @@
 <template>
   <section class="hero is-info is-fullheight">
     <div class="hero-head">
-      <Navbar />
+      <Navbar>
+        <SpeechRecognition
+          ref="speechRecognitionComponent"
+          :user-input="userInput"
+          @update:user-input="userInput = $event"
+        />
+      </Navbar>
     </div>
 
     <router-view
+      ref="routerView"
       :user-input="userInput"
       @update:user-input="userInput = $event"
-    >
-      <SpeechRecognition
-        ref="speechRecognitionComponent"
-        :user-input="userInput"
-        @update:user-input="userInput = $event"
-      />
-    </router-view>
+    />
   </section>
 </template>
 
@@ -38,9 +39,7 @@ export default {
   watch: {
     // eslint-disable-next-line func-names
     '$route.name': function () {
-      if (this.$refs.speechRecognitionComponent !== undefined) {
-        this.$refs.speechRecognitionComponent.stopSpeechRecognition();
-      }
+      this.userInput = '';
     },
   },
   created() {

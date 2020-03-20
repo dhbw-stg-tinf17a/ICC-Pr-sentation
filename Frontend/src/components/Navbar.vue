@@ -14,6 +14,11 @@
         </router-link>
       </b-navbar-item>
     </template>
+    <template slot="start">
+      <b-navbar-item tag="div">
+        <slot />
+      </b-navbar-item>
+    </template>
     <template slot="end">
       <b-navbar-item tag="div">
         <router-link
