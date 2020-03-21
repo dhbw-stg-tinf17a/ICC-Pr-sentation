@@ -109,8 +109,23 @@ function getStationByID(id) {
   });
 }
 
+function getFilteredStations(predicate) {
+  const filteredStations = [];
+
+  return new Promise((resolve) => {
+    stations()
+      .on('data', (station) => {
+        if (predicate(station)) {
+          filteredStations.push(station);
+        }
+      })
+      .on('end', () => resolve(filteredStations));
+  });
+}
+
 module.exports = {
   getConnections,
   getStationByName,
   getStationByID,
+  getFilteredStations,
 };
