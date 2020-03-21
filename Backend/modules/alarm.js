@@ -13,7 +13,7 @@ const dailyCommuteJobName = 'CommuteWakeUpAlarm';
 alarmModule.getFirstEventWithTimeToLeave = async () => {
   logger.trace('alarm.js - getFirstEventWithTimeToLeave - start');
 
-  const event = await calendar.getTodaysFirstEvent();
+  const event = await calendar.getNextFirstEventOfDay();
   logger.trace(`alarm.js - getFirstEventWithTimeToLeave: Event starts at: ${moment(event.start).format('DD.MM HH:mm')}`);
 
   if (event.location) {
