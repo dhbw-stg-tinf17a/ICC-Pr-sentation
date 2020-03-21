@@ -38,7 +38,7 @@ export default {
         const today = new Date();
         const time = `${today.getHours()}:${today.getMinutes()}:${today.getSeconds()}`;
 
-        SpeechService.speak(`Currently it is: ${time}`);
+        if (this.$store.get('soundEnabled')) SpeechService.speak(`Currently it is: ${time}`);
         this.userInput = '';
       }
     },

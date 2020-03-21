@@ -129,7 +129,7 @@ export default {
   },
 
   created() {
-    SpeechService.speak('Edit your Preferences');
+    if (this.$store.get('soundEnabled')) SpeechService.speak('Edit your Preferences');
     this.getUser();
   },
 
@@ -147,7 +147,7 @@ export default {
         type: 'is-success',
       });
 
-      SpeechService.speak('Saved successfully.');
+      if (this.$store.get('soundEnabled')) SpeechService.speak('Saved successfully.');
     },
 
     async toggleNotifications() {

@@ -18,6 +18,39 @@
       <b-navbar-item tag="div">
         <slot />
       </b-navbar-item>
+      <b-navbar-item tag="div">
+        <b-tooltip
+          label="Sound Off"
+          position="is-bottom"
+          type="is-light"
+        >
+          <button
+            v-if="soundEnabled"
+            class="button is-info"
+            @click="muteSound"
+          >
+            <span class="icon">
+              <i class="fas fa-volume-up fa-2x" />
+            </span>
+          </button>
+        </b-tooltip>
+        <b-tooltip
+          label="Sound On"
+          position="is-bottom"
+          type="is-light"
+        >
+          <button
+            v-if="!soundEnabled"
+            id="unmuteButton"
+            class="button is-info"
+            @click="unmuteSound"
+          >
+            <span class="icon">
+              <i class="fas fa-volume-off fa-2x" />
+            </span>
+          </button>
+        </b-tooltip>
+      </b-navbar-item>
     </template>
     <template slot="end">
       <b-navbar-item tag="div">
@@ -110,6 +143,15 @@ export default {
   computed: {
     currentRoute() {
       return this.$route.name;
+    },
+  },
+  methods: {
+    muteSound() {
+      this.soundEnabled = false;
+      speechSynthesis.cancel();
+    },
+    unmuteSound() {
+      this.soundEnabled = true;
     },
   },
 };

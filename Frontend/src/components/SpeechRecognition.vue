@@ -65,6 +65,7 @@ export default {
       return s.replace(s.substr(0, 1), (m) => m.toUpperCase());
     },
     startSpeechRecognition() {
+      this.$store.set('microphoneEnabled', true);
       this.listening = true;
       this.recognition.lang = 'en-US';
       this.recognition.start();
@@ -75,6 +76,7 @@ export default {
       this.lastStartedAt = new Date().getTime();
     },
     stopSpeechRecognition() {
+      this.$store.set('microphoneEnabled', false);
       this.listening = false;
       this.autoRestart = false;
       if (this.recognizing) {
