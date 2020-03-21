@@ -32,7 +32,11 @@ async function getConnections({ start, destination, datetime }) {
   const response = await axios.get(endpoint, { params });
 
   if (response.data.error) {
-    throw new Error(`Error returned by DB prices API: ${response.data.error.t} - ${response.data.error.tsys}`);
+    if (response.data.error.t === 'Keine Verbindungen gefunden') {
+      return [];
+    }
+
+    throw new Error(`DB prices API returned: ${response.data.error.t} - ${response.data.error.tsys}`);
   }
 
   const connections = Object.values(response.data.verbindungen).map((connection) => {
