@@ -31,10 +31,6 @@ async function getConnections({ start, destination, datetime }) {
 
   const response = await axios.get(endpoint, { params });
 
-  if (response.status !== 200) {
-    throw new Error(`Unexpected response from DB prices API: ${response.status} - ${response.statusText}`);
-  }
-
   if (response.data.error) {
     throw new Error(`Error returned by DB prices API: ${response.data.error.t} - ${response.data.error.tsys}`);
   }
@@ -80,7 +76,6 @@ async function getConnections({ start, destination, datetime }) {
       connections[Number(id)].notes = notes[offer.pky];
     }
   }));
-
 
   return connections;
 }
