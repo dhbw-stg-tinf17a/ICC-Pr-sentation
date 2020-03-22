@@ -13,7 +13,7 @@ describe('calendar module', () => {
       await expect(calendar.getFirstEventOfDay()).rejects.toThrow('User has not set their calendar url yet.');
     });
 
-    it('should return the first event of today, if it did not start yet', async () => {
+    it('should return the first event of today if it did not start yet', async () => {
       user.getUserPreferences.mockResolvedValue({ calendarUrl: 'https://example.com' });
 
       const now = new Date();
@@ -30,7 +30,7 @@ describe('calendar module', () => {
       expect(event.start).toStrictEqual(inOneMinute);
     });
 
-    it('should return the first event of tomorrow, if the first event of today already started', async () => {
+    it('should return the first event of tomorrow if the first event of today already started', async () => {
       user.getUserPreferences.mockResolvedValue({ calendarUrl: 'https://example.com' });
 
       const now = new Date();

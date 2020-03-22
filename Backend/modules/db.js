@@ -84,18 +84,6 @@ async function getConnections({ start, destination, datetime }) {
   return connections;
 }
 
-function getStationByName(name) {
-  return new Promise((resolve) => {
-    stations()
-      .on('data', (station) => {
-        if (station.name === name) {
-          resolve(station);
-        }
-      })
-      .on('end', () => resolve(null));
-  });
-}
-
 function getStationByID(id) {
   return new Promise((resolve) => {
     stations()
@@ -124,7 +112,6 @@ function getFilteredStations(predicate) {
 
 module.exports = {
   getConnections,
-  getStationByName,
   getStationByID,
   getFilteredStations,
 };
