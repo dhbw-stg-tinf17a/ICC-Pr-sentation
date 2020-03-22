@@ -18,6 +18,7 @@ const moment = require('moment');
 const geolib = require('geolib');
 const calendar = require('../modules/calendar');
 const db = require('../modules/db');
+const notifications = require('../modules/notifications');
 
 // TODO from user preferences
 const home = { id: '8098096', latitude: 48.784084, longitude: 9.181635 }; // Stuttgart Hbf
@@ -72,7 +73,7 @@ async function planTrip(departure, arrival) {
 
 function init() {
   // every Friday
-  schedule.scheduleJob({ dayOfWeek: 5 }, () => {
+  schedule.scheduleJob({ dayOfWeek: 5 }, async () => {
     const {
       saturday, sunday, saturdayFree, sundayFree,
     } = isWeekendFree();
@@ -80,10 +81,19 @@ function init() {
       return;
     }
 
-    const trip = planTrip(saturday, sunday);
+    const trip = await planTrip(saturday, sunday);
     const { destination, connectionToDestination, connectionFromDestination } = trip;
 
-    // TODO schedule a notification
+    // TODO custom notification text
+    // TODO cache trip
+    notifications.sendNotifications({
+      title: 'Recommended trip for this weekend',
+      options: {
+        body: `Your weekend seems to be free, why not travel to ${destination.city.name}?`,
+        icon: '/favicon.jpg',
+        badge: '/badge.png',
+      },
+    });
   });
 }
 
