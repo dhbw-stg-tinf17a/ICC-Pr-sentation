@@ -14,16 +14,77 @@
  */
 
 const schedule = require('node-schedule');
+const moment = require('moment');
+const geolib = require('geolib');
+const calendar = require('../modules/calendar');
+const db = require('../modules/db');
 
-function planWeekendTrip() {
-  // 1. Check whether Saturday or Sunday is free for a trip?
-  // 2. Select a random city (from which set?)
-  // 3. Check trip prices to and from city?
+// TODO from user preferences
+const home = { id: '8098096', latitude: 48.784084, longitude: 9.181635 }; // Stuttgart Hbf
+const minDistance = 100; // km
+const excluded = [
+  { id: '8098096', latitude: 48.784084, longitude: 9.181635 },
+];
+
+async function isWeekendFree() {
+  const today = moment().startOf('day');
+  const saturday = moment(today).day(today.day() === 6 ? 13 : 6);
+  const sunday = moment(today).day(today.day() === 6 ? 14 : 7);
+
+  const saturdayFree = undefined === await calendar.getFirstEventOfDay(saturday);
+  const sundayFree = undefined === await calendar.getFirstEventOfDay(sunday);
+
+  return {
+    saturday, sunday, saturdayFree, sundayFree,
+  };
+}
+
+async function planTrip(departure, arrival) {
+  const stations = await db.getFilteredStations((station) => station.location
+    && geolib.getDistance(home, station.location) / 1000 >= minDistance // convert m to km
+    && !excluded.findIndex((otherStation) => station.id === otherStation.id) >= 0);
+
+  let connectionsToDestination = [];
+  let connectionsFromDestination = [];
+  let destination;
+  do {
+    destination = stations[Math.floor(Math.random() * stations.length)];
+    // eslint-disable-next-line no-await-in-loop
+    [connectionsToDestination, connectionsFromDestination] = await Promise.all([
+      db.getConnections({
+        start: home.id,
+        destination: destination.id,
+        datetime: departure,
+      }),
+      db.getConnections({
+        start: destination.id,
+        destination: home.id,
+        datetime: arrival,
+      }),
+    ]);
+  } while (connectionsToDestination.length === 0 || connectionsFromDestination.length === 0);
+
+  const connectionToDestination = connectionsToDestination.sort((a, b) => a.price - b.price)[0];
+  const connectionFromDestination = connectionsFromDestination.sort((a, b) => a.price - b.price)[0];
+
+  return { destination, connectionToDestination, connectionFromDestination };
 }
 
 function init() {
   // every Friday
-  schedule.scheduleJob({ dayOfWeek: 5 }, planWeekendTrip);
+  schedule.scheduleJob({ dayOfWeek: 5 }, () => {
+    const {
+      saturday, sunday, saturdayFree, sundayFree,
+    } = isWeekendFree();
+    if (!saturdayFree || !sundayFree) {
+      return;
+    }
+
+    const trip = planTrip(saturday, sunday);
+    const { destination, connectionToDestination, connectionFromDestination } = trip;
+
+    // TODO schedule a notification
+  });
 }
 
-module.exports = { init, planWeekendTrip };
+module.exports = { init, isWeekendFree, planTrip };
