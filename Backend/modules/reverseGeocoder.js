@@ -17,10 +17,10 @@ reverseGeocoderModule.getStreetFromCoordinates = async (coordinates) => {
 
   const geocodeResponse = await request.get(reverseGeocodeUrl, { params: reverseGeocodeParams });
 
-  const addressObject = geocodeResponse.data.address;
-  const houseNumber = addressObject.house_number || '';
-  const street = addressObject.road || addressObject.pedestrian;
-  const { city } = addressObject;
+  const addrObj = geocodeResponse.data.address;
+  const houseNumber = addrObj.house_number || '';
+  const city = addrObj.city || addrObj.suburb || addrObj.city_district || addrObj.county;
+  const street = addrObj.road || addrObj.pedestrian;
 
   const address = `${city}, ${street} ${houseNumber}`;
   logger.trace(`reverseGeocoderModule - getStreetFromCoordinates: Reverse geocoded ${coordinates.lat},${coordinates.lon} to: ${address}`);

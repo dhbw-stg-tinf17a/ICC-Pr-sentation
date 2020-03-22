@@ -19,7 +19,7 @@ userModule.setCoordinates = async (coordinates) => {
   const validatedCoordinates = await validationHandler.validateCoordinate(coordinates);
   preferenceModule.set('user.preferences.currentLocationCoordinates', validatedCoordinates).write();
   const coordinateArea = await reverseGeocoder.getStreetFromCoordinates(validatedCoordinates);
-  preferenceModule.set('user.preferences.weatherCity', coordinateArea).write();
+  preferenceModule.set('user.preferences.currentLocationAddress', coordinateArea).write();
   return Promise.resolve('Your current coordinates have been set successfully');
 };
 
@@ -90,20 +90,6 @@ userModule.setFallbackQuote = async (quoteObject) => {
   logger.trace('userModule - setFallbackQuote - called');
   preferenceModule.set('rateLimitBackups.dailyQuote', quoteObject).write();
 };
-
-userModule.getUsersCity = () => new Promise((resolve, reject) => {
-  userModule.getUserPreferences()
-    .then((preferences) => {
-      if (preferences.weatherCity === undefined) {
-        logger.trace("User hasn't set their city yet, using Stuttgart as fallback");
-        reject(new Error("User hasn't set their city yet, using Stuttgart as fallback"));
-        return;
-      }
-      resolve(preferences.weatherCity);
-    })
-    .catch((error) => reject(error));
-});
-
 
 module.exports = userModule;
 logger.debug('userModule initialized');
