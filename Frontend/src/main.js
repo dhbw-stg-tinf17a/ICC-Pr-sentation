@@ -23,4 +23,9 @@ new Vue({
 
 window.addEventListener('load', async () => {
   await navigator.serviceWorker.register('/service-worker.js');
+
+  navigator.serviceWorker.addEventListener('message', (event) => {
+    const { usecase } = event.data;
+    router.push({ path: `/dialog?usecase=${usecase}` });
+  });
 });

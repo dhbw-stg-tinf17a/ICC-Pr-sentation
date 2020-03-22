@@ -5,6 +5,20 @@ self.addEventListener('push', async (event) => {
   event.waitUntil(self.registration.showNotification(data.title, data.options));
 });
 
-self.addEventListener('notificationclick', (event) => {
+async function handleNotificationClick(event) {
   event.notification.close();
-});
+
+  const { usecase } = event.notification.data || {};
+  if (usecase) {
+    const allClients = await self.clients.matchAll();
+    if (allClients.length > 0) {
+      const client = allClients[0];
+      client.postMessage({ usecase });
+      return;
+    }
+
+    self.clients.openWindow(`/dialog?usecase=${usecase}`);
+  }
+}
+
+self.addEventListener('notificationclick', (event) => event.waitUntil(handleNotificationClick(event)));
