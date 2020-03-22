@@ -71,30 +71,38 @@ async function planTrip(departure, arrival) {
   return { destination, connectionToDestination, connectionFromDestination };
 }
 
-function init() {
-  // every Friday
-  schedule.scheduleJob({ dayOfWeek: 5 }, async () => {
-    const {
-      saturday, sunday, saturdayFree, sundayFree,
-    } = isWeekendFree();
-    if (!saturdayFree || !sundayFree) {
-      return;
-    }
+async function planRandomTripIfWeekendIsFree() {
+  const {
+    saturday, sunday, saturdayFree, sundayFree,
+  } = await isWeekendFree();
+  if (!saturdayFree || !sundayFree) {
+    return;
+  }
 
-    const trip = await planTrip(saturday, sunday);
-    const { destination, connectionToDestination, connectionFromDestination } = trip;
+  const trip = await planTrip(saturday, sunday);
+  const { destination, connectionToDestination, connectionFromDestination } = trip;
+  const price = connectionToDestination.price + connectionFromDestination.price;
 
-    // TODO custom notification text
-    // TODO cache trip
-    notifications.sendNotifications({
-      title: 'Recommended trip for this weekend',
-      options: {
-        body: `Your weekend seems to be free, why not travel to ${destination.city.name}?`,
-        icon: '/favicon.jpg',
-        badge: '/badge.png',
+  // TODO cache trip
+  notifications.sendNotifications({
+    title: 'Recommended trip for this weekend',
+    options: {
+      body: `Your weekend seems to be free, why not travel to ${destination.address.city} for just ${price} €?`,
+      icon: '/favicon.jpg',
+      badge: '/badge.png',
+      data: {
+        usecase: 'travel-planning',
+        destinationID: destination.id,
       },
-    });
+    },
   });
 }
 
-module.exports = { init, isWeekendFree, planTrip };
+function init() {
+  // every Friday
+  schedule.scheduleJob({ dayOfWeek: 5 }, planRandomTripIfWeekendIsFree);
+}
+
+module.exports = {
+  init, isWeekendFree, planTrip, planRandomTripIfWeekendIsFree,
+};
