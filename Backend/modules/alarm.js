@@ -1,11 +1,10 @@
 const logger = require('pino')({ level: process.env.LOG_LEVEL || 'info' });
 const schedule = require('node-schedule');
 const moment = require('moment');
-const webpush = require('web-push');
 const calendar = require('./calendar');
 const User = require('./user');
 const vvs = require('./vvs');
-const { getSubscriptions } = require('./notifications');
+const notifications = require('./notifications');
 
 const alarmModule = {};
 const dailyCommuteJobName = 'CommuteWakeUpAlarm';
@@ -28,17 +27,14 @@ alarmModule.getFirstEventWithTimeToLeave = async () => {
 };
 
 async function wakeUpUser(event) {
-  logger.debug(`Hey, listen. Please wake up, there is an event you wanted to attend: ${event.title}`);
-
-  const subscriptions = await getSubscriptions();
-  subscriptions.forEach((subscription) => webpush.sendNotification(subscription, JSON.stringify({
-    title: 'A notification from Gunter!',
+  await notifications.sendNotifications({
+    title: 'Wake up!',
     options: {
-      body: 'It works :)',
+      body: `There is an event you want to attend: ${event.title}`,
       icon: '/favicon.jpg',
       badge: '/badge.png',
     },
-  })));
+  });
 }
 
 function setCommuteAlarm() {
