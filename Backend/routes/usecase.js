@@ -33,46 +33,4 @@ router.get('/1', (req, res) => {
     .catch((error) => res.status(500).send({ status: 500, error: error.message }));
 });
 
-router.get('/2', (req, res) => {
-  logger.trace('router - usecase - GET called on /2');
-  Promise.all([2])
-    .then((usecaseData) => {
-      const stuff = usecaseData[0];
-
-      const response = {
-        stuff,
-      };
-      res.status(200).send({ status: 200, data: response });
-    })
-    .catch((error) => res.status(500).send({ status: 500, error: error.message }));
-});
-
-router.get('/3', (req, res) => {
-  logger.trace('router - usecase - GET called on /3');
-  Promise.all([3])
-    .then((usecaseData) => {
-      const stuff = usecaseData[0];
-
-      const response = {
-        stuff,
-      };
-      res.status(200).send({ status: 200, data: response });
-    })
-    .catch((error) => res.status(500).send({ status: 500, error: error.message }));
-});
-
-router.get('/4', (req, res) => {
-  logger.trace('router - usecase - GET called on /4');
-  Promise.all([4])
-    .then((usecaseData) => {
-      const stuff = usecaseData[0];
-
-      const response = {
-        stuff,
-      };
-      res.status(200).send({ status: 200, data: response });
-    })
-    .catch((error) => res.status(500).send({ status: 500, error: error.message }));
-});
-
 module.exports = router;
