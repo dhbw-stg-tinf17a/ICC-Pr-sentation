@@ -33,6 +33,9 @@ async function wakeUpUser(event) {
       body: `There is an event you want to attend: ${event.title}`,
       icon: '/favicon.jpg',
       badge: '/badge.png',
+      data: {
+        link: '/dialog?usecase=morning-routine',
+      },
     },
   });
 }
