@@ -13,7 +13,7 @@ async function handleNotificationClick(event) {
     const allClients = await self.clients.matchAll();
     if (allClients.length > 0) {
       const client = allClients[0];
-      client.postMessage({ usecase });
+      client.postMessage(event.notification.data);
       return;
     }
 
