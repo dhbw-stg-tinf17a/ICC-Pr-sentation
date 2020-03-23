@@ -17,10 +17,10 @@ router.get('/connections', async (req, res) => {
 });
 
 router.get('/station', async (req, res) => {
-  const name = 'Stuttgart Hbf';
-  const station = await db.getStationByName(name);
+  const id = '8000105';
+  const station = await db.getStationByID(id);
   if (station === null) {
-    res.status(404).send({ error: `Station ${name} not found` });
+    res.status(404).send({ error: `Station ${id} not found` });
     return;
   }
 
