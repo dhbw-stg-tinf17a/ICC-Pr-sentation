@@ -1,4 +1,4 @@
-/* eslint no-restricted-globals: 1 */
+/* eslint-disable no-restricted-globals */
 
 self.addEventListener('push', async (event) => {
   const data = event.data.json();
