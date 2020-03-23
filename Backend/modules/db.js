@@ -1,5 +1,5 @@
 const axios = require('axios').default;
-const moment = require('moment');
+const moment = require('moment-timezone');
 const stations = require('db-stations');
 
 const options = {
@@ -114,4 +114,5 @@ module.exports = {
   getConnections,
   getStationByID,
   getFilteredStations,
+  endpoint,
 };
