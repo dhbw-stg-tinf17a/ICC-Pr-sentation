@@ -16,11 +16,10 @@ router.get('/', (req, res) => {
 router.use('/user', require('./user'));
 router.use('/quote', require('./quote'));
 router.use('/weather', require('./weather'));
-router.use('/notifications', require('./notifications'));
 router.use('/places', require('./place'));
-router.use('/db', require('./db'));
 router.use('/usecases', require('./usecase'));
 
+router.use('/notifications', require('./notifications'));
 router.use('/travel-planning', require('./travel-planning'));
 
 router.get('*', (req, res) => {
