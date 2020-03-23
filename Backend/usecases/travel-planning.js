@@ -1,5 +1,4 @@
 /* eslint-disable no-await-in-loop */
-
 /**
  * Travel is very popular, but the search for a destination is often complicated. For this use case,
  * the assistant sends a notification before the weekend, if the user has enough free time during
