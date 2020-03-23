@@ -80,6 +80,18 @@ describe('db module', () => {
       });
       await expect(db.getConnections({ start: '8000096', destination: '8000105', datetime: new Date('2020-03-23T22:00:00Z') })).rejects.toThrow('DB prices API returned: XML der Anfrage fehlerhaft - Ungueltige XML-Daten gefunden: s=null.');
     });
+
+    it('should throw an error if the API returns an error with no tsys property', async () => {
+      axios.get.mockResolvedValue({
+        data: {
+          error: {
+            s: 'PE', n: '7', t: 'Nummer des Zielbahnhofs existiert nicht', zi: '', k: '2',
+          },
+          sp: false,
+        },
+      });
+      await expect(db.getConnections({ start: '8000096', destination: '8000105', datetime: new Date('2020-03-23T22:00:00Z') })).rejects.toThrow('DB prices API returned: Nummer des Zielbahnhofs existiert nicht');
+    });
   });
 
   describe('getStationByID', () => {

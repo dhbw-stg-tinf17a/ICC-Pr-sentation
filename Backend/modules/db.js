@@ -36,7 +36,11 @@ async function getConnections({ start, destination, datetime }) {
       return [];
     }
 
-    throw new Error(`DB prices API returned: ${response.data.error.t} - ${response.data.error.tsys}`);
+    let message = response.data.error.t;
+    if (response.data.error.tsys) {
+      message += ` - ${response.data.error.tsys}`;
+    }
+    throw new Error(`DB prices API returned: ${message}`);
   }
 
   const connections = Object.values(response.data.verbindungen).map((connection) => {
