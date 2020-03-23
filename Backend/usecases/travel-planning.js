@@ -1,3 +1,5 @@
+/* eslint-disable no-await-in-loop */
+
 /**
  * Travel is very popular, but the search for a destination is often complicated. For this use case,
  * the assistant sends a notification before the weekend, if the user has enough free time during
@@ -16,9 +18,12 @@
 const schedule = require('node-schedule');
 const moment = require('moment');
 const geolib = require('geolib');
+const pino = require('pino');
 const calendar = require('../modules/calendar');
 const db = require('../modules/db');
 const notifications = require('../modules/notifications');
+
+const logger = pino({ level: process.env.LOG_LEVEL || 'info' });
 
 // TODO from user preferences
 const home = { id: '8098096', latitude: 48.784084, longitude: 9.181635 }; // Stuttgart Hbf
@@ -67,10 +72,10 @@ async function planRandomTrip({ departure, arrival }) {
   let destination;
   do {
     destination = stations[Math.floor(Math.random() * stations.length)];
-    // eslint-disable-next-line no-await-in-loop
-    ({ connectionsToDestination, connectionsFromDestination } = await planTrip({
-      departure, arrival, destination: destination.id,
-    }));
+
+    ({
+      connectionsToDestination, connectionsFromDestination,
+    } = await planTrip({ departure, arrival, destination: destination.id }));
   } while (connectionsToDestination.length === 0 || connectionsFromDestination.length === 0);
 
   const connectionToDestination = connectionsToDestination.sort((a, b) => a.price - b.price)[0];
@@ -80,30 +85,34 @@ async function planRandomTrip({ departure, arrival }) {
 }
 
 async function planRandomTripIfWeekendIsFree() {
-  const {
-    saturday, sunday, saturdayFree, sundayFree,
-  } = await isWeekendFree();
-  if (!saturdayFree || !sundayFree) {
-    return;
-  }
+  try {
+    const {
+      saturday, sunday, saturdayFree, sundayFree,
+    } = await isWeekendFree();
+    if (!saturdayFree || !sundayFree) {
+      return;
+    }
 
-  const trip = await planRandomTrip({ departure: saturday, arrival: sunday });
-  const { destination, connectionToDestination, connectionFromDestination } = trip;
-  const price = connectionToDestination.price + connectionFromDestination.price;
+    const trip = await planRandomTrip({ departure: saturday, arrival: sunday });
+    const { destination, connectionToDestination, connectionFromDestination } = trip;
+    const price = connectionToDestination.price + connectionFromDestination.price;
 
-  // TODO cache trip
-  notifications.sendNotifications({
-    title: 'Recommended trip for this weekend',
-    options: {
-      body: `Your weekend seems to be free, why not travel to ${destination.address.city} and back for just ${price} €?`,
-      icon: '/favicon.jpg',
-      badge: '/badge.png',
-      data: {
-        usecase: 'travel-planning',
-        destination: destination.id,
+    // TODO cache trip
+    notifications.sendNotifications({
+      title: 'Recommended trip for this weekend',
+      options: {
+        body: `Your weekend seems to be free, why not travel to ${destination.address.city} and back for just ${price} €?`,
+        icon: '/favicon.jpg',
+        badge: '/badge.png',
+        data: {
+          usecase: 'travel-planning',
+          destination: destination.id,
+        },
       },
-    },
-  });
+    });
+  } catch (error) {
+    logger.error(error);
+  }
 }
 
 function init() {
