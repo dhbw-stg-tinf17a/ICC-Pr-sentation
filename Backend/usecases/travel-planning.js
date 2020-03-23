@@ -40,35 +40,37 @@ async function isWeekendFree() {
   };
 }
 
-async function planTrip(departure, arrival, destination) {
-  return Promise.all([
+async function planTrip({ departure, arrival, destination }) {
+  const [connectionsToDestination, connectionsFromDestination] = await Promise.all([
     db.getConnections({
       start: home.id,
-      destination: destination.id,
+      destination,
       datetime: departure,
     }),
     db.getConnections({
-      start: destination.id,
+      start: destination,
       destination: home.id,
       datetime: arrival,
     }),
   ]);
+
+  return { connectionsToDestination, connectionsFromDestination };
 }
 
-async function planRandomTrip(departure, arrival) {
+async function planRandomTrip({ departure, arrival }) {
   const stations = await db.getFilteredStations((station) => station.location
     && geolib.getDistance(home, station.location) / 1000 >= minDistance // convert m to km
     && !excluded.findIndex((otherStation) => station.id === otherStation.id) >= 0);
 
-  let connectionsToDestination = [];
-  let connectionsFromDestination = [];
+  let connectionsToDestination;
+  let connectionsFromDestination;
   let destination;
   do {
     destination = stations[Math.floor(Math.random() * stations.length)];
     // eslint-disable-next-line no-await-in-loop
-    [connectionsToDestination, connectionsFromDestination] = await planTrip(
-      departure, arrival, destination,
-    );
+    ({ connectionsToDestination, connectionsFromDestination } = await planTrip({
+      departure, arrival, destination: destination.id,
+    }));
   } while (connectionsToDestination.length === 0 || connectionsFromDestination.length === 0);
 
   const connectionToDestination = connectionsToDestination.sort((a, b) => a.price - b.price)[0];
@@ -85,7 +87,7 @@ async function planRandomTripIfWeekendIsFree() {
     return;
   }
 
-  const trip = await planRandomTrip(saturday, sunday);
+  const trip = await planRandomTrip({ departure: saturday, arrival: sunday });
   const { destination, connectionToDestination, connectionFromDestination } = trip;
   const price = connectionToDestination.price + connectionFromDestination.price;
 

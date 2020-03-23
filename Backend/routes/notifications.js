@@ -1,6 +1,8 @@
-const router = require('express').Router();
+const express = require('express');
 const logger = require('pino')({ level: process.env.LOG_LEVEL || 'info' });
 const notifications = require('../modules/notifications');
+
+const router = express.Router();
 
 router.post('/enable', async (req, res) => {
   try {

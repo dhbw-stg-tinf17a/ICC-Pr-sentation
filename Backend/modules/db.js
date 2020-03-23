@@ -1,6 +1,6 @@
 const axios = require('axios').default;
 const moment = require('moment-timezone');
-const stations = require('db-stations');
+const dbStations = require('db-stations');
 
 const options = {
   c: 2, // class
@@ -76,9 +76,7 @@ async function getConnections({ start, destination, datetime }) {
       boundToTrain: offer.zb === 'Y',
     };
 
-    if (offer.pky in notes) {
-      connections[Number(id)].notes = notes[offer.pky];
-    }
+    connections[Number(id)].notes = notes[offer.pky];
   }));
 
   return connections;
@@ -86,7 +84,7 @@ async function getConnections({ start, destination, datetime }) {
 
 function getStationByID(id) {
   return new Promise((resolve) => {
-    stations()
+    dbStations()
       .on('data', (station) => {
         if (station.id === id) {
           resolve(station);
@@ -100,7 +98,7 @@ function getFilteredStations(predicate) {
   const filteredStations = [];
 
   return new Promise((resolve) => {
-    stations()
+    dbStations()
       .on('data', (station) => {
         if (predicate(station)) {
           filteredStations.push(station);
