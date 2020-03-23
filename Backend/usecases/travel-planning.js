@@ -40,7 +40,22 @@ async function isWeekendFree() {
   };
 }
 
-async function planTrip(departure, arrival) {
+async function planTrip(departure, arrival, destination) {
+  return Promise.all([
+    db.getConnections({
+      start: home.id,
+      destination: destination.id,
+      datetime: departure,
+    }),
+    db.getConnections({
+      start: destination.id,
+      destination: home.id,
+      datetime: arrival,
+    }),
+  ]);
+}
+
+async function planRandomTrip(departure, arrival) {
   const stations = await db.getFilteredStations((station) => station.location
     && geolib.getDistance(home, station.location) / 1000 >= minDistance // convert m to km
     && !excluded.findIndex((otherStation) => station.id === otherStation.id) >= 0);
@@ -51,18 +66,9 @@ async function planTrip(departure, arrival) {
   do {
     destination = stations[Math.floor(Math.random() * stations.length)];
     // eslint-disable-next-line no-await-in-loop
-    [connectionsToDestination, connectionsFromDestination] = await Promise.all([
-      db.getConnections({
-        start: home.id,
-        destination: destination.id,
-        datetime: departure,
-      }),
-      db.getConnections({
-        start: destination.id,
-        destination: home.id,
-        datetime: arrival,
-      }),
-    ]);
+    [connectionsToDestination, connectionsFromDestination] = await planTrip(
+      departure, arrival, destination,
+    );
   } while (connectionsToDestination.length === 0 || connectionsFromDestination.length === 0);
 
   const connectionToDestination = connectionsToDestination.sort((a, b) => a.price - b.price)[0];
@@ -79,7 +85,7 @@ async function planRandomTripIfWeekendIsFree() {
     return;
   }
 
-  const trip = await planTrip(saturday, sunday);
+  const trip = await planRandomTrip(saturday, sunday);
   const { destination, connectionToDestination, connectionFromDestination } = trip;
   const price = connectionToDestination.price + connectionFromDestination.price;
 
@@ -87,12 +93,12 @@ async function planRandomTripIfWeekendIsFree() {
   notifications.sendNotifications({
     title: 'Recommended trip for this weekend',
     options: {
-      body: `Your weekend seems to be free, why not travel to ${destination.address.city} for just ${price} €?`,
+      body: `Your weekend seems to be free, why not travel to ${destination.address.city} and back for just ${price} €?`,
       icon: '/favicon.jpg',
       badge: '/badge.png',
       data: {
         usecase: 'travel-planning',
-        destinationID: destination.id,
+        destination: destination.id,
       },
     },
   });
@@ -104,5 +110,5 @@ function init() {
 }
 
 module.exports = {
-  init, isWeekendFree, planTrip, planRandomTripIfWeekendIsFree,
+  isWeekendFree, planTrip, planRandomTrip, planRandomTripIfWeekendIsFree, init,
 };
