@@ -58,7 +58,12 @@ async function planTrip({ departure, arrival, destination }) {
     }),
   ]);
 
-  return { connectionsToDestination, connectionsFromDestination };
+  const connectionToDestination = connectionsToDestination.sort((a, b) => a.price - b.price)
+    .find(() => true);
+  const connectionFromDestination = connectionsFromDestination.sort((a, b) => a.price - b.price)
+    .find(() => true);
+
+  return { connectionToDestination, connectionFromDestination };
 }
 
 async function planRandomTrip({ departure, arrival }) {
@@ -66,19 +71,17 @@ async function planRandomTrip({ departure, arrival }) {
     && geolib.getDistance(home, station.location) / 1000 >= minDistance // convert m to km
     && !excluded.findIndex((otherStation) => station.id === otherStation.id) >= 0);
 
-  let connectionsToDestination;
-  let connectionsFromDestination;
+  let connectionToDestination;
+  let connectionFromDestination;
   let destination;
   do {
     destination = stations[Math.floor(Math.random() * stations.length)];
 
     ({
-      connectionsToDestination, connectionsFromDestination,
+      connectionToDestination, connectionFromDestination,
     } = await planTrip({ departure, arrival, destination: destination.id }));
-  } while (connectionsToDestination.length === 0 || connectionsFromDestination.length === 0);
+  } while (!connectionToDestination || !connectionFromDestination);
 
-  const connectionToDestination = connectionsToDestination.sort((a, b) => a.price - b.price)[0];
-  const connectionFromDestination = connectionsFromDestination.sort((a, b) => a.price - b.price)[0];
 
   return { destination, connectionToDestination, connectionFromDestination };
 }
@@ -96,7 +99,6 @@ async function planRandomTripIfWeekendIsFree() {
     const { destination, connectionToDestination, connectionFromDestination } = trip;
     const price = connectionToDestination.price + connectionFromDestination.price;
 
-    // TODO cache trip
     notifications.sendNotifications({
       title: 'Recommended trip for this weekend',
       options: {
