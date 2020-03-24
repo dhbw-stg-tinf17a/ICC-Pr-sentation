@@ -51,7 +51,7 @@ describe('db module', () => {
         notes: { name: 'Super Sparpreis Aktion', text: 'Sie können alle Züge bzw. IC Busse nutzen, die auf Ihrer Fahrkarte angegeben sind. Für Züge des Nahverkehrs (z.B. RE, RB, S) besteht keine Zugbindung. Bei Zahlung mit Kreditkarte ist ggf. ein 3-D Secure-Code erforderlich. Eine Stornierung (Umtausch oder Erstattung) Ihrer Fahrkarte ist ausgeschlossen.' },
       }];
 
-      await expect(db.getConnections({ start: '8000096', destination: '8000105', datetime: new Date('2020-03-23T22:00:00Z') })).resolves.toStrictEqual(parsedConnections);
+      await expect(db.getConnections({ startID: '8000096', destinationID: '8000105', datetime: new Date('2020-03-23T22:00:00Z') })).resolves.toStrictEqual(parsedConnections);
       expect(axios.get).toHaveBeenLastCalledWith(db.endpoint, { params: { data: '{"s":"8000096","d":"8000105","dt":"23.03.20","t":"23:00","c":2,"ohneICE":false,"tct":0,"dur":86400,"travellers":[{"bc":0,"typ":"E","alter":30}],"sv":true,"device":"HANDY"}', service: 'pscangebotsuche' } });
     });
 
@@ -78,7 +78,7 @@ describe('db module', () => {
           sp: false,
         },
       });
-      await expect(db.getConnections({ start: '8000096', destination: '8000105', datetime: new Date('2020-03-23T22:00:00Z') })).rejects.toThrow('DB prices API returned: XML der Anfrage fehlerhaft - Ungueltige XML-Daten gefunden: s=null.');
+      await expect(db.getConnections({ startID: '8000096', destinationID: '8000105', datetime: new Date('2020-03-23T22:00:00Z') })).rejects.toThrow('DB prices API returned: XML der Anfrage fehlerhaft - Ungueltige XML-Daten gefunden: s=null.');
     });
 
     it('should throw an error if the API returns an error with no tsys property', async () => {
@@ -90,7 +90,7 @@ describe('db module', () => {
           sp: false,
         },
       });
-      await expect(db.getConnections({ start: '8000096', destination: '8000105', datetime: new Date('2020-03-23T22:00:00Z') })).rejects.toThrow('DB prices API returned: Nummer des Zielbahnhofs existiert nicht');
+      await expect(db.getConnections({ startID: '8000096', destinationID: '8000105', datetime: new Date('2020-03-23T22:00:00Z') })).rejects.toThrow('DB prices API returned: Nummer des Zielbahnhofs existiert nicht');
     });
   });
 
