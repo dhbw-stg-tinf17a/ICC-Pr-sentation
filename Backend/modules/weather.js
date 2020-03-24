@@ -1,52 +1,19 @@
-const logger = require('pino')({ level: process.env.LOG_LEVEL || 'info' });
-const weatherAPI = require('openweather-apis');
-const User = require('./user');
-const validationHandler = require('../utilities/validationHandler');
+const axios = require('axios').default;
 
-const weatherModule = {};
+const endpoint = 'https://atlas.microsoft.com/weather/forecast/daily/json';
 
-weatherAPI.setLang('en');
-weatherAPI.setUnits('metric');
-weatherAPI.setAPPID(process.env.OPENWEATHER_API_KEY);
-
-const fetchCurrentWeather = () => new Promise((resolve, reject) => {
-  logger.trace('weather.js - fetchCurrentWeather - start');
-  weatherAPI.getAllWeather((error, weatherData) => {
-    logger.trace('weather.js - fetchCurrentWeather - fetchReturned');
-    if (error || (weatherData && weatherData.cod >= 400)) {
-      logger.trace('weather.js - fetchCurrentWeather - error with the openweather API');
-      logger.error(error);
-      logger.error(weatherData);
-      reject(new Error('Error with the OpenWeather-API'));
-    } else resolve(weatherData);
+// duration can be 1, 5, or 10
+async function getForecast({ latitude, longitude, duration }) {
+  const response = await axios.get(endpoint, {
+    params: {
+      'subscription-key': process.env.AZURE_MAPS_KEY,
+      'api-version': '1.0',
+      query: `${latitude},${longitude}`,
+      duration,
+    },
   });
-});
 
-weatherModule.getCurrentWeatherForUserLocation = async () => {
-  logger.trace('weather.js - getCurrentWeatherForUserLocation - start');
+  return response.data;
+}
 
-  try {
-    const userCoordinates = await User.getUserCoordinates();
-    weatherAPI.setCoordinate({
-      lat: userCoordinates.lat,
-      lon: userCoordinates.lon,
-    });
-    return fetchCurrentWeather();
-  } catch (error) {
-    logger.error(error);
-    return Promise.reject(error);
-  }
-};
-
-weatherModule.getCurrentWeatherForCity = async (city) => {
-  logger.trace('weather.js - getCurrentWeatherForCity - start');
-  const validatedCity = await validationHandler.validateCity(city);
-
-  weatherAPI.setCoordinate({ lat: null, lon: null });
-  weatherAPI.setCity(validatedCity);
-
-  return fetchCurrentWeather();
-};
-
-module.exports = weatherModule;
-logger.debug('weatherModule initialized');
+module.exports = { endpoint, getForecast };
