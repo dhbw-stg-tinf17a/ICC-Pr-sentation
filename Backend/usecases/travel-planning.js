@@ -44,16 +44,19 @@ async function isWeekendFree() {
   };
 }
 
-async function planTrip({ departure, arrival, destination }) {
-  const [connectionsToDestination, connectionsFromDestination] = await Promise.all([
+async function planTrip({ departure, arrival, destinationID }) {
+  const [
+    connectionsToDestination,
+    connectionsFromDestination,
+  ] = await Promise.all([
     db.getConnections({
-      start: home.id,
-      destination,
+      startID: home.id,
+      destinationID,
       datetime: departure,
     }),
     db.getConnections({
-      start: destination,
-      destination: home.id,
+      startID: destinationID,
+      destinationID: home.id,
       datetime: arrival,
     }),
   ]);
@@ -79,7 +82,7 @@ async function planRandomTrip({ departure, arrival }) {
 
     ({
       connectionToDestination, connectionFromDestination,
-    } = await planTrip({ departure, arrival, destination: destination.id }));
+    } = await planTrip({ departure, arrival, destinationID: destination.id }));
   } while (!connectionToDestination || !connectionFromDestination);
 
 
@@ -107,7 +110,7 @@ async function planRandomTripIfWeekendIsFree() {
         badge: '/badge.png',
         data: {
           usecase: 'travel-planning',
-          destination: destination.id,
+          destinationID: destination.id,
         },
       },
     });

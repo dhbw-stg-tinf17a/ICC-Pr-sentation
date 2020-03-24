@@ -1,22 +1,28 @@
 const express = require('express');
 const travelPlanning = require('../usecases/travel-planning');
 const wrapAsync = require('../utilities/wrap-async');
+const db = require('../modules/db');
 
 const router = express.Router();
 
 router.get('/', wrapAsync(async (req, res) => {
-  let { destination } = req.query;
+  const { destinationID } = req.query;
 
   const {
     saturday, sunday, saturdayFree, sundayFree,
   } = await travelPlanning.isWeekendFree();
 
+  let destination;
   let connectionToDestination;
   let connectionFromDestination;
-  if (destination) {
-    ({
-      connectionToDestination, connectionFromDestination,
-    } = await travelPlanning.planTrip({ departure: saturday, arrival: sunday, destination }));
+  if (destinationID) {
+    [
+      destination,
+      { connectionToDestination, connectionFromDestination },
+    ] = await Promise.all([
+      db.getStationByID(destinationID),
+      travelPlanning.planTrip({ departure: saturday, arrival: sunday, destinationID }),
+    ]);
   } else {
     ({
       destination, connectionToDestination, connectionFromDestination,

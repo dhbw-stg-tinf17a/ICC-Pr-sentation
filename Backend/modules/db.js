@@ -14,14 +14,14 @@ const options = {
 
 const endpoint = 'https://ps.bahn.de/preissuche/preissuche/psc_service.go';
 
-async function getConnections({ start, destination, datetime }) {
+async function getConnections({ startID, destinationID, datetime }) {
   const date = moment(datetime).tz('Europe/Berlin').format('DD.MM.YY');
   const time = moment(datetime).tz('Europe/Berlin').format('HH:mm');
 
   const params = {
     data: JSON.stringify({
-      s: start,
-      d: destination,
+      s: startID,
+      d: destinationID,
       dt: date,
       t: time,
       ...options,
