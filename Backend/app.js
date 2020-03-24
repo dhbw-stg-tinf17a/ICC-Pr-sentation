@@ -5,7 +5,7 @@ const helmet = require('helmet');
 const pino = require('pino');
 
 const app = express();
-const logger = ({ level: process.env.LOG_LEVEL || 'info' });
+const logger = pino({ level: process.env.LOG_LEVEL || 'info' });
 const prod = process.env.PROD === 'true';
 logger.info(`Running in ${prod ? 'production' : 'development'}`);
 
