@@ -5,7 +5,7 @@ jest.mock('axios');
 
 describe('db module', () => {
   describe('getConnections', () => {
-    it('should return requested connections', async () => {
+    it('should return the requested connections', async () => {
       axios.get.mockResolvedValue({
         data: {
           angebote: {
