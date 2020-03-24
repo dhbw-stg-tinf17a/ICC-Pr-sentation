@@ -4,7 +4,7 @@ const vvsModule = {};
 
 const typeOf = (object) => Object.prototype.toString.call(object).slice(8, -1).toLowerCase();
 const request = require('axios');
-const moment = require('moment');
+const moment = require('moment-timezone');
 const User = require('./user');
 const reverseGeocoder = require('./reverseGeocoder');
 

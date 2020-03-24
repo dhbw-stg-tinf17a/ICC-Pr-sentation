@@ -15,7 +15,7 @@
  */
 
 const schedule = require('node-schedule');
-const moment = require('moment');
+const moment = require('moment-timezone');
 const geolib = require('geolib');
 const pino = require('pino');
 const calendar = require('../modules/calendar');

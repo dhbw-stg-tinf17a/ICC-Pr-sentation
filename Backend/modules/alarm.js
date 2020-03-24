@@ -1,6 +1,6 @@
 const logger = require('pino')({ level: process.env.LOG_LEVEL || 'info' });
 const schedule = require('node-schedule');
-const moment = require('moment');
+const moment = require('moment-timezone');
 const calendar = require('./calendar');
 const User = require('./user');
 const vvs = require('./vvs');
