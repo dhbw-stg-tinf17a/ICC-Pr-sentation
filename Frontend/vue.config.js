@@ -3,7 +3,7 @@ module.exports = {
     port: 3001,
     proxy: {
       '^/api': {
-        target: 'http://localhost:3000',
+        target: 'https://gunter.felixsz.de',
       },
     },
   },

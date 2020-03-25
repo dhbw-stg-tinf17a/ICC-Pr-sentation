@@ -76,7 +76,7 @@
             <label class="label has-text-white">Current Location</label>
             <div class="control">
               <input
-                v-model="user.preferences.currentLocationCoordinates"
+                v-model="user.preferences.currentLocationAddress"
                 disabled
                 class="input"
                 type="text"
@@ -125,14 +125,18 @@ export default {
     return {
       user: null,
       loading: true,
+      notificationsEnabled: localStorage.getItem('notificationsEnabled') === 'true',
     };
   },
-
+  watch: {
+    notificationsEnabled() {
+      localStorage.setItem('notificationsEnabled', this.notificationsEnabled);
+    },
+  },
   created() {
-    if (this.$store.get('soundEnabled')) SpeechService.speak('Edit your Preferences');
+    if (localStorage.getItem('soundEnabled') === 'true') SpeechService.speak('Edit your Preferences');
     this.getUser();
   },
-
   methods: {
     getUser() {
       UserService.getUser().then((result) => {
@@ -147,7 +151,7 @@ export default {
         type: 'is-success',
       });
 
-      if (this.$store.get('soundEnabled')) SpeechService.speak('Saved successfully.');
+      if (localStorage.getItem('soundEnabled') === 'true') SpeechService.speak('Saved successfully.');
     },
 
     // TODO state is not stored in local storage :(
@@ -164,7 +168,8 @@ export default {
         const notificationPermission = await Notification.requestPermission();
         if (notificationPermission !== 'granted') {
           this.$buefy.snackbar.open({
-            message: 'Unfortunately, Gunter doesn\'t have permission to send you notifications on this device. Please check your browser settings.',
+            message:
+              "Unfortunately, Gunter doesn't have permission to send you notifications on this device. Please check your browser settings.",
             type: 'is-danger',
           });
           this.notificationsEnabled = false;
@@ -172,10 +177,13 @@ export default {
         }
 
         const serviceWorkerRegistration = await navigator.serviceWorker.ready;
-        const pushSubscription = await serviceWorkerRegistration.pushManager.subscribe({
-          userVisibleOnly: true,
-          applicationServerKey: 'BBauGh8G3IdDf28vFQD0-Nn-8wniZUsCjvRa0F0MbRUTmy0NDDGQCT-OD3M5k8c54DNsyw9-_SwibbBXxWYG_nk',
-        });
+        const pushSubscription = await serviceWorkerRegistration.pushManager.subscribe(
+          {
+            userVisibleOnly: true,
+            applicationServerKey:
+              'BBauGh8G3IdDf28vFQD0-Nn-8wniZUsCjvRa0F0MbRUTmy0NDDGQCT-OD3M5k8c54DNsyw9-_SwibbBXxWYG_nk',
+          },
+        );
 
         const response = await fetch('/api/notifications/enable', {
           method: 'POST',
@@ -186,10 +194,11 @@ export default {
           throw await response.text();
         }
 
-        this.notificationEndpoint = pushSubscription.endpoint;
+        localStorage.setItem('notificationEndpoint', pushSubscription.endpoint);
       } catch (err) {
         this.$buefy.snackbar.open({
-          message: 'Unfortunately, Gunter couldn\'t enable notifications for you on this device. He doesn\'t know why and is truly sorry.',
+          message:
+            "Unfortunately, Gunter couldn't enable notifications for you on this device. He doesn't know why and is truly sorry.",
           type: 'is-danger',
         });
         this.notificationsEnabled = false;
@@ -202,17 +211,18 @@ export default {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            endpoint: this.notificationEndpoint,
+            endpoint: localStorage.getItem('notificationEndpoint'),
           }),
         });
         if (!response.ok) {
           throw await response.text();
         }
 
-        this.notificationEndpoint = '';
+        localStorage.setItem('notificationEndpoint', '');
       } catch (err) {
         this.$buefy.snackbar.open({
-          message: 'Unfortunately, Gunter couldn\'t disable notifications for you on this device. He doesn\'t know why and is truly sorry.',
+          message:
+            "Unfortunately, Gunter couldn't disable notifications for you on this device. He doesn't know why and is truly sorry.",
           type: 'is-danger',
         });
         this.notificationsEnabled = true;

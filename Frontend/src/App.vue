@@ -47,7 +47,7 @@ export default {
       message: 'This Page talks to you!',
       type: 'is-success',
       onConfirm: () => {
-        if (this.$store.get('soundEnabled')) SpeechService.speak('Hello my name is Gunter!');
+        if (localStorage.getItem('soundEnabled') === 'true') SpeechService.speak('Hello my name is Gunter!');
       },
     });
   },

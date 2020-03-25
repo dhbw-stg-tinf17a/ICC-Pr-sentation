@@ -85,7 +85,7 @@ import SpeechService from '@/services/SpeechSynthesis';
 
 export default {
   created() {
-    if (this.$store.get('soundEnabled')) {
+    if (localStorage.getItem('soundEnabled') === 'true') {
       SpeechService.speak('This is the help section. '
     + 'Here you can see an overview of what I can do!');
     }
