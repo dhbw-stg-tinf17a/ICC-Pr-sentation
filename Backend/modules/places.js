@@ -1,4 +1,3 @@
-const logger = require('pino')({ level: process.env.LOG_LEVEL || 'info' });
 const request = require('axios');
 const reverseGeocoder = require('./reverseGeocoder');
 const User = require('./user');
@@ -8,8 +7,6 @@ const placesModule = {};
 
 
 placesModule.getRestaurantsNearUser = async () => {
-  logger.trace('placesModule - getRestaurantsNearUser - start');
-
   const coordinates = await User.getUserCoordinates();
   const area = await reverseGeocoder.getAreaFromCoordinates(coordinates);
   const entries = await request.get(`${searchUrl}restaurant ${area}`, { params: { format: 'jsonv2' } });
@@ -17,4 +14,3 @@ placesModule.getRestaurantsNearUser = async () => {
 };
 
 module.exports = placesModule;
-logger.debug('placesModule initialized');
