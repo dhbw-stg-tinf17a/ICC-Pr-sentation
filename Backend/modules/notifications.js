@@ -1,16 +1,10 @@
-const low = require('lowdb');
-const FileAsync = require('lowdb/adapters/FileAsync');
 const webpush = require('web-push');
+const initDatabase = require('../utilities/init-database');
 
-let db;
-
-(async () => {
-  const adapter = new FileAsync('db/notifications.json');
-  db = (await low(adapter)).defaults({ subscriptions: [] });
-})();
+const database = initDatabase('notifications', { subscriptions: [] });
 
 async function addSubscription(subscription) {
-  const subscriptions = db.get('subscriptions');
+  const subscriptions = (await database).get('subscriptions');
 
   if (await subscriptions.findIndex({ endpoint: subscription.endpoint }).value() >= 0) {
     // subscription already stored
@@ -21,7 +15,7 @@ async function addSubscription(subscription) {
 }
 
 async function removeSubscription(endpoint) {
-  await db.get('subscriptions').remove({ endpoint }).write();
+  await (await database).get('subscriptions').remove({ endpoint }).write();
 }
 
 async function sendNotification(payload, subscription) {
@@ -39,7 +33,7 @@ async function sendNotification(payload, subscription) {
 }
 
 async function sendNotifications(payload) {
-  const subscriptions = await db.get('subscriptions').value();
+  const subscriptions = await (await database).get('subscriptions').value();
   await Promise.all(subscriptions.map((subscription) => sendNotification(payload, subscription)));
 }
 
