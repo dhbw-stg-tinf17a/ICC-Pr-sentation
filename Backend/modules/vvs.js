@@ -1,11 +1,10 @@
 const pino = require('pino');
-
-const logger = pino({ level: process.env.LOG_LEVEL || 'info' });
-const request = require('axios');
+const request = require('axios').default;
 const moment = require('moment-timezone');
 const user = require('./user');
 const reverseGeocoder = require('./reverseGeocoder');
 
+const logger = pino({ level: process.env.LOG_LEVEL || 'info' });
 const typeOf = (object) => Object.prototype.toString.call(object).slice(8, -1).toLowerCase();
 
 const vvsUrl = 'http://efastatic.vvs.de/vvs/XML_TRIP_REQUEST2';

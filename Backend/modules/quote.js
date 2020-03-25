@@ -1,5 +1,5 @@
 const pino = require('pino');
-const request = require('axios');
+const request = require('axios').default;
 const User = require('./user');
 
 const logger = pino({ level: process.env.LOG_LEVEL || 'info' });
