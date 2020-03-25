@@ -1,46 +1,34 @@
-const router = require('express').Router();
-const logger = require('pino')({ level: process.env.LOG_LEVEL || 'info' });
-const webpush = require('web-push');
-const { addSubscription, removeSubscription } = require('../modules/notifications');
+const express = require('express');
+const notifications = require('../modules/notifications');
+const wrapAsync = require('../utilities/wrap-async');
 
+const router = express.Router();
 
-webpush.setVapidDetails(
-  'https://gunter.felixsz.de',
-  process.env.PUSH_KEY_PUBLIC,
-  process.env.PUSH_KEY_PRIVATE,
-);
+router.post('/enable', wrapAsync(async (req, res) => {
+  const subscription = req.body;
 
-router.post('/enable', async (req, res) => {
-  try {
-    const subscription = req.body;
-
-    await Promise.all([
-      addSubscription(subscription),
-      webpush.sendNotification(subscription, JSON.stringify({
+  await Promise.all([
+    notifications.addSubscription(subscription),
+    notifications.sendNotification(
+      {
         title: 'A notification from Gunter!',
         options: {
           body: 'It works :)',
           icon: '/favicon.jpg',
           badge: '/badge.png',
         },
-      })),
-    ]);
-
-    res.send({});
-  } catch (err) {
-    logger.error(err);
-    res.status(500).send({
-      error: err,
-    });
-  }
-});
-
-router.post('/disable', async (req, res) => {
-  logger.trace(req.body);
-
-  await removeSubscription(req.body.endpoint);
+      },
+      subscription,
+    ),
+  ]);
 
   res.send({});
-});
+}));
+
+router.post('/disable', wrapAsync(async (req, res) => {
+  await notifications.removeSubscription(req.body.endpoint);
+
+  res.send({});
+}));
 
 module.exports = router;

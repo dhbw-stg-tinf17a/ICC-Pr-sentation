@@ -1,8 +1,9 @@
-const logger = require('pino')({ level: process.env.LOG_LEVEL || 'info' });
-const request = require('axios');
+const pino = require('pino');
+const request = require('axios').default;
 
-const reverseGeocoderModule = {};
-const reverseGeocodeUrl = 'https://nominatim.openstreetmap.org/reverse';
+const logger = pino({ level: process.env.LOG_LEVEL || 'info' });
+
+const endpoint = 'https://nominatim.openstreetmap.org/reverse';
 
 const reverseGeocodeParams = {
   format: 'jsonv2',
@@ -10,35 +11,35 @@ const reverseGeocodeParams = {
   lon: 0,
 };
 
-reverseGeocoderModule.getStreetFromCoordinates = async (coordinates) => {
-  logger.trace('reverseGeocoderModule - getStreetFromCoordinates - called');
+async function getStreetFromCoordinates(coordinates) {
   reverseGeocodeParams.lat = coordinates.lat;
   reverseGeocodeParams.lon = coordinates.lon;
 
-  const geocodeResponse = await request.get(reverseGeocodeUrl, { params: reverseGeocodeParams });
+  const geocodeResponse = await request.get(endpoint, { params: reverseGeocodeParams });
 
-  const addressObject = geocodeResponse.data.address;
-  const houseNumber = addressObject.house_number || '';
-  const street = addressObject.road || addressObject.pedestrian;
-  const { city } = addressObject;
-
+  const addrObj = geocodeResponse.data.address;
+  const houseNumber = addrObj.house_number || '';
+  const city = addrObj.city || addrObj.suburb || addrObj.city_district || addrObj.county;
+  const street = addrObj.road || addrObj.pedestrian;
   const address = `${city}, ${street} ${houseNumber}`;
-  logger.trace(`reverseGeocoderModule - getStreetFromCoordinates: Reverse geocoded ${coordinates.lat},${coordinates.lon} to: ${address}`);
-  return address;
-};
 
-reverseGeocoderModule.getAreaFromCoordinates = async (coordinates) => {
-  logger.trace('reverseGeocoderModule - getAreaFromCoordinates - called');
+  logger.trace(`reverseGeocoder.getStreetFromCoordinates: Reverse geocoded ${coordinates.lat}, ${coordinates.lon} to street ${address}`);
+
+  return address;
+}
+
+async function getAreaFromCoordinates(coordinates) {
   reverseGeocodeParams.lat = coordinates.lat;
   reverseGeocodeParams.lon = coordinates.lon;
 
-  const geocodeResponse = await request.get(reverseGeocodeUrl, { params: reverseGeocodeParams });
+  const geocodeResponse = await request.get(endpoint, { params: reverseGeocodeParams });
   const addr = geocodeResponse.data.address;
   const area = addr.suburb || addr.city_district || addr.postcode || addr.city || addr.county;
-  logger.trace(`reverseGeocoderModule - getAreaFromCoordinates: Reverse geocoded ${coordinates.lat},${coordinates.lon} to: ${area}`);
+
+  logger.trace(`reverseGeocoder.getAreaFromCoordinates: Reverse geocoded ${coordinates.lat}, ${coordinates.lon} to area ${area}`);
+
   return area;
-};
+}
 
 
-module.exports = reverseGeocoderModule;
-logger.debug('reverseGeocoderModule initialized');
+module.exports = { getStreetFromCoordinates, getAreaFromCoordinates };

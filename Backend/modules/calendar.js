@@ -1,54 +1,41 @@
-const logger = require('pino')({ level: process.env.LOG_LEVEL || 'info' });
 const ical = require('node-ical');
-const moment = require('moment');
-const User = require('./user');
+const moment = require('moment-timezone');
+const user = require('./user');
 
-const calendarModule = {};
+async function getCalendarURL() {
+  const preferences = await user.getUserPreferences();
 
-async function getUsersCalendarUrlFromUserPreferences() {
-  const preferences = await User.getUserPreferences();
+  if (preferences.calendarUrl === undefined) {
+    throw new Error('User has not set their calendar url yet.');
+  }
 
-  if (preferences.calendarUrl === undefined) throw new Error("User hasn't set their calendar url yet.");
   return preferences.calendarUrl;
 }
 
 async function fetchCalendarEvents() {
-  const calendarUrl = await getUsersCalendarUrlFromUserPreferences();
-  return ical.async.fromURL(calendarUrl);
+  return ical.async.fromURL(await getCalendarURL());
 }
 
-calendarModule.getTodaysFirstEvent = async () => {
+async function getFirstEventOfDay(date) {
   const events = await fetchCalendarEvents();
-  if (!events || events.length === 0) throw new Error('There are no events');
+  const day = moment(date).utc().format('YYYY-MM-DD');
 
-  const eventArray = Object.values(events);
-  let firstEventToday;
-  let firstEventTomorrow;
+  return Object.values(events)
+    .filter((event) => event.type === 'VEVENT' && moment(event.start).utc().format('YYYY-MM-DD') === day)
+    .sort((a, b) => a.start - b.start)
+    .find(() => true);
+}
 
-  const now = moment();
-  const today = now.dayOfYear();
-  const tomorrow = today + 1;
+async function getNextFirstEventOfDay() {
+  const today = moment();
+  const firstEventOfToday = await getFirstEventOfDay(today);
+  if (firstEventOfToday && firstEventOfToday.start >= today) {
+    return firstEventOfToday;
+  }
 
-  eventArray.forEach((event) => {
-    if (event.type !== 'VEVENT') return;
-    const eventDate = moment(event.start);
-    const dayOfEvent = eventDate.dayOfYear();
+  const tomorrow = today.add(1, 'day');
+  const firstEventOfTomorrow = await getFirstEventOfDay(tomorrow);
+  return firstEventOfTomorrow;
+}
 
-    if (dayOfEvent !== today && dayOfEvent !== tomorrow) return;
-    if (dayOfEvent === today
-          && (firstEventToday === undefined || eventDate.isBefore(firstEventToday.start))) {
-      firstEventToday = event;
-    }
-    if (dayOfEvent === tomorrow
-          && (firstEventTomorrow === undefined || eventDate.isBefore(firstEventTomorrow.start))) {
-      firstEventTomorrow = event;
-    }
-  });
-
-  if (firstEventToday && now.isBefore(firstEventToday.start)) return firstEventToday;
-  if (firstEventTomorrow && now.isBefore(firstEventTomorrow.start)) return firstEventTomorrow;
-  throw new Error('There are no events');
-};
-
-module.exports = calendarModule;
-logger.debug('calendarModule initialized');
+module.exports = { fetchCalendarEvents, getFirstEventOfDay, getNextFirstEventOfDay };

@@ -1,20 +1,24 @@
-const logger = require('pino')({ level: process.env.LOG_LEVEL || 'info' });
-const request = require('axios');
-const reverseGeocoder = require('./reverseGeocoder');
-const User = require('./user');
+const axios = require('axios').default;
 
-const searchUrl = 'https://nominatim.openstreetmap.org/search/';
-const placesModule = {};
+const endpoint = 'https://atlas.microsoft.com/search/poi/category/json';
 
+// supported categories: https://docs.microsoft.com/en-us/azure/azure-maps/supported-search-categories
+async function getPOIsAround({
+  latitude, longitude, category, radius, limit,
+}) {
+  const response = await axios.get(endpoint, {
+    params: {
+      'subscription-key': process.env.AZURE_MAPS_KEY,
+      'api-version': '1.0',
+      query: category,
+      lat: latitude,
+      lon: longitude,
+      radius: radius * 1000,
+      limit,
+    },
+  });
 
-placesModule.getRestaurantsNearUser = async () => {
-  logger.trace('placesModule - getRestaurantsNearUser - start');
+  return response.data;
+}
 
-  const coordinates = await User.getUserCoordinates();
-  const area = await reverseGeocoder.getAreaFromCoordinates(coordinates);
-  const entries = await request.get(`${searchUrl}restaurant ${area}`, { params: { format: 'jsonv2' } });
-  return entries.data.filter((entry) => entry.type === 'restaurant');
-};
-
-module.exports = placesModule;
-logger.debug('placesModule initialized');
+module.exports = { endpoint, getPOIsAround };

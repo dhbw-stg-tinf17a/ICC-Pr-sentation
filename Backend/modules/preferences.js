@@ -1,5 +1,3 @@
-// const logger = require('pino')({ level: process.env.LOG_LEVEL || 'info' });
-
 const low = require('lowdb');
 const FileSync = require('lowdb/adapters/FileSync');
 

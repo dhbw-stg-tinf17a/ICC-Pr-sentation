@@ -1,109 +1,91 @@
-const logger = require('pino')({ level: process.env.LOG_LEVEL || 'info' });
+const pino = require('pino');
 const preferenceModule = require('./preferences');
 const reverseGeocoder = require('./reverseGeocoder');
-const validationHandler = require('../utilities/validationHandler');
+const validationSchemas = require('../utilities/validation-schemas');
 
-const userModule = {};
+const logger = pino({ level: process.env.LOG_LEVEL || 'info' });
 
-userModule.getUser = async () => {
-  logger.trace('userModule - getUser - called');
+async function getUser() {
   const user = preferenceModule.get('user').value();
   if (user === undefined) throw new Error('There is no user set in the preferenceModule.');
   return user;
-};
+}
 
-userModule.setCoordinates = async (coordinates) => {
-  logger.trace('userModule - setCoordinates with coordinates:');
-  logger.trace(coordinates);
-
-  const validatedCoordinates = await validationHandler.validateCoordinate(coordinates);
+async function setCoordinates(coordinates) {
+  logger.trace(`userModule - setCoordinates with coordinates ${coordinates.lat}, ${coordinates.lon}`);
+  const validatedCoordinates = await validationSchemas.coordinates.validateAsync(coordinates);
   preferenceModule.set('user.preferences.currentLocationCoordinates', validatedCoordinates).write();
   const coordinateArea = await reverseGeocoder.getStreetFromCoordinates(validatedCoordinates);
-  preferenceModule.set('user.preferences.weatherCity', coordinateArea).write();
+  preferenceModule.set('user.preferences.currentLocationAddress', coordinateArea).write();
   return Promise.resolve('Your current coordinates have been set successfully');
-};
+}
 
-userModule.getUserCoordinates = () => new Promise((resolve, reject) => {
-  logger.trace('userModule - getUserCoordinates - start');
-  userModule.getUserPreferences()
-    .then((preferences) => {
-      if (preferences.currentLocationCoordinates === undefined) {
-        logger.trace("We don't have the user's coordinates yet");
-        return reject(new Error("We don't have the user's coordinates yet"));
-      }
-      return resolve(preferences.currentLocationCoordinates);
-    })
-    .catch((error) => reject(error));
-});
-
-userModule.getUserPreferences = async () => {
-  logger.trace('userModule - getUserPreferences - start');
-
-  const user = await userModule.getUser();
+async function getUserPreferences() {
+  const user = await getUser();
   if (user.preferences === undefined) throw new Error('User has no preferences set.');
   return user.preferences;
-};
+}
 
-userModule.getUsersPreparationTime = async () => {
+async function getUserCoordinates() {
+  const preferences = await getUserPreferences();
+  if (preferences.currentLocationCoordinates === undefined) {
+    throw new Error('We do not have the user coordinates yet');
+  }
+  return preferences.currentLocationCoordinates;
+}
+
+async function getUsersPreparationTime() {
   try {
-    const preferences = await userModule.getUserPreferences();
+    const preferences = await getUserPreferences();
     if (preferences.preparationTimeInMinutes === undefined) {
-      logger.trace("User hasn't set their preparationTime yet, using standard time of 1h");
+      logger.trace('User has not set their preparationTime yet, using standard time of 1h');
       return 60;
     }
     return preferences.preparationTimeInMinutes;
   } catch (error) {
     return 60;
   }
-};
+}
 
-userModule.getUsersQuoteCategory = async () => {
+async function getUsersQuoteCategory() {
   const availableCategories = ['inspiration', 'management', 'life', 'sports', 'funny', 'love', 'art', 'students'];
   const defaultCategory = 'inspire';
   try {
-    const preferences = await userModule.getUserPreferences();
+    const preferences = await getUserPreferences();
     if (preferences.quoteCategory === undefined) {
-      logger.error("User hasn't set their favourite quote category yet, using default category");
+      logger.trace('User has not set their favourite quote category, using default category');
       return defaultCategory;
     }
     if (!availableCategories.includes(preferences.quoteCategory)) {
-      logger.error("User's set category is faulty, using default category");
+      logger.error('User has set a faulty quote category, using default category');
       return defaultCategory;
     }
     return preferences.quoteCategory;
   } catch (error) {
-    logger.error('User has no preferences, using standard category');
+    logger.trace('User has no preferences, using default quote category');
     return defaultCategory;
   }
-};
+}
 
-userModule.getFallbackQuote = async () => {
-  logger.trace('userModule - getFallbackQuote - called');
+async function getFallbackQuote() {
   const rateLimitBackups = preferenceModule.get('rateLimitBackups').value();
   if (rateLimitBackups === undefined) throw new Error('There is no ratelimit-backup for this and the ratelimit is reached.');
 
   if (rateLimitBackups && rateLimitBackups.dailyQuote) return rateLimitBackups.dailyQuote;
   throw new Error('There is no ratelimit-backup for this and the ratelimit is reached.');
-};
+}
 
-userModule.setFallbackQuote = async (quoteObject) => {
-  logger.trace('userModule - setFallbackQuote - called');
+async function setFallbackQuote(quoteObject) {
   preferenceModule.set('rateLimitBackups.dailyQuote', quoteObject).write();
+}
+
+module.exports = {
+  getUser,
+  setCoordinates,
+  getUserCoordinates,
+  getUserPreferences,
+  getUsersPreparationTime,
+  getUsersQuoteCategory,
+  getFallbackQuote,
+  setFallbackQuote,
 };
-
-userModule.getUsersCity = () => new Promise((resolve, reject) => {
-  userModule.getUserPreferences()
-    .then((preferences) => {
-      if (preferences.weatherCity === undefined) {
-        logger.trace("User hasn't set their city yet, using Stuttgart as fallback");
-        reject(new Error("User hasn't set their city yet, using Stuttgart as fallback"));
-        return;
-      }
-      resolve(preferences.weatherCity);
-    })
-    .catch((error) => reject(error));
-});
-
-
-module.exports = userModule;
-logger.debug('userModule initialized');

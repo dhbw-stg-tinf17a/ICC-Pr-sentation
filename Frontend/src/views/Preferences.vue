@@ -154,6 +154,7 @@ export default {
       if (localStorage.getItem('soundEnabled') === 'true') SpeechService.speak('Saved successfully.');
     },
 
+    // TODO state is not stored in local storage :(
     async toggleNotifications() {
       if (this.notificationsEnabled) {
         await this.enableNotifications();

@@ -1,6 +1,6 @@
 const axios = require('axios').default;
-const moment = require('moment');
-const stations = require('db-stations');
+const moment = require('moment-timezone');
+const dbStations = require('db-stations');
 
 const options = {
   c: 2, // class
@@ -14,14 +14,14 @@ const options = {
 
 const endpoint = 'https://ps.bahn.de/preissuche/preissuche/psc_service.go';
 
-async function getConnections({ start, destination, datetime }) {
+async function getConnections({ startID, destinationID, datetime }) {
   const date = moment(datetime).tz('Europe/Berlin').format('DD.MM.YY');
   const time = moment(datetime).tz('Europe/Berlin').format('HH:mm');
 
   const params = {
     data: JSON.stringify({
-      s: start,
-      d: destination,
+      s: startID,
+      d: destinationID,
       dt: date,
       t: time,
       ...options,
@@ -31,12 +31,16 @@ async function getConnections({ start, destination, datetime }) {
 
   const response = await axios.get(endpoint, { params });
 
-  if (response.status !== 200) {
-    throw new Error(`Unexpected response from DB prices API: ${response.status} - ${response.statusText}`);
-  }
-
   if (response.data.error) {
-    throw new Error(`Error returned by DB prices API: ${response.data.error.t} - ${response.data.error.tsys}`);
+    if (response.data.error.t === 'Keine Verbindungen gefunden') {
+      return [];
+    }
+
+    let message = response.data.error.t;
+    if (response.data.error.tsys) {
+      message += ` - ${response.data.error.tsys}`;
+    }
+    throw new Error(`DB prices API returned: ${message}`);
   }
 
   const connections = Object.values(response.data.verbindungen).map((connection) => {
@@ -76,20 +80,17 @@ async function getConnections({ start, destination, datetime }) {
       boundToTrain: offer.zb === 'Y',
     };
 
-    if (offer.pky in notes) {
-      connections[Number(id)].notes = notes[offer.pky];
-    }
+    connections[Number(id)].notes = notes[offer.pky];
   }));
-
 
   return connections;
 }
 
-function getStation(name) {
+function getStationByID(id) {
   return new Promise((resolve) => {
-    stations()
+    dbStations()
       .on('data', (station) => {
-        if (station.name === name) {
+        if (station.id === id) {
           resolve(station);
         }
       })
@@ -97,7 +98,23 @@ function getStation(name) {
   });
 }
 
+function getFilteredStations(predicate) {
+  const filteredStations = [];
+
+  return new Promise((resolve) => {
+    dbStations()
+      .on('data', (station) => {
+        if (predicate(station)) {
+          filteredStations.push(station);
+        }
+      })
+      .on('end', () => resolve(filteredStations));
+  });
+}
+
 module.exports = {
   getConnections,
-  getStation,
+  getStationByID,
+  getFilteredStations,
+  endpoint,
 };
