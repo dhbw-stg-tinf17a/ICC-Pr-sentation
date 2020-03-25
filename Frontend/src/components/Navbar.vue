@@ -140,6 +140,11 @@
 
 <script>
 export default {
+  data() {
+    return {
+      soundEnabled: localStorage.getItem('soundEnabled') === 'true',
+    };
+  },
   computed: {
     currentRoute() {
       return this.$route.name;
@@ -148,10 +153,12 @@ export default {
   methods: {
     muteSound() {
       this.soundEnabled = false;
+      localStorage.setItem('soundEnabled', false);
       speechSynthesis.cancel();
     },
     unmuteSound() {
       this.soundEnabled = true;
+      localStorage.setItem('soundEnabled', true);
     },
   },
 };

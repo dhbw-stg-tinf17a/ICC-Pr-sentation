@@ -4,7 +4,7 @@
       id="container"
       class="container has-text-centered"
     >
-      <div class="columns">
+      <div class="columns is-vcentered">
         <div class="column">
           <Chat
             :participants="participants"
@@ -158,7 +158,7 @@ export default {
           participantId: 1,
           timestamp: this.getCurrentTimestamp(),
         });
-        if (this.$store.get('soundEnabled')) {
+        if (localStorage.getItem('soundEnabled') === 'true') {
           SpeechService.speak(`Next Event: ${response.data.data.firstEvent.summary}`
                             + ` at ${response.data.data.firstEvent.start}.`
                             + ` You have to leave at ${response.data.data.timeToLeave}`);
@@ -169,7 +169,7 @@ export default {
           duration: 3000,
           type: 'is-danger',
         });
-        if (this.$store.get('soundEnabled')) SpeechService.speak(`${error.response.data.error}. Sorry!`);
+        if (localStorage.getItem('soundEnabled') === 'true') SpeechService.speak(`${error.response.data.error}. Sorry!`);
         this.submitMessage({
           content: `Error ${error.response.data.status}: ${error.response.data.error}`,
           myself: false,
@@ -228,6 +228,9 @@ export default {
 </script>
 
 <style scoped>
+.hero-body {
+  padding-top: 1rem;
+}
 .quick-chat-container {
   height: 29rem;
   width: 30rem;
