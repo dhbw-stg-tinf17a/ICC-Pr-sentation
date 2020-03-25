@@ -14,7 +14,6 @@ const schedule = require('node-schedule');
 const moment = require('moment-timezone');
 const pino = require('pino');
 const calendar = require('../modules/calendar');
-const quote = require('../modules/quote');
 const vvs = require('../modules/vvs');
 const weather = require('../modules/weather');
 const user = require('../modules/user');
@@ -77,4 +76,6 @@ function init() {
   schedule.scheduleJob({ minute: 0, hour: 0, dayOfWeek: [1, 2, 3, 4, 5] }, run);
 }
 
-module.exports = { init, run };
+module.exports = {
+  getWakeUpTimeForNextFirstEventOfDay, getWeatherForecastAtHome, run, init,
+};
