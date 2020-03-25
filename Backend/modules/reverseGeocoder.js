@@ -1,5 +1,5 @@
 const pino = require('pino');
-const request = require('axios').default;
+const axios = require('axios').default;
 
 const logger = pino({ level: process.env.LOG_LEVEL || 'info' });
 
@@ -15,7 +15,7 @@ async function getStreetFromCoordinates(coordinates) {
   reverseGeocodeParams.lat = coordinates.lat;
   reverseGeocodeParams.lon = coordinates.lon;
 
-  const geocodeResponse = await request.get(endpoint, { params: reverseGeocodeParams });
+  const geocodeResponse = await axios.get(endpoint, { params: reverseGeocodeParams });
 
   const addrObj = geocodeResponse.data.address;
   const houseNumber = addrObj.house_number || '';
@@ -32,7 +32,7 @@ async function getAreaFromCoordinates(coordinates) {
   reverseGeocodeParams.lat = coordinates.lat;
   reverseGeocodeParams.lon = coordinates.lon;
 
-  const geocodeResponse = await request.get(endpoint, { params: reverseGeocodeParams });
+  const geocodeResponse = await axios.get(endpoint, { params: reverseGeocodeParams });
   const addr = geocodeResponse.data.address;
   const area = addr.suburb || addr.city_district || addr.postcode || addr.city || addr.county;
 

@@ -1,5 +1,5 @@
 const pino = require('pino');
-const request = require('axios').default;
+const axios = require('axios').default;
 const moment = require('moment-timezone');
 const user = require('./user');
 const reverseGeocoder = require('./reverseGeocoder');
@@ -57,7 +57,7 @@ async function getLastConnectionStartTime(eventStartTime, eventLocation) {
 
   let vvsResponse;
   try {
-    vvsResponse = await request.get(vvsUrl, { params: parameters });
+    vvsResponse = await axios.get(vvsUrl, { params: parameters });
   } catch (error) {
     throw new Error('There was an Error fetching the trip information from VVS');
   }
