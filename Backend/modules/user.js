@@ -12,7 +12,7 @@ async function getUser() {
 }
 
 async function setCoordinates(coordinates) {
-  logger.trace(`userModule - setCoordinates with coordinates ${coordinates}`);
+  logger.trace(`userModule - setCoordinates with coordinates ${coordinates.lat}, ${coordinates.lon}`);
   const validatedCoordinates = await validationSchemas.coordinates.validateAsync(coordinates);
   preferenceModule.set('user.preferences.currentLocationCoordinates', validatedCoordinates).write();
   const coordinateArea = await reverseGeocoder.getStreetFromCoordinates(validatedCoordinates);
