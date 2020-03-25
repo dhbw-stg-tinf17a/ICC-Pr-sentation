@@ -9,10 +9,9 @@ router.use('/', (req, res, next) => {
   next();
 });
 
-router.use('/user', require('./user'));
 router.use('/quote', require('./quote'));
-router.use('/places', require('./place'));
 
+router.use('/user', require('./user'));
 router.use('/notifications', require('./notifications'));
 router.use('/morning-routine', require('./morning-routine'));
 router.use('/travel-planning', require('./travel-planning'));
