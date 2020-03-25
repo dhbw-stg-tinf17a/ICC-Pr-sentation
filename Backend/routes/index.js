@@ -12,7 +12,6 @@ router.use('/', (req, res, next) => {
 router.use('/user', require('./user'));
 router.use('/quote', require('./quote'));
 router.use('/places', require('./place'));
-router.use('/usecases', require('./usecase'));
 
 router.use('/notifications', require('./notifications'));
 router.use('/morning-routine', require('./morning-routine'));
