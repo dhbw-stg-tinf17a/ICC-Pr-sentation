@@ -1,7 +1,16 @@
-const low = require('lowdb');
-const FileSync = require('lowdb/adapters/FileSync');
+const initDatabase = require('../utilities/init-database');
 
-const adapter = new FileSync('preferenceModule.json');
-const db = low(adapter);
+const database = initDatabase('preferences', {});
 
-module.exports = db;
+// TODO validation
+// TODO explanations
+
+async function get() {
+  return (await database).value();
+}
+
+async function update(values) {
+  await (await database).assign(values).write();
+}
+
+module.exports = { get, update };
