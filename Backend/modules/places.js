@@ -21,4 +21,4 @@ async function getPOIsAround({
   return response.data;
 }
 
-module.exports = { getPOIsAround };
+module.exports = { endpoint, getPOIsAround };
