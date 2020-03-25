@@ -30,7 +30,4 @@ jobs:
     - name: Test backend
       run: npm run test
       working-directory: ./Backend
-      env: 
-        PUSH_KEY_PUBLIC: ${{ secrets.PUSH_KEY_PUBLIC }}
-        PUSH_KEY_PRIVATE: ${{ secrets.PUSH_KEY_PRIVATE }}
-        OPENWEATHER_API_KEY: ${{ secrets.OPENWEATHER_API_KEY }}
+
