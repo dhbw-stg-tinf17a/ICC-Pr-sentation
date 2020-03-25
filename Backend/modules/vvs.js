@@ -1,7 +1,7 @@
 const pino = require('pino');
 const axios = require('axios').default;
 const moment = require('moment-timezone');
-const user = require('./user');
+const preferences = require('./preferences');
 const reverseGeocoder = require('./reverseGeocoder');
 
 const logger = pino({ level: process.env.LOG_LEVEL || 'info' });
@@ -33,15 +33,12 @@ const dateFormat = 'YYYYMMDD';
 const timeFormat = 'HHmm';
 
 async function getUsersCurrentAddressFromUserPreferences() {
-  const preferences = await user.getUserPreferences();
-
-  if (preferences.currentLocationCoordinates
-    && preferences.currentLocationCoordinates.lat
-    && preferences.currentLocationCoordinates.lon) {
-    return reverseGeocoder.getStreetFromCoordinates(preferences.currentLocationCoordinates);
+  const { location } = await preferences.get();
+  if (!location) {
+    throw new Error('Location not set');
   }
 
-  throw new Error('Could not load current address from preferences');
+  return reverseGeocoder.getStreetFromCoordinates({ lat: location.lat, lon: location.longitude });
 }
 
 async function getLastConnectionStartTime(eventStartTime, eventLocation) {
