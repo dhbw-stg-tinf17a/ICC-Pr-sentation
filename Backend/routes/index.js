@@ -9,8 +9,6 @@ router.use('/', (req, res, next) => {
   next();
 });
 
-router.use('/quote', require('./quote'));
-
 router.use('/user', require('./user'));
 router.use('/notifications', require('./notifications'));
 router.use('/morning-routine', require('./morning-routine'));
