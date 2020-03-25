@@ -14,6 +14,5 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 app.use('/api', require('./routes'));
-require('./modules/alarm');
 
 module.exports = app;
