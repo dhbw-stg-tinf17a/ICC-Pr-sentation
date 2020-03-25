@@ -15,7 +15,7 @@
  */
 
 const schedule = require('node-schedule');
-const moment = require('moment');
+const moment = require('moment-timezone');
 const geolib = require('geolib');
 const pino = require('pino');
 const calendar = require('../modules/calendar');
@@ -89,7 +89,7 @@ async function planRandomTrip({ departure, arrival }) {
   return { destination, connectionToDestination, connectionFromDestination };
 }
 
-async function planRandomTripIfWeekendIsFree() {
+async function run() {
   try {
     const {
       saturday, sunday, saturdayFree, sundayFree,
@@ -121,9 +121,9 @@ async function planRandomTripIfWeekendIsFree() {
 
 function init() {
   // every Friday
-  schedule.scheduleJob({ dayOfWeek: 5 }, planRandomTripIfWeekendIsFree);
+  schedule.scheduleJob({ minute: 0, hour: 0, dayOfWeek: 5 }, run);
 }
 
 module.exports = {
-  isWeekendFree, planTrip, planRandomTrip, planRandomTripIfWeekendIsFree, init,
+  isWeekendFree, planTrip, planRandomTrip, run, init,
 };

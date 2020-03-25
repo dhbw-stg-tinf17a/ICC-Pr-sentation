@@ -1,5 +1,5 @@
 const ical = require('node-ical');
-const moment = require('moment');
+const moment = require('moment-timezone');
 const user = require('./user');
 
 async function getCalendarURL() {
