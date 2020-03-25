@@ -13,6 +13,6 @@ app.use(helmet());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-app.use('/api', require('./routes'));
+app.use('/api', require('./api'));
 
 module.exports = app;
