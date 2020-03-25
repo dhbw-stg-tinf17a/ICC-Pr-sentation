@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node ./bin/www | pino-pretty",
-    "start-dev": "nodemon 'node ./bin/www | pino-pretty' --ignore db/",
+    "start-dev": "nodemon 'node ./bin/www | pino-pretty' --ignore database/",
     "lint": "eslint .",
     "test": "jest"
   },

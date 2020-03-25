@@ -3,6 +3,8 @@ const weather = require('../modules/weather');
 
 jest.mock('axios');
 
+process.env.AZURE_MAPS_KEY = 'AZURE_MAPS_KEY';
+
 describe('weather module', () => {
   describe('getForecast', () => {
     it('should return the forecast', async () => {
