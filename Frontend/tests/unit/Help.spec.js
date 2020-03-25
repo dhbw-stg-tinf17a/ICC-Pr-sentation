@@ -1,17 +1,10 @@
 import { createLocalVue, mount } from '@vue/test-utils';
 import Buefy from 'buefy';
 import Help from '@/views/Help.vue';
-import persistentState from 'vue-persistent-state';
 import SpeechService from '@/services/SpeechSynthesis';
 
 const localVue = createLocalVue();
 localVue.use(Buefy);
-localVue.use(persistentState, {
-  soundEnabled: true,
-  microphoneEnabled: true,
-  notificationsEnabled: false,
-  notificationEndpoint: '',
-});
 
 jest.mock('@/services/SpeechSynthesis');
 
