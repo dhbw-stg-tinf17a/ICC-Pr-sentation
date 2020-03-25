@@ -8,7 +8,7 @@ exports[`Navbar.vue Elements are rendered correctly Component renders 1`] = `
   <div class="navbar-menu">
     <div class="navbar-start">
       <div class="navbar-item"></div>
-      <div class="navbar-item"><span data-label="Sound Off" class="is-light is-bottom is-medium b-tooltip" style="transition-delay: 0ms;"></span> <span data-label="Sound On" class="is-light is-bottom is-medium b-tooltip" style="transition-delay: 0ms;"><button id="unmuteButton" class="button is-info"><span class="icon"><i class="fas fa-volume-off fa-2x"></i></span></button></span></div>
+      <div class="navbar-item"><span data-label="Sound Off" class="is-light is-bottom is-medium b-tooltip" style="transition-delay: 0ms;"><button class="button is-info"><span class="icon"><i class="fas fa-volume-up fa-2x"></i></span></button></span> <span data-label="Sound On" class="is-light is-bottom is-medium b-tooltip" style="transition-delay: 0ms;"></span></div>
     </div>
     <div class="navbar-end">
       <div class="navbar-item"><a href="#/dialog?usecase=commute" class="button is-white is-outlined"><span class="icon"><i class="fas fa-train"></i></span> <span>Commute</span></a></div>
