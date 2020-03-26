@@ -6,7 +6,10 @@ const router = express.Router();
 
 router.get('/', wrapAsync(async (req, res) => {
   // TODO explanation
-  res.send(await preferences.get());
+  res.send({
+    ...await preferences.get(),
+    description: preferences.description,
+  });
 }));
 
 router.put('/', wrapAsync(async (req, res) => {
