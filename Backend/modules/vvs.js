@@ -7,26 +7,26 @@ const endpoint = 'http://efastatic.vvs.de/dhbwstuttgart/trias';
 function parseTimedLeg(timedLeg) {
   return {
     mode: 'transport',
-    from: timedLeg.LegBoard.StopPointName.Text,
-    to: timedLeg.LegAlight.StopPointName.Text,
-    departure: timedLeg.LegBoard.ServiceDeparture.TimetabledTime,
-    arrival: timedLeg.LegAlight.ServiceArrival.TimetabledTime,
-    lineName: timedLeg.Service.PublishedLineName.Text,
-    lineDestination: timedLeg.Service.DestinationText.Text,
+    from: timedLeg.LegBoard[0].StopPointName[0].Text[0],
+    to: timedLeg.LegAlight[0].StopPointName[0].Text[0],
+    departure: timedLeg.LegBoard[0].ServiceDeparture[0].TimetabledTime[0],
+    arrival: timedLeg.LegAlight[0].ServiceArrival[0].TimetabledTime[0],
+    lineName: timedLeg.Service[0].PublishedLineName[0].Text[0],
+    lineDestination: timedLeg.Service[0].DestinationText[0].Text[0],
   };
 }
 
 function parseContinuousLeg(continuousLeg) {
   return {
     mode: 'walk',
-    from: continuousLeg.LegStart.LocationName.Text,
-    to: continuousLeg.LegEnd.LocationName.Text,
+    from: continuousLeg.LegStart[0].LocationName[0].Text[0],
+    to: continuousLeg.LegEnd[0].LocationName[0].Text[0],
   };
 }
 
 function parseTripLeg(tripLeg) {
   if (tripLeg.TimedLeg) {
-    return parseTimedLeg(tripLeg.TimedLeg);
+    return parseTimedLeg(tripLeg.TimedLeg[0]);
   }
 
   if (tripLeg.InterchangeLeg) {
@@ -34,19 +34,20 @@ function parseTripLeg(tripLeg) {
   }
 
   if (tripLeg.ContinuousLeg) {
-    return parseContinuousLeg(tripLeg.ContinuousLeg);
+    return parseContinuousLeg(tripLeg.ContinuousLeg[0]);
   }
 
   throw new Error('Unknown leg type');
 }
 
 async function parseXML(xml) {
-  const object = await xml2js.parseStringPromise(xml, { explicitArray: false, ignoreAttrs: true });
-  const tripResult = object.Trias.ServiceDelivery.DeliveryPayload.TripResponse.TripResult;
-  const departure = tripResult.Trip.StartTime;
-  const arrival = tripResult.Trip.EndTime;
+  const object = await xml2js.parseStringPromise(xml, { ignoreAttrs: true });
+  const tripResult = object.Trias.ServiceDelivery[0].DeliveryPayload[0].TripResponse[0]
+    .TripResult[0];
+  const departure = tripResult.Trip[0].StartTime[0];
+  const arrival = tripResult.Trip[0].EndTime[0];
   const duration = moment.duration(moment(arrival).diff(departure));
-  const legs = tripResult.Trip.TripLeg.map(parseTripLeg)
+  const legs = tripResult.Trip[0].TripLeg.map(parseTripLeg)
     .filter((tripLeg) => Object.keys(tripLeg).length > 0);
 
   return {
@@ -60,28 +61,41 @@ async function parseXML(xml) {
   };
 }
 
-async function getLastConnection({ start, destination, arrival }) {
-  const request = `<?xml version="1.0" encoding="UTF-8"?>
+function getLocationRef({ coordinates, address }) {
+  if (coordinates) {
+    return `
+      <LocationRef>
+        <GeoPosition>
+          <Latitude>${coordinates.latitude}</Latitude>
+          <Longitude>${coordinates.longitude}</Longitude>
+        </GeoPosition>
+      </LocationRef>`;
+  }
+
+  return `
+    <LocationRef>
+      <AddressRef>
+        <AddressCode>Address</AddressCode>
+        <AddressName>${address}</AddressName>
+      </AddressRef>
+    </LocationRef>`;
+}
+
+async function getLastConnection({
+  startCoordinates, startAddress, destinationCoordinates, destinationAddress, arrival,
+}) {
+  const request = `
+    <?xml version="1.0" encoding="UTF-8"?>
     <Trias version="1.1" xmlns="http://www.vdv.de/trias" xmlns:siri="http://www.siri.org.uk/siri">
       <ServiceRequest>
         <siri:RequestorRef>${process.env.VVS_KEY}</siri:RequestorRef>
         <RequestPayload>
           <TripRequest>
             <Origin>
-              <LocationRef>
-                <GeoPosition>
-                  <Latitude>${start.latitude}</Latitude>
-                  <Longitude>${start.longitude}</Longitude>
-                </GeoPosition>
-              </LocationRef>
+              ${getLocationRef({ coordinates: startCoordinates, address: startAddress })}
             </Origin>
             <Destination>
-              <LocationRef>
-                <GeoPosition>
-                  <Latitude>${destination.latitude}</Latitude>
-                  <Longitude>${destination.longitude}</Longitude>
-                </GeoPosition>
-              </LocationRef>
+              ${getLocationRef({ coordinates: destinationCoordinates, address: destinationAddress })}
               <DepArrTime>${moment(arrival).toISOString()}</DepArrTime>
             </Destination>
             <Params>
