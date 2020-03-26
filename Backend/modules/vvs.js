@@ -1,82 +1,102 @@
-const pino = require('pino');
 const axios = require('axios').default;
+const xml2js = require('xml2js');
 const moment = require('moment-timezone');
-const preferences = require('./preferences');
-const reverseGeocoder = require('./reverseGeocoder');
 
-const logger = pino({ level: process.env.LOG_LEVEL || 'info' });
-const typeOf = (object) => Object.prototype.toString.call(object).slice(8, -1).toLowerCase();
+const endpoint = 'http://efastatic.vvs.de/dhbwstuttgart/trias';
 
-const vvsUrl = 'http://efastatic.vvs.de/vvs/XML_TRIP_REQUEST2';
-const parameters = {
-  locationServerActive: 1,
-  outputFormat: 'json',
-
-  type_origin: 'any',
-  name_origin: 5000322,
-  anyObjFilter_origin: 0,
-
-  type_destination: 'any',
-  name_destination: 5006056,
-  anyObjFilter_dest: 0,
-
-  ptOptionsActive: 1,
-  useProxFootSearchOrigin: 1,
-  calcNumberOfTrips: 1,
-  changeSpeed: 'slow',
-
-  itdDate: 20200307,
-  itdTime: 1440,
-  itdTripDateTimeDepArr: 'arr',
-};
-const dateFormat = 'YYYYMMDD';
-const timeFormat = 'HHmm';
-
-async function getUsersCurrentAddressFromUserPreferences() {
-  const { location } = await preferences.get();
-  if (!location) {
-    throw new Error('Location not set');
-  }
-
-  return reverseGeocoder.getStreetFromCoordinates({ lat: location.lat, lon: location.longitude });
+function parseTimedLeg(timedLeg) {
+  return {
+    mode: 'transport',
+    from: timedLeg.LegBoard.StopPointName.Text,
+    to: timedLeg.LegAlight.StopPointName.Text,
+    departure: timedLeg.LegBoard.ServiceDeparture.TimetabledTime,
+    arrival: timedLeg.LegAlight.ServiceArrival.TimetabledTime,
+    lineName: timedLeg.Service.PublishedLineName.Text,
+    lineDestination: timedLeg.Service.DestinationText.Text,
+  };
 }
 
-async function getLastConnectionStartTime(eventStartTime, eventLocation) {
-  const address = await getUsersCurrentAddressFromUserPreferences();
-
-  parameters.name_origin = address;
-  parameters.name_destination = eventLocation;
-
-  const event = moment(eventStartTime);
-  parameters.itdDate = event.format(dateFormat);
-  parameters.itdTime = event.format(timeFormat);
-  parameters.itdTripDateTimeDepArr = 'arr';
-
-  let vvsResponse;
-  try {
-    vvsResponse = await axios.get(vvsUrl, { params: parameters });
-  } catch (error) {
-    throw new Error('There was an Error fetching the trip information from VVS');
-  }
-
-  const { trips } = vvsResponse.data;
-
-  let tripInfo;
-  switch (typeOf(trips)) {
-    case 'array':
-      [tripInfo] = trips;
-      break;
-    case 'object':
-      tripInfo = trips.trip;
-      break;
-    default:
-      throw new Error('Error retrieving trip information');
-  }
-
-  logger.trace(`vvsModule - getLastConnectionStartTime: trip duration = ${tripInfo.duration}`);
-  const startDateTimeObject = tripInfo.legs[0].points[0].dateTime;
-  const startTime = moment(`${startDateTimeObject.date} ${startDateTimeObject.time}`, 'DD.MM.YYYY HH:mm');
-  return startTime;
+function parseContinuousLeg(continuousLeg) {
+  return {
+    mode: 'walk',
+    from: continuousLeg.LegStart.LocationName.Text,
+    to: continuousLeg.LegEnd.LocationName.Text,
+  };
 }
 
-module.exports = { getLastConnectionStartTime };
+function parseTripLeg(tripLeg) {
+  if (tripLeg.TimedLeg) {
+    return parseTimedLeg(tripLeg.TimedLeg);
+  }
+
+  if (tripLeg.InterchangeLeg) {
+    return {};
+  }
+
+  if (tripLeg.ContinuousLeg) {
+    return parseContinuousLeg(tripLeg.ContinuousLeg);
+  }
+
+  throw new Error('Unknown leg type');
+}
+
+async function parseXML(xml) {
+  const object = await xml2js.parseStringPromise(xml, { explicitArray: false, ignoreAttrs: true });
+  const tripResult = object.Trias.ServiceDelivery.DeliveryPayload.TripResponse.TripResult;
+  const departure = tripResult.Trip.StartTime;
+  const arrival = tripResult.Trip.EndTime;
+  const duration = moment.duration(moment(arrival).diff(departure));
+  const legs = tripResult.Trip.TripLeg.map(parseTripLeg)
+    .filter((tripLeg) => Object.keys(tripLeg).length > 0);
+
+  return {
+    departure,
+    arrival,
+    duration: {
+      hours: duration.hours(),
+      minutes: duration.minutes(),
+    },
+    legs,
+  };
+}
+
+async function getLastConnection({ start, destination, arrival }) {
+  const request = `<?xml version="1.0" encoding="UTF-8"?>
+    <Trias version="1.1" xmlns="http://www.vdv.de/trias" xmlns:siri="http://www.siri.org.uk/siri">
+      <ServiceRequest>
+        <siri:RequestorRef>${process.env.VVS_KEY}</siri:RequestorRef>
+        <RequestPayload>
+          <TripRequest>
+            <Origin>
+              <LocationRef>
+                <GeoPosition>
+                  <Latitude>${start.latitude}</Latitude>
+                  <Longitude>${start.longitude}</Longitude>
+                </GeoPosition>
+              </LocationRef>
+            </Origin>
+            <Destination>
+              <LocationRef>
+                <GeoPosition>
+                  <Latitude>${destination.latitude}</Latitude>
+                  <Longitude>${destination.longitude}</Longitude>
+                </GeoPosition>
+              </LocationRef>
+              <DepArrTime>${moment(arrival).toISOString()}</DepArrTime>
+            </Destination>
+            <Params>
+              <NumberOfResults>1</NumberOfResults>
+              <WalkSpeed>100</WalkSpeed>
+            </Params>
+          </TripRequest>
+        </RequestPayload>
+      </ServiceRequest>
+    </Trias>`;
+  const response = await axios.post(endpoint, request, {
+    headers: { 'Content-Type': 'text/xml' },
+  });
+
+  return parseXML(response.data);
+}
+
+module.exports = { endpoint, getLastConnection };
