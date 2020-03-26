@@ -34,8 +34,8 @@ process.env.PUSH_KEY_PUBLIC = 'PUSH_KEY_PUBLIC';
 process.env.PUSH_SUBJECT = 'PUSH_SUBJECT';
 
 describe('notifications module', () => {
-  beforeEach(() => {
-    mockDatabase.set('subscriptions', []).write();
+  beforeEach(async () => {
+    await mockDatabase.setState({ subscriptions: [] });
   });
 
   describe('addSubscription', () => {
