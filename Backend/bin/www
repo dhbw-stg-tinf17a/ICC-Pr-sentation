@@ -9,7 +9,7 @@ app.set('port', port);
 
 const server = http.createServer(app);
 
-server.listen(port, () => logger.info('Gunter has woken up'));
+server.listen(port, () => logger.info('Gunter is listening'));
 
 server.on('error', (error) => {
   if (error.syscall !== 'listen') {
