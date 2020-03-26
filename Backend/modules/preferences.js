@@ -11,11 +11,6 @@ const schema = joi.object({
   calendarURL: joi.string().uri({ scheme: ['http', 'https'] }),
 });
 
-const description = {
-  location: 'Home location',
-  calendarURL: 'URL to public ICS calendar feed',
-};
-
 async function get() {
   return (await database).value();
 }
@@ -25,4 +20,4 @@ async function update(values) {
   await (await database).assign(values).write();
 }
 
-module.exports = { get, update, description };
+module.exports = { get, update };
