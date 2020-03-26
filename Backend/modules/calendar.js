@@ -1,15 +1,14 @@
 const ical = require('node-ical');
 const moment = require('moment-timezone');
-const user = require('./user');
+const preferences = require('./preferences');
 
 async function getCalendarURL() {
-  const preferences = await user.getUserPreferences();
-
-  if (preferences.calendarUrl === undefined) {
-    throw new Error('User has not set their calendar url yet.');
+  const { calendarURL } = await preferences.get();
+  if (!calendarURL) {
+    throw new Error('Calendar URL is not set');
   }
 
-  return preferences.calendarUrl;
+  return calendarURL;
 }
 
 async function fetchCalendarEvents() {

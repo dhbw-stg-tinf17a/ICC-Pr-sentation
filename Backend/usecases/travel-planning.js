@@ -24,7 +24,7 @@ const notifications = require('../modules/notifications');
 
 const logger = pino({ level: process.env.LOG_LEVEL || 'info' });
 
-// TODO from user preferences
+// TODO from preferences
 const home = { id: '8098096', latitude: 48.784084, longitude: 9.181635 }; // Stuttgart Hbf
 const minDistance = 100; // km
 const excluded = [

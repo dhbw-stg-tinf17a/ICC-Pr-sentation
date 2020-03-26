@@ -16,19 +16,16 @@ const pino = require('pino');
 const calendar = require('../modules/calendar');
 const vvs = require('../modules/vvs');
 const weather = require('../modules/weather');
-const user = require('../modules/user');
+const preferences = require('../modules/preferences');
 const notifications = require('../modules/notifications');
 
 const logger = pino({ level: process.env.LOG_LEVEL || 'info' });
 
+// TODO from prefereneces
+const preparationTime = 45;
+
 async function getWakeUpTimeForNextFirstEventOfDay() {
-  const [
-    event,
-    preparationTime,
-  ] = await Promise.all([
-    calendar.getNextFirstEventOfDay(),
-    user.getUsersPreparationTime(),
-  ]);
+  const event = await calendar.getNextFirstEventOfDay();
 
   let departure;
   if (event.location) {
@@ -37,7 +34,7 @@ async function getWakeUpTimeForNextFirstEventOfDay() {
     departure = event.start;
   }
 
-  const wakeUpTime = moment(departure).subtract(preparationTime, 'minutes');
+  const wakeUpTime = moment(departure).subtract(preparationTime || 0, 'minutes');
 
   return {
     event, departure, wakeUpTime, preparationTime,
@@ -45,8 +42,8 @@ async function getWakeUpTimeForNextFirstEventOfDay() {
 }
 
 async function getWeatherForecastAtHome() {
-  const { lat, lon } = await user.getUserCoordinates();
-  return weather.getForecast({ latitude: lat, longitude: lon, duration: 1 });
+  const { location } = await preferences.get();
+  return weather.getForecast({ ...location, duration: 1 });
 }
 
 async function run() {

@@ -9,7 +9,7 @@ router.use('/', (req, res, next) => {
   next();
 });
 
-router.use('/user', require('./user'));
+router.use('/preferences', require('./preferences'));
 router.use('/notifications', require('./notifications'));
 router.use('/morning-routine', require('./morning-routine'));
 router.use('/travel-planning', require('./travel-planning'));

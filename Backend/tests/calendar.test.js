@@ -1,21 +1,21 @@
 const ical = require('node-ical');
 const calendar = require('../modules/calendar');
-const user = require('../modules/user');
+const preferences = require('../modules/preferences');
 
 jest.mock('node-ical');
-jest.mock('../modules/user');
+jest.mock('../modules/preferences');
 
 describe('calendar module', () => {
   describe('getNextFirstEventOfDay', () => {
     it('should throw an error if no calendar URL is set', async () => {
-      user.getUserPreferences.mockResolvedValue({});
+      preferences.get.mockResolvedValue({});
 
-      await expect(calendar.getFirstEventOfDay()).rejects.toThrow('User has not set their calendar url yet.');
+      await expect(calendar.getFirstEventOfDay()).rejects.toThrow('Calendar URL is not set');
     });
 
     it('should return the first event of today if it did not start yet', async () => {
-      const calendarUrl = 'https://example.com';
-      user.getUserPreferences.mockResolvedValue({ calendarUrl });
+      const calendarURL = 'https://example.com';
+      preferences.get.mockResolvedValue({ calendarURL });
 
       const now = new Date();
       const inOneMinute = new Date(now.getTime());
@@ -29,12 +29,12 @@ describe('calendar module', () => {
 
       const event = await calendar.getNextFirstEventOfDay();
       expect(event.start).toStrictEqual(inOneMinute);
-      expect(ical.async.fromURL).toHaveBeenLastCalledWith(calendarUrl);
+      expect(ical.async.fromURL).toHaveBeenLastCalledWith(calendarURL);
     });
 
     it('should return the first event of tomorrow if the first event of today already started', async () => {
-      const calendarUrl = 'https://example.com';
-      user.getUserPreferences.mockResolvedValue({ calendarUrl });
+      const calendarURL = 'https://example.com';
+      preferences.get.mockResolvedValue({ calendarURL });
 
       const now = new Date();
       const oneMinuteAgo = new Date(now.getTime());

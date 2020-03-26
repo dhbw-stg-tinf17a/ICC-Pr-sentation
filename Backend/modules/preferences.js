@@ -1,7 +1,23 @@
-const low = require('lowdb');
-const FileSync = require('lowdb/adapters/FileSync');
+const joi = require('@hapi/joi');
+const initDatabase = require('../utilities/init-database');
 
-const adapter = new FileSync('preferenceModule.json');
-const db = low(adapter);
+const database = initDatabase('preferences', {});
 
-module.exports = db;
+const schema = joi.object({
+  location: joi.object({
+    latitude: joi.number().min(-90).max(90).required(),
+    longitude: joi.number().min(-180).max(180).required(),
+  }),
+  calendarURL: joi.string().uri({ scheme: ['http', 'https'] }),
+});
+
+async function get() {
+  return (await database).value();
+}
+
+async function update(values) {
+  joi.assert(values, schema);
+  await (await database).assign(values).write();
+}
+
+module.exports = { get, update };

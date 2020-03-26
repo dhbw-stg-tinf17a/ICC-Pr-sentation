@@ -1,15 +1,16 @@
 const express = require('express');
-const user = require('../modules/user');
 const wrapAsync = require('../utilities/wrap-async');
+const preferences = require('../modules/preferences');
 
 const router = express.Router();
 
 router.get('/', wrapAsync(async (req, res) => {
-  res.send({ data: await user.getUser() });
+  // TODO explanation
+  res.send(await preferences.get());
 }));
 
-router.put('/coordinates', wrapAsync(async (req, res) => {
-  await user.setCoordinates(req.body);
+router.put('/', wrapAsync(async (req, res) => {
+  await preferences.update(req.body);
   res.send({});
 }));
 
