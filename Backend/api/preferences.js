@@ -5,7 +5,6 @@ const preferences = require('../modules/preferences');
 const router = express.Router();
 
 router.get('/', wrapAsync(async (req, res) => {
-  // TODO explanation
   res.send(await preferences.get());
 }));
 

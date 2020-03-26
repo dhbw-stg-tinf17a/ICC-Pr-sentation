@@ -25,19 +25,22 @@ const logger = pino({ level: process.env.LOG_LEVEL || 'info' });
 const preparationTime = 45;
 
 async function getWakeUpTimeForNextFirstEventOfDay() {
-  const event = await calendar.getNextFirstEventOfDay();
+  const [
+    event,
+    { location },
+  ] = await Promise.all([
+    calendar.getNextFirstEventOfDay(),
+    preferences.get(),
+  ]);
 
-  let departure;
-  if (event.location) {
-    departure = await vvs.getLastConnectionStartTime(event.start, event.location);
-  } else {
-    departure = event.start;
-  }
+  const connection = await vvs.getLastConnection({
+    startCoordinates: location, destinationAddress: event.location, arrival: event.start,
+  });
 
-  const wakeUpTime = moment(departure).subtract(preparationTime || 0, 'minutes');
+  const wakeUpTime = moment(connection.departure).subtract(preparationTime || 0, 'minutes');
 
   return {
-    event, departure, wakeUpTime, preparationTime,
+    event, connection, wakeUpTime,
   };
 }
 
@@ -48,13 +51,13 @@ async function getWeatherForecastAtHome() {
 
 async function run() {
   try {
-    const { event, departure, wakeUpTime } = await getWakeUpTimeForNextFirstEventOfDay();
+    const { event, connection, wakeUpTime } = await getWakeUpTimeForNextFirstEventOfDay();
 
     schedule.scheduleJob(wakeUpTime, () => {
       notifications.sendNotifications({
         title: 'Wake up!',
         options: {
-          body: `${event.summary} starts at ${moment(event.start).format('HH:mm')}. You have to leave at ${moment(departure).format('HH:mm')}.`,
+          body: `${event.summary} starts at ${moment(event.start).format('HH:mm')}. You have to leave at ${moment(connection.departure).format('HH:mm')}.`,
           icon: '/favicon.jpg',
           badge: '/badge.png',
           data: {
