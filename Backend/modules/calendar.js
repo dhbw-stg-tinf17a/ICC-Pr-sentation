@@ -44,7 +44,7 @@ async function getFreeSlots({ startDatetime, endDatetime }) {
 
   Object.values(events).forEach((event) => {
     freeSlots = freeSlots.flatMap(({ start, end }) => {
-      if (start >= event.end || end <= event.end) {
+      if (start >= event.end || end <= event.start) {
         // slot and event do not intersect
         return [{ start, end }];
       }
