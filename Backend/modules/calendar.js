@@ -38,7 +38,29 @@ async function getNextFirstEventOfDay() {
 }
 
 async function getFreeSlots({ startDatetime, endDatetime }) {
-  return [];
+  const events = await fetchCalendarEvents();
+
+  let freeSlots = [{ start: new Date(startDatetime), end: new Date(endDatetime) }];
+
+  Object.values(events).forEach((event) => {
+    freeSlots = freeSlots.flatMap(({ start, end }) => {
+      if (start >= event.end || end <= event.end) {
+        // slot and event do not intersect
+        return [{ start, end }];
+      }
+
+      const subSlots = [];
+      if (start < event.start) {
+        subSlots.push({ start, end: event.start });
+      }
+      if (end > event.end) {
+        subSlots.push({ start: event.end, end });
+      }
+      return subSlots;
+    });
+  });
+
+  return freeSlots;
 }
 
 module.exports = { getFirstEventOfDay, getNextFirstEventOfDay, getFreeSlots };
