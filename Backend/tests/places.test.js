@@ -38,7 +38,7 @@ describe('places module', () => {
 
       expect(places.getPOIsAround({
         latitude: 48.78232, longitude: 9.17702, category: 'restaurant', limit: 1, radius: 2,
-      })).resolves.toStrictEqual(response);
+      })).resolves.toStrictEqual(response.results);
 
       // check conversion to API request
       expect(axios.get).toHaveBeenCalledWith(places.endpoint, {
