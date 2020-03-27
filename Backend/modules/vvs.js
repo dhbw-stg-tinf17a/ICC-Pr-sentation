@@ -29,25 +29,30 @@ function parseTripLeg(tripLeg) {
     return parseTimedLeg(tripLeg.TimedLeg[0]);
   }
 
-  if (tripLeg.InterchangeLeg) {
-    return {};
-  }
-
   if (tripLeg.ContinuousLeg) {
     return parseContinuousLeg(tripLeg.ContinuousLeg[0]);
   }
 
-  throw new Error('Unknown leg type');
+  return {};
 }
 
 async function parseXML(xml) {
   const object = await xml2js.parseStringPromise(xml, { ignoreAttrs: true });
-  const tripResult = object.Trias.ServiceDelivery[0].DeliveryPayload[0].TripResponse[0]
-    .TripResult[0];
-  const departure = tripResult.Trip[0].StartTime[0];
-  const arrival = tripResult.Trip[0].EndTime[0];
+  const tripResponse = object.Trias.ServiceDelivery[0].DeliveryPayload[0].TripResponse[0];
+  if (tripResponse.ErrorMessage) {
+    const error = tripResponse.ErrorMessage[0].Text[0].Text[0];
+    if (error === 'TRIP_NOTRIPFOUND') {
+      return undefined;
+    }
+
+    throw new Error(`VVS API returned: ${error}`);
+  }
+
+  const trip = tripResponse.TripResult[0].Trip[0];
+  const departure = trip.StartTime[0];
+  const arrival = trip.EndTime[0];
   const duration = moment.duration(moment(arrival).diff(departure));
-  const legs = tripResult.Trip[0].TripLeg.map(parseTripLeg)
+  const legs = trip.TripLeg.map(parseTripLeg)
     .filter((tripLeg) => Object.keys(tripLeg).length > 0);
 
   return {
@@ -106,9 +111,8 @@ async function getLastConnection({
         </RequestPayload>
       </ServiceRequest>
     </Trias>`;
-  const response = await axios.post(endpoint, request, {
-    headers: { 'Content-Type': 'text/xml' },
-  });
+
+  const response = await axios.post(endpoint, request, { headers: { 'Content-Type': 'text/xml' } });
 
   return parseXML(response.data);
 }

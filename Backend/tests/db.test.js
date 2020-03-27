@@ -52,6 +52,8 @@ describe('db module', () => {
       }];
 
       await expect(db.getConnections({ startID: '8000096', destinationID: '8000105', departure: new Date('2020-03-23T22:00:00Z') })).resolves.toStrictEqual(parsedConnections);
+
+      // check conversion to API request (only in this test case)
       expect(axios.get).toHaveBeenLastCalledWith(db.endpoint, { params: { data: '{"s":"8000096","d":"8000105","dt":"23.03.20","t":"23:00","c":2,"ohneICE":false,"tct":0,"dur":86400,"travellers":[{"bc":0,"typ":"E","alter":30}],"sv":true,"device":"HANDY"}', service: 'pscangebotsuche' } });
     });
 
