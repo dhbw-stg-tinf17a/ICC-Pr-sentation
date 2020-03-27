@@ -37,4 +37,8 @@ async function getNextFirstEventOfDay() {
   return firstEventOfTomorrow;
 }
 
-module.exports = { fetchCalendarEvents, getFirstEventOfDay, getNextFirstEventOfDay };
+async function getFreeSlots({ startDatetime, endDatetime }) {
+  return [];
+}
+
+module.exports = { getNextFirstEventOfDay, getFreeSlots };
