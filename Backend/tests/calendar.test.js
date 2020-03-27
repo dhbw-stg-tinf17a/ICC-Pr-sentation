@@ -29,6 +29,8 @@ describe('calendar module', () => {
 
       const event = await calendar.getNextFirstEventOfDay();
       expect(event.start).toStrictEqual(inOneMinute);
+
+      // check conversion to API request (only in this test case)
       expect(ical.async.fromURL).toHaveBeenLastCalledWith(calendarURL);
     });
 
