@@ -25,8 +25,9 @@ const logger = pino({ level: process.env.LOG_LEVEL || 'info' });
 // TODO from preferences
 const startHour = 11;
 const endHour = 14;
-const minHours = 1;
+const minTime = 60;
 const radius = 1;
+const beforeStart = 30;
 
 async function run() {
   try {
@@ -48,7 +49,7 @@ async function run() {
 
     // find the longest slot and check if it sufficiently long
     const freeSlot = freeSlots.sort((a, b) => (b.end - b.start) - (a.end - a.start))[0];
-    if (moment.duration(moment(freeSlot.end).diff(freeSlot.start)).asHours() < minHours) {
+    if (moment.duration(moment(freeSlot.end).diff(freeSlot.start)).asMinutes() < minTime) {
       return;
     }
 
@@ -61,24 +62,27 @@ async function run() {
 
     const restaurant = restaurants[Math.floor(Math.random() * restaurants.length)];
 
-    // TODO schedule notification before lunch break
-    notifications.sendNotifications({
-      title: 'Recommended restaurant for your lunch break',
-      options: {
-        body: `You have some time to spare during your lunch break, why not go to ${restaurant.poi.name}?`,
-        icon: '/favicon.jpg',
-        badge: '/badge.png',
-        data: {
-          usecase: 'lunch-break',
-          restaurant: {
-            name: restaurant.poi.name,
-            categories: restaurant.poi.categories,
-            address: restaurant.address.freeformAddress,
-            latitude: restaurant.position.lat,
-            longitude: restaurant.position.lon,
+    const notificationTime = moment(freeSlot.start).subtract(beforeStart, 'minutes');
+
+    schedule.scheduleJob(notificationTime, async () => {
+      await notifications.sendNotifications({
+        title: 'Recommended restaurant for your lunch break',
+        options: {
+          body: `You have some time to spare during your lunch break, why not go to ${restaurant.poi.name}?`,
+          icon: '/favicon.jpg',
+          badge: '/badge.png',
+          data: {
+            usecase: 'lunch-break',
+            restaurant: {
+              name: restaurant.poi.name,
+              categories: restaurant.poi.categories,
+              address: restaurant.address.freeformAddress,
+              latitude: restaurant.position.lat,
+              longitude: restaurant.position.lon,
+            },
           },
         },
-      },
+      });
     });
   } catch (error) {
     logger.error(error);
