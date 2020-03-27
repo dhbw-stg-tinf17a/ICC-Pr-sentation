@@ -70,7 +70,13 @@ async function run() {
         badge: '/badge.png',
         data: {
           usecase: 'lunch-break',
-          restaurantID: restaurant.id,
+          restaurant: {
+            name: restaurant.poi.name,
+            categories: restaurant.poi.categories,
+            address: restaurant.address.freeformAddress,
+            latitude: restaurant.position.lat,
+            longitude: restaurant.position.lon,
+          },
         },
       },
     });
