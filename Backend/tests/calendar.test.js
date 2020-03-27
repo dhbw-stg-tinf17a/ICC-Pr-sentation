@@ -52,4 +52,22 @@ describe('calendar module', () => {
       await expect(calendar.getNextFirstEventOfDay()).resolves.toStrictEqual(events[1]);
     });
   });
+
+  describe('getFreeSlots', () => {
+    it('should return all free slots during the given time', async () => {
+      const calendarURL = 'https://example.com';
+      preferences.get.mockResolvedValue({ calendarURL });
+
+      ical.async.fromURL.mockResolvedValue({
+        1: { type: 'VEVENT', start: new Date('2020-03-27T05:00Z'), end: new Date('2020-03-27T07:00Z') },
+        2: { type: 'VEVENT', start: new Date('2020-03-27T12:00Z'), end: new Date('2020-03-27T15:00Z') },
+      });
+
+      await expect(calendar.getFreeSlots({ startDatetime: '2020-03-27T00:00Z', endDatetime: '2020-03-28T00:00Z' })).resolves.toStrictEqual([
+        { start: new Date('2020-03-27T00:00Z'), end: new Date('2020-03-27T05:00Z') },
+        { start: new Date('2020-03-27T07:00Z'), end: new Date('2020-03-27T12:00Z') },
+        { start: new Date('2020-03-27T15:00Z'), end: new Date('2020-03-28T00:00Z') },
+      ]);
+    });
+  });
 });
