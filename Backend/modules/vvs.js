@@ -29,15 +29,11 @@ function parseTripLeg(tripLeg) {
     return parseTimedLeg(tripLeg.TimedLeg[0]);
   }
 
-  if (tripLeg.InterchangeLeg) {
-    return {};
-  }
-
   if (tripLeg.ContinuousLeg) {
     return parseContinuousLeg(tripLeg.ContinuousLeg[0]);
   }
 
-  throw new Error('Unknown leg type');
+  return {};
 }
 
 async function parseXML(xml) {
@@ -117,10 +113,6 @@ async function getLastConnection({
     </Trias>`;
 
   const response = await axios.post(endpoint, request, { headers: { 'Content-Type': 'text/xml' } });
-
-  if (process.env.NODE_ENV !== 'test') {
-    console.log(response.data);
-  }
 
   return parseXML(response.data);
 }
