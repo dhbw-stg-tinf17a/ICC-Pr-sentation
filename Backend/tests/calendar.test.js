@@ -29,6 +29,8 @@ describe('calendar module', () => {
       ical.async.fromURL.mockResolvedValue(events);
 
       await expect(calendar.getNextFirstEventOfDay()).resolves.toStrictEqual(events[2]);
+
+      // check conversion to API request (only in this test case)
       expect(ical.async.fromURL).toHaveBeenLastCalledWith(calendarURL);
     });
 
@@ -48,11 +50,6 @@ describe('calendar module', () => {
       ical.async.fromURL.mockResolvedValue(events);
 
       await expect(calendar.getNextFirstEventOfDay()).resolves.toStrictEqual(events[1]);
-    });
-      });
-
-      const event = await calendar.getNextFirstEventOfDay();
-      expect(event.start).toStrictEqual(inOneDay);
     });
   });
 });

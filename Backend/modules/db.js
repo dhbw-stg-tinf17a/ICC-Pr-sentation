@@ -14,36 +14,8 @@ const options = {
 
 const endpoint = 'https://ps.bahn.de/preissuche/preissuche/psc_service.go';
 
-async function getConnections({ startID, destinationID, datetime }) {
-  const date = moment(datetime).tz('Europe/Berlin').format('DD.MM.YY');
-  const time = moment(datetime).tz('Europe/Berlin').format('HH:mm');
-
-  const params = {
-    data: JSON.stringify({
-      s: startID,
-      d: destinationID,
-      dt: date,
-      t: time,
-      ...options,
-    }),
-    service: 'pscangebotsuche',
-  };
-
-  const response = await axios.get(endpoint, { params });
-
-  if (response.data.error) {
-    if (response.data.error.t === 'Keine Verbindungen gefunden') {
-      return [];
-    }
-
-    let message = response.data.error.t;
-    if (response.data.error.tsys) {
-      message += ` - ${response.data.error.tsys}`;
-    }
-    throw new Error(`DB prices API returned: ${message}`);
-  }
-
-  const connections = Object.values(response.data.verbindungen).map((connection) => {
+async function parseData(data) {
+  const connections = Object.values(data.verbindungen).map((connection) => {
     const legs = connection.trains.map((leg) => ({
       from: leg.sn,
       to: leg.dn,
@@ -68,11 +40,11 @@ async function getConnections({ startID, destinationID, datetime }) {
   });
 
   const notes = {};
-  Object.entries(response.data.peTexte).forEach(([ref, note]) => {
+  Object.entries(data.peTexte).forEach(([ref, note]) => {
     notes[ref] = { name: note.name, text: note.hinweis.replace('<br/>', ' ') };
   });
 
-  Object.values(response.data.angebote).forEach((offer) => offer.sids.forEach((id) => {
+  Object.values(data.angebote).forEach((offer) => offer.sids.forEach((id) => {
     connections[Number(id)] = {
       ...connections[Number(id)],
       reducedPrice: offer.tt === 'SP',
@@ -84,6 +56,36 @@ async function getConnections({ startID, destinationID, datetime }) {
   }));
 
   return connections;
+}
+
+async function getConnections({ startID, destinationID, departure }) {
+  const date = moment(departure).tz('Europe/Berlin').format('DD.MM.YY');
+  const time = moment(departure).tz('Europe/Berlin').format('HH:mm');
+  const params = {
+    data: JSON.stringify({
+      s: startID,
+      d: destinationID,
+      dt: date,
+      t: time,
+      ...options,
+    }),
+    service: 'pscangebotsuche',
+  };
+  const response = await axios.get(endpoint, { params });
+
+  if (response.data.error) {
+    if (response.data.error.t === 'Keine Verbindungen gefunden') {
+      return [];
+    }
+
+    let message = response.data.error.t;
+    if (response.data.error.tsys) {
+      message += ` - ${response.data.error.tsys}`;
+    }
+    throw new Error(`DB prices API returned: ${message}`);
+  }
+
+  return parseData(response.data);
 }
 
 function getStationByID(id) {

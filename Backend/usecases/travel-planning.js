@@ -52,12 +52,12 @@ async function planTrip({ departure, arrival, destinationID }) {
     db.getConnections({
       startID: home.id,
       destinationID,
-      datetime: departure,
+      departure,
     }),
     db.getConnections({
       startID: destinationID,
       destinationID: home.id,
-      datetime: arrival,
+      departure: arrival,
     }),
   ]);
 

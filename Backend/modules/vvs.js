@@ -1,82 +1,120 @@
-const pino = require('pino');
 const axios = require('axios').default;
+const xml2js = require('xml2js');
 const moment = require('moment-timezone');
-const preferences = require('./preferences');
-const reverseGeocoder = require('./reverseGeocoder');
 
-const logger = pino({ level: process.env.LOG_LEVEL || 'info' });
-const typeOf = (object) => Object.prototype.toString.call(object).slice(8, -1).toLowerCase();
+const endpoint = 'http://efastatic.vvs.de/dhbwstuttgart/trias';
 
-const vvsUrl = 'http://efastatic.vvs.de/vvs/XML_TRIP_REQUEST2';
-const parameters = {
-  locationServerActive: 1,
-  outputFormat: 'json',
-
-  type_origin: 'any',
-  name_origin: 5000322,
-  anyObjFilter_origin: 0,
-
-  type_destination: 'any',
-  name_destination: 5006056,
-  anyObjFilter_dest: 0,
-
-  ptOptionsActive: 1,
-  useProxFootSearchOrigin: 1,
-  calcNumberOfTrips: 1,
-  changeSpeed: 'slow',
-
-  itdDate: 20200307,
-  itdTime: 1440,
-  itdTripDateTimeDepArr: 'arr',
-};
-const dateFormat = 'YYYYMMDD';
-const timeFormat = 'HHmm';
-
-async function getUsersCurrentAddressFromUserPreferences() {
-  const { location } = await preferences.get();
-  if (!location) {
-    throw new Error('Location not set');
-  }
-
-  return reverseGeocoder.getStreetFromCoordinates({ lat: location.lat, lon: location.longitude });
+function parseTimedLeg(timedLeg) {
+  return {
+    mode: 'transport',
+    from: timedLeg.LegBoard[0].StopPointName[0].Text[0],
+    to: timedLeg.LegAlight[0].StopPointName[0].Text[0],
+    departure: timedLeg.LegBoard[0].ServiceDeparture[0].TimetabledTime[0],
+    arrival: timedLeg.LegAlight[0].ServiceArrival[0].TimetabledTime[0],
+    lineName: timedLeg.Service[0].PublishedLineName[0].Text[0],
+    lineDestination: timedLeg.Service[0].DestinationText[0].Text[0],
+  };
 }
 
-async function getLastConnectionStartTime(eventStartTime, eventLocation) {
-  const address = await getUsersCurrentAddressFromUserPreferences();
-
-  parameters.name_origin = address;
-  parameters.name_destination = eventLocation;
-
-  const event = moment(eventStartTime);
-  parameters.itdDate = event.format(dateFormat);
-  parameters.itdTime = event.format(timeFormat);
-  parameters.itdTripDateTimeDepArr = 'arr';
-
-  let vvsResponse;
-  try {
-    vvsResponse = await axios.get(vvsUrl, { params: parameters });
-  } catch (error) {
-    throw new Error('There was an Error fetching the trip information from VVS');
-  }
-
-  const { trips } = vvsResponse.data;
-
-  let tripInfo;
-  switch (typeOf(trips)) {
-    case 'array':
-      [tripInfo] = trips;
-      break;
-    case 'object':
-      tripInfo = trips.trip;
-      break;
-    default:
-      throw new Error('Error retrieving trip information');
-  }
-
-  logger.trace(`vvsModule - getLastConnectionStartTime: trip duration = ${tripInfo.duration}`);
-  const startDateTimeObject = tripInfo.legs[0].points[0].dateTime;
-  const startTime = moment(`${startDateTimeObject.date} ${startDateTimeObject.time}`, 'DD.MM.YYYY HH:mm');
-  return startTime;
+function parseContinuousLeg(continuousLeg) {
+  return {
+    mode: 'walk',
+    from: continuousLeg.LegStart[0].LocationName[0].Text[0],
+    to: continuousLeg.LegEnd[0].LocationName[0].Text[0],
+  };
 }
 
-module.exports = { getLastConnectionStartTime };
+function parseTripLeg(tripLeg) {
+  if (tripLeg.TimedLeg) {
+    return parseTimedLeg(tripLeg.TimedLeg[0]);
+  }
+
+  if (tripLeg.ContinuousLeg) {
+    return parseContinuousLeg(tripLeg.ContinuousLeg[0]);
+  }
+
+  return {};
+}
+
+async function parseXML(xml) {
+  const object = await xml2js.parseStringPromise(xml, { ignoreAttrs: true });
+  const tripResponse = object.Trias.ServiceDelivery[0].DeliveryPayload[0].TripResponse[0];
+  if (tripResponse.ErrorMessage) {
+    const error = tripResponse.ErrorMessage[0].Text[0].Text[0];
+    if (error === 'TRIP_NOTRIPFOUND') {
+      return undefined;
+    }
+
+    throw new Error(`VVS API returned: ${error}`);
+  }
+
+  const trip = tripResponse.TripResult[0].Trip[0];
+  const departure = trip.StartTime[0];
+  const arrival = trip.EndTime[0];
+  const duration = moment.duration(moment(arrival).diff(departure));
+  const legs = trip.TripLeg.map(parseTripLeg)
+    .filter((tripLeg) => Object.keys(tripLeg).length > 0);
+
+  return {
+    departure,
+    arrival,
+    duration: {
+      hours: duration.hours(),
+      minutes: duration.minutes(),
+    },
+    legs,
+  };
+}
+
+function getLocationRef({ coordinates, address }) {
+  if (coordinates) {
+    return `
+      <LocationRef>
+        <GeoPosition>
+          <Latitude>${coordinates.latitude}</Latitude>
+          <Longitude>${coordinates.longitude}</Longitude>
+        </GeoPosition>
+      </LocationRef>`;
+  }
+
+  return `
+    <LocationRef>
+      <AddressRef>
+        <AddressCode>Address</AddressCode>
+        <AddressName>${address}</AddressName>
+      </AddressRef>
+    </LocationRef>`;
+}
+
+async function getLastConnection({
+  startCoordinates, startAddress, destinationCoordinates, destinationAddress, arrival,
+}) {
+  const request = `
+    <?xml version="1.0" encoding="UTF-8"?>
+    <Trias version="1.1" xmlns="http://www.vdv.de/trias" xmlns:siri="http://www.siri.org.uk/siri">
+      <ServiceRequest>
+        <siri:RequestorRef>${process.env.VVS_KEY}</siri:RequestorRef>
+        <RequestPayload>
+          <TripRequest>
+            <Origin>
+              ${getLocationRef({ coordinates: startCoordinates, address: startAddress })}
+            </Origin>
+            <Destination>
+              ${getLocationRef({ coordinates: destinationCoordinates, address: destinationAddress })}
+              <DepArrTime>${moment(arrival).toISOString()}</DepArrTime>
+            </Destination>
+            <Params>
+              <NumberOfResults>1</NumberOfResults>
+              <WalkSpeed>100</WalkSpeed>
+            </Params>
+          </TripRequest>
+        </RequestPayload>
+      </ServiceRequest>
+    </Trias>`;
+
+  const response = await axios.post(endpoint, request, { headers: { 'Content-Type': 'text/xml' } });
+
+  return parseXML(response.data);
+}
+
+module.exports = { endpoint, getLastConnection };

@@ -96,6 +96,8 @@ describe('weather module', () => {
 
       expect(weather.getForecast({ latitude: 48.78232, longitude: 9.17702, duration: 1 }))
         .resolves.toStrictEqual(response);
+
+      // check conversion to API request
       expect(axios.get).toHaveBeenLastCalledWith(weather.endpoint, {
         params: {
           'subscription-key': process.env.AZURE_MAPS_KEY, 'api-version': '1.0', query: '48.78232,9.17702', duration: 1,
