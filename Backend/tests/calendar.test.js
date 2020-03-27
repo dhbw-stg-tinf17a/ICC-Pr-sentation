@@ -59,14 +59,13 @@ describe('calendar module', () => {
       preferences.get.mockResolvedValue({ calendarURL });
 
       ical.async.fromURL.mockResolvedValue({
-        1: { type: 'VEVENT', start: new Date('2020-03-27T05:00Z'), end: new Date('2020-03-27T07:00Z') },
+        1: { type: 'VEVENT', start: new Date('2020-03-27T00:00Z'), end: new Date('2020-03-27T07:00Z') },
         2: { type: 'VEVENT', start: new Date('2020-03-27T12:00Z'), end: new Date('2020-03-27T15:00Z') },
+        3: { type: 'VEVENT', start: new Date('2020-03-28T07:00Z'), end: new Date('2020-03-28T09:00Z') },
       });
 
-      await expect(calendar.getFreeSlots({ startDatetime: '2020-03-27T00:00Z', endDatetime: '2020-03-28T00:00Z' })).resolves.toStrictEqual([
-        { start: new Date('2020-03-27T00:00Z'), end: new Date('2020-03-27T05:00Z') },
+      await expect(calendar.getFreeSlots({ startDatetime: '2020-03-27T00:00Z', endDatetime: '2020-03-27T15:00Z' })).resolves.toStrictEqual([
         { start: new Date('2020-03-27T07:00Z'), end: new Date('2020-03-27T12:00Z') },
-        { start: new Date('2020-03-27T15:00Z'), end: new Date('2020-03-28T00:00Z') },
       ]);
     });
   });
