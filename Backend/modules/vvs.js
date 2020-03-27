@@ -101,7 +101,7 @@ async function getLastConnection({
             </Origin>
             <Destination>
               ${getLocationRef({ coordinates: destinationCoordinates, address: destinationAddress })}
-              <DepArrTime>${moment(arrival).toISOString()}</DepArrTime>
+              <DepArrTime>${new Date(arrival).toISOString()}</DepArrTime>
             </Destination>
             <Params>
               <NumberOfResults>1</NumberOfResults>

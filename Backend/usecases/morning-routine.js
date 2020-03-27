@@ -72,7 +72,7 @@ async function run() {
 }
 
 function init() {
-  // every day at 00:00
+  // every day at 00:00, but not on the weekend
   schedule.scheduleJob({ minute: 0, hour: 0, dayOfWeek: [1, 2, 3, 4, 5] }, run);
 }
 

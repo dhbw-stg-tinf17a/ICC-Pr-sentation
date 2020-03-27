@@ -33,8 +33,8 @@ const excluded = [
 
 async function isWeekendFree() {
   const today = moment().startOf('day');
-  const saturday = moment(today).day(today.day() === 6 ? 13 : 6);
-  const sunday = moment(today).day(today.day() === 6 ? 14 : 7);
+  const saturday = today.clone().day(today.day() === 6 ? 13 : 6);
+  const sunday = today.clone().day(today.day() === 6 ? 14 : 7);
 
   const saturdayFree = undefined === await calendar.getFirstEventOfDay(saturday);
   const sundayFree = undefined === await calendar.getFirstEventOfDay(sunday);
