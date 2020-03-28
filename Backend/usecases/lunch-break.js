@@ -59,6 +59,7 @@ async function getRandomRestaurantNear({ latitude, longitude }) {
 async function run() {
   try {
     const freeSlot = await getFreeSlotForLunchbreak();
+    const freeSlotStart = moment(freeSlot.start).tz('Europe/Berlin').format('HH:mm');
 
     const notificationTime = moment(freeSlot.start).subtract(timeBeforeStart, 'minutes');
 
@@ -66,7 +67,7 @@ async function run() {
       await notifications.sendNotifications({
         title: 'Recommended restaurant for your lunch break',
         options: {
-          body: `You have some time to spare during your lunch break at ${moment(freeSlot.start)}, why not try a restaurant?`,
+          body: `You have some time to spare during your lunch break at ${freeSlotStart}, why not try a restaurant?`,
           icon: '/favicon.jpg',
           badge: '/badge.png',
           data: {

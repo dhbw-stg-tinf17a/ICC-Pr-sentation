@@ -53,11 +53,14 @@ async function run() {
   try {
     const { event, connection, wakeUpTime } = await getWakeUpTimeForNextFirstEventOfDay();
 
+    const eventStart = moment(event.start).tz('Europe/Berlin').format('HH:mm');
+    const departure = moment(connection.departure).tz('Europe/Berlin').format('HH:mm');
+
     schedule.scheduleJob(wakeUpTime, async () => {
       await notifications.sendNotifications({
         title: 'Wake up!',
         options: {
-          body: `${event.summary} starts at ${moment(event.start).format('HH:mm')}. You have to leave at ${moment(connection.departure).format('HH:mm')}.`,
+          body: `${event.summary} starts at ${eventStart}. You have to leave at ${departure}.`,
           icon: '/favicon.jpg',
           badge: '/badge.png',
           data: {
