@@ -2,13 +2,15 @@
  * In the morning, most people always repeat the same set of tasks. For this use case, the assistant
  * sends a notification to the user depending on the start of the first event in the calendar, the
  * travel time to the first event (VVS), and the time they need to get ready (preferences) (time of
- * notification = start of the first event - travel time - time to get ready). When the user clicks
- * on the notification, the morning routine use case is opened in the web app. The user can also
- * open the use case at any other time using the web app. After opening the use case, the assistant
- * presents the route to the first event in the calendar (VVS) and the weather forecast for the day.
- * Dialog: If the user confirms that they want to hear the daily quote, a daily quote is also
- * presented to the user.
+ * notification = start of the first event - travel time - time to get ready). The notification is
+ * not sent during the weekend. When the user clicks on the notification, the morning routine use
+ * case is opened in the web app. The user can also open the use case at any other time using the
+ * web app. After opening the use case, the assistant presents the route to the first event in the
+ * calendar (VVS) and the weather forecast for the day. Dialog: If the user confirms that they want
+ * to hear the daily quote, a daily quote is also presented to the user.
  */
+// TODO use preferences
+// TODO timespan of weather forecast?
 
 const schedule = require('node-schedule');
 const moment = require('moment-timezone');

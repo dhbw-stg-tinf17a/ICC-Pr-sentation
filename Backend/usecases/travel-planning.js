@@ -1,18 +1,19 @@
 /* eslint-disable no-await-in-loop */
 /**
  * Travel is very popular, but the search for a destination is often complicated. For this use case,
- * the assistant sends a notification before the weekend, if the user has enough free time during
+ * the assistant sends a notification every Friday at 07:00, if the user does not have events during
  * the weekend (calendar). When the user clicks on the notification, the travel planning use case is
  * opened. The user can also open the use case at any other time using the web app. After opening
- * the use case, the assistant presents an optimal travel destination depending on preferred
- * countries of the user (preferences) and prices for a roundtrip to the destination, starting from
- * the main station (DB). The assistant also presents the weather during the weekend at the
- * destination. Dialog: If the user confirms that they want to travel to the presented destination,
- * the assistant presents the route taken to the main station (VVS) and from there to the
- * destination (DB). Extension 1: If the user wants to travel to a different destination, the
- * assistant presents an alternative travel destination. Extension 2: The travel destination depends
- * on the weather at possible destinations and the weather preferred by the user (preferences).
+ * the use case, the assistant presents a travel destination which the user has not yet visited
+ * (preferences), prices for a roundtrip to the destination (DB) and the weather at the destination
+ * (weather). Dialog: If the user confirms that they want to travel to the presented destination,
+ * the assistant presents the route taken to the main station (VVS) and will not recommend that
+ * destination again.
  */
+// TODO remember travel destination for weekend
+// TODO use preferences
+// TODO store visited destinations
+// TODO weather
 
 const schedule = require('node-schedule');
 const moment = require('moment-timezone');
