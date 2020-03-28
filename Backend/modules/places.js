@@ -18,7 +18,7 @@ async function getPOIsAround({
     },
   });
 
-  return response.data;
+  return response.data.results;
 }
 
 module.exports = { endpoint, getPOIsAround };

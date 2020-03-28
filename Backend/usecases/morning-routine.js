@@ -33,8 +33,8 @@ async function getWakeUpTimeForNextFirstEventOfDay() {
     preferences.get(),
   ]);
 
-  const connection = await vvs.getLastConnection({
-    startCoordinates: location, destinationAddress: event.location, arrival: event.start,
+  const connection = await vvs.getConnection({
+    originCoordinates: location, destinationAddress: event.location, arrival: event.start,
   });
 
   const wakeUpTime = moment(connection.departure).subtract(preparationTime || 0, 'minutes');
@@ -53,11 +53,14 @@ async function run() {
   try {
     const { event, connection, wakeUpTime } = await getWakeUpTimeForNextFirstEventOfDay();
 
-    schedule.scheduleJob(wakeUpTime, () => {
-      notifications.sendNotifications({
+    const eventStart = moment(event.start).tz('Europe/Berlin').format('HH:mm');
+    const departure = moment(connection.departure).tz('Europe/Berlin').format('HH:mm');
+
+    schedule.scheduleJob(wakeUpTime, async () => {
+      await notifications.sendNotifications({
         title: 'Wake up!',
         options: {
-          body: `${event.summary} starts at ${moment(event.start).format('HH:mm')}. You have to leave at ${moment(connection.departure).format('HH:mm')}.`,
+          body: `${event.summary} starts at ${eventStart}. You have to leave at ${departure}.`,
           icon: '/favicon.jpg',
           badge: '/badge.png',
           data: {
@@ -72,7 +75,7 @@ async function run() {
 }
 
 function init() {
-  // every day at 00:00
+  // every day at 00:00, but not on the weekend
   schedule.scheduleJob({ minute: 0, hour: 0, dayOfWeek: [1, 2, 3, 4, 5] }, run);
 }
 

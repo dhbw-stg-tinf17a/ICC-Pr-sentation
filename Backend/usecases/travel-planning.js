@@ -31,16 +31,24 @@ const excluded = [
   { id: '8098096', latitude: 48.784084, longitude: 9.181635 },
 ];
 
-async function isWeekendFree() {
+async function getWeekend() {
   const today = moment().startOf('day');
-  const saturday = moment(today).day(today.day() === 6 ? 13 : 6);
-  const sunday = moment(today).day(today.day() === 6 ? 14 : 7);
+  const saturday = today.clone().day(today.day() === 6 ? 13 : 6);
+  const sunday = today.clone().day(today.day() === 6 ? 14 : 7);
 
-  const saturdayFree = undefined === await calendar.getFirstEventOfDay(saturday);
-  const sundayFree = undefined === await calendar.getFirstEventOfDay(sunday);
+  const [
+    saturdayEvent,
+    sundayEvent,
+  ] = await Promise.all([
+    calendar.getFirstEventOfDay(saturday),
+    calendar.getFirstEventOfDay(sunday),
+  ]);
 
   return {
-    saturday, sunday, saturdayFree, sundayFree,
+    saturday,
+    sunday,
+    saturdayFree: saturdayEvent === undefined,
+    sundayFree: sundayEvent === undefined,
   };
 }
 
@@ -50,12 +58,12 @@ async function planTrip({ departure, arrival, destinationID }) {
     connectionsFromDestination,
   ] = await Promise.all([
     db.getConnections({
-      startID: home.id,
+      originID: home.id,
       destinationID,
       departure,
     }),
     db.getConnections({
-      startID: destinationID,
+      originID: destinationID,
       destinationID: home.id,
       departure: arrival,
     }),
@@ -93,7 +101,7 @@ async function run() {
   try {
     const {
       saturday, sunday, saturdayFree, sundayFree,
-    } = await isWeekendFree();
+    } = await getWeekend();
     if (!saturdayFree || !sundayFree) {
       return;
     }
@@ -125,5 +133,5 @@ function init() {
 }
 
 module.exports = {
-  isWeekendFree, planTrip, planRandomTrip, run, init,
+  run, init,
 };

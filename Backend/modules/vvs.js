@@ -25,11 +25,11 @@ function parseContinuousLeg(continuousLeg) {
 }
 
 function parseTripLeg(tripLeg) {
-  if (tripLeg.TimedLeg) {
+  if (tripLeg.TimedLeg !== undefined) {
     return parseTimedLeg(tripLeg.TimedLeg[0]);
   }
 
-  if (tripLeg.ContinuousLeg) {
+  if (tripLeg.ContinuousLeg !== undefined) {
     return parseContinuousLeg(tripLeg.ContinuousLeg[0]);
   }
 
@@ -39,7 +39,7 @@ function parseTripLeg(tripLeg) {
 async function parseXML(xml) {
   const object = await xml2js.parseStringPromise(xml, { ignoreAttrs: true });
   const tripResponse = object.Trias.ServiceDelivery[0].DeliveryPayload[0].TripResponse[0];
-  if (tripResponse.ErrorMessage) {
+  if (tripResponse.ErrorMessage !== undefined) {
     const error = tripResponse.ErrorMessage[0].Text[0].Text[0];
     if (error === 'TRIP_NOTRIPFOUND') {
       return undefined;
@@ -66,28 +66,23 @@ async function parseXML(xml) {
   };
 }
 
-function getLocationRef({ coordinates, address }) {
-  if (coordinates) {
-    return `
-      <LocationRef>
-        <GeoPosition>
-          <Latitude>${coordinates.latitude}</Latitude>
-          <Longitude>${coordinates.longitude}</Longitude>
-        </GeoPosition>
-      </LocationRef>`;
+function getWaypoint({ coordinates, address, datetime }) {
+  let locationRefContent;
+  if (coordinates !== undefined) {
+    locationRefContent = `<GeoPosition><Latitude>${coordinates.latitude}</Latitude><Longitude>${coordinates.longitude}</Longitude></GeoPosition>`;
+  } else {
+    locationRefContent = `<AddressRef><AddressCode>Address</AddressCode><AddressName>${address}</AddressName></AddressRef>`;
   }
 
-  return `
-    <LocationRef>
-      <AddressRef>
-        <AddressCode>Address</AddressCode>
-        <AddressName>${address}</AddressName>
-      </AddressRef>
-    </LocationRef>`;
+  if (datetime !== undefined) {
+    return `<LocationRef>${locationRefContent}</LocationRef><DepArrTime>${new Date(datetime).toISOString()}</DepArrTime>`;
+  }
+
+  return `<LocationRef>${locationRefContent}</LocationRef>`;
 }
 
-async function getLastConnection({
-  startCoordinates, startAddress, destinationCoordinates, destinationAddress, arrival,
+async function getConnection({
+  originCoordinates, originAddress, destinationCoordinates, destinationAddress, departure, arrival,
 }) {
   const request = `
     <?xml version="1.0" encoding="UTF-8"?>
@@ -97,11 +92,10 @@ async function getLastConnection({
         <RequestPayload>
           <TripRequest>
             <Origin>
-              ${getLocationRef({ coordinates: startCoordinates, address: startAddress })}
+              ${getWaypoint({ coordinates: originCoordinates, address: originAddress, datetime: departure })}
             </Origin>
             <Destination>
-              ${getLocationRef({ coordinates: destinationCoordinates, address: destinationAddress })}
-              <DepArrTime>${moment(arrival).toISOString()}</DepArrTime>
+              ${getWaypoint({ coordinates: destinationCoordinates, address: destinationAddress, datetime: arrival })}
             </Destination>
             <Params>
               <NumberOfResults>1</NumberOfResults>
@@ -117,4 +111,4 @@ async function getLastConnection({
   return parseXML(response.data);
 }
 
-module.exports = { endpoint, getLastConnection };
+module.exports = { endpoint, getConnection };

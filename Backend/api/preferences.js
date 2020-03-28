@@ -8,7 +8,7 @@ router.get('/', wrapAsync(async (req, res) => {
   res.send(await preferences.get());
 }));
 
-router.put('/', wrapAsync(async (req, res) => {
+router.patch('/', wrapAsync(async (req, res) => {
   await preferences.update(req.body);
   res.send({});
 }));
