@@ -13,7 +13,7 @@ async function getForecast({ latitude, longitude, duration }) {
     },
   });
 
-  return response.data;
+  return response.data.forecasts;
 }
 
 module.exports = { endpoint, getForecast };

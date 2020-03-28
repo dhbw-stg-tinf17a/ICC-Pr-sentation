@@ -9,9 +9,6 @@ describe('weather module', () => {
   describe('getForecast', () => {
     it('should return the forecast', async () => {
       const response = {
-        summary: {
-          startDate: '2020-03-28T18:00:00+00:00', endDate: '2020-03-29T00:00:00+00:00', severity: 5, phrase: 'Expect showers Saturday evening', category: 'rain',
-        },
         forecasts: [
           {
             date: '2020-03-24T06:00:00+00:00',
@@ -95,7 +92,7 @@ describe('weather module', () => {
       });
 
       expect(weather.getForecast({ latitude: 48.78232, longitude: 9.17702, duration: 1 }))
-        .resolves.toStrictEqual(response);
+        .resolves.toStrictEqual(response.forecasts);
 
       // check conversion to API request
       expect(axios.get).toHaveBeenLastCalledWith(weather.endpoint, {
