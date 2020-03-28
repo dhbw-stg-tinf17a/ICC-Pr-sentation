@@ -21,8 +21,8 @@ const notifications = require('../modules/notifications');
 
 const logger = pino({ level: process.env.LOG_LEVEL || 'info' });
 
-// TODO from prefereneces
 const preparationTime = 45;
+const timezone = 'Europe/Berlin';
 
 async function getWakeUpTimeForNextFirstEventOfDay() {
   const [
@@ -76,9 +76,11 @@ async function run() {
 
 function init() {
   // every day at 00:00, but not on the weekend
-  schedule.scheduleJob({ minute: 0, hour: 0, dayOfWeek: [1, 2, 3, 4, 5] }, run);
+  schedule.scheduleJob({
+    minute: 0, hour: 0, dayOfWeek: [1, 2, 3, 4, 5], tz: timezone,
+  }, run);
 }
 
 module.exports = {
-  getWakeUpTimeForNextFirstEventOfDay, getWeatherForecastAtHome, run, init,
+  init,
 };

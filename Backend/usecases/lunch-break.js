@@ -28,6 +28,7 @@ const endHour = 14;
 const minTime = 60;
 const radius = 1;
 const timeBeforeStart = 30;
+const timezone = 'Europe/Berlin';
 
 async function getFreeSlotForLunchbreak() {
   const start = new Date();
@@ -87,7 +88,9 @@ async function run() {
 
 function init() {
   // every day at 00:00, but not on the weekend
-  schedule.scheduleJob({ minute: 0, hour: 0, dayOfWeek: [1, 2, 3, 4, 5] }, run);
+  schedule.scheduleJob({
+    minute: 0, hour: 0, dayOfWeek: [1, 2, 3, 4, 5], tz: timezone,
+  }, run);
 }
 
 module.exports = {

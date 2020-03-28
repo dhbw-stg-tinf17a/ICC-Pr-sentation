@@ -23,13 +23,12 @@ const db = require('../modules/db');
 const notifications = require('../modules/notifications');
 
 const logger = pino({ level: process.env.LOG_LEVEL || 'info' });
-
-// TODO from preferences
 const home = { id: '8098096', latitude: 48.784084, longitude: 9.181635 }; // Stuttgart Hbf
 const minDistance = 100; // km
 const excluded = [
   { id: '8098096', latitude: 48.784084, longitude: 9.181635 },
 ];
+const timezone = 'Europe/Berlin';
 
 async function getWeekend() {
   const today = moment().startOf('day');
@@ -128,10 +127,12 @@ async function run() {
 }
 
 function init() {
-  // every Friday
-  schedule.scheduleJob({ minute: 0, hour: 0, dayOfWeek: 5 }, run);
+  // every Friday at 07:00
+  schedule.scheduleJob({
+    minute: 0, hour: 7, dayOfWeek: 5, tz: timezone,
+  }, run);
 }
 
 module.exports = {
-  run, init,
+  init,
 };
