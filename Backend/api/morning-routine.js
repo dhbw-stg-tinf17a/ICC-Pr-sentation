@@ -19,7 +19,7 @@ router.get('/', wrapAsync(async (req, res) => {
   });
 }));
 
-router.get('/quote-of-the-day', wrapAsync(async (req, res) => {
+router.get('/confirm', wrapAsync(async (req, res) => {
   const quoteOfTheDay = await quote.getPreferredQuoteOfTheDay();
   res.send(quoteOfTheDay);
 }));
