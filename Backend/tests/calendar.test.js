@@ -17,11 +17,6 @@ describe('calendar module', () => {
       const calendarURL = 'https://example.com';
       preferences.get.mockResolvedValue({ calendarURL });
 
-      const now = new Date();
-      const inOneMinute = new Date(now.getTime());
-      inOneMinute.setUTCMinutes(inOneMinute.getUTCMinutes() + 1);
-      const inTwoMinutes = new Date(now.getTime());
-      inTwoMinutes.setUTCMinutes(inTwoMinutes.getUTCMinutes() + 1);
       const events = {
         1: { type: 'VEVENT', start: new Date('2020-03-28T08:00:00Z') },
         2: { type: 'VEVENT', start: new Date('2020-03-28T07:00:00Z') },
