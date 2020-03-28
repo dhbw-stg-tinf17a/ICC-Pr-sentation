@@ -10,8 +10,8 @@ router.get('/', wrapAsync(async (req, res) => {
     { event, connection, wakeUpTime },
     weatherForecast,
   ] = await Promise.all([
-    morningRoutine.getWakeUpTimeForNextFirstEventOfDay(),
-    morningRoutine.getWeatherForecastAtHome(),
+    morningRoutine.getWakeUpTimeForFirstEventOfToday(),
+    morningRoutine.getWeatherForecast(),
   ]);
 
   res.send({

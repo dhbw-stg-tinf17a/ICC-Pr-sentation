@@ -44,6 +44,10 @@ async function getWakeUpTimeForFirstEventOfToday() {
     return {};
   }
 
+  if (location === undefined) {
+
+  }
+
   const connection = await vvs.getConnection({
     originCoordinates: location, destinationAddress: event.location, arrival: event.start,
   });
@@ -54,7 +58,7 @@ async function getWakeUpTimeForFirstEventOfToday() {
   };
 }
 
-async function getWeatherForecastAtHome() {
+async function getWeatherForecast() {
   const { location } = await preferences.get();
   return weather.getForecast({ ...location, duration: 1 });
 }
@@ -92,5 +96,5 @@ function init() {
 }
 
 module.exports = {
-  init,
+  init, getWakeUpTimeForFirstEventOfToday, getWeatherForecast,
 };
