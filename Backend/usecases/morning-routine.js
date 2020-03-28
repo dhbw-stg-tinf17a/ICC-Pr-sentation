@@ -26,20 +26,27 @@ const logger = pino({ level: process.env.LOG_LEVEL || 'info' });
 const preparationTime = 45;
 const timezone = 'Europe/Berlin';
 
-async function getWakeUpTimeForNextFirstEventOfDay() {
+async function getWakeUpTimeForFirstEventOfToday() {
+  const start = moment.tz(timezone).startOf('day');
+  const end = start.clone().endOf('day');
+
   const [
     event,
     { location },
   ] = await Promise.all([
-    calendar.getNextFirstEventOfDay(),
+    calendar.getFirstEventStartingBetween({ start, end }),
     preferences.get(),
   ]);
+
+  if (event === undefined) {
+    // no event today
+    return {};
+  }
 
   const connection = await vvs.getConnection({
     originCoordinates: location, destinationAddress: event.location, arrival: event.start,
   });
-
-  const wakeUpTime = moment(connection.departure).subtract(preparationTime || 0, 'minutes');
+  const wakeUpTime = moment(connection.departure).subtract(preparationTime, 'minutes');
 
   return {
     event, connection, wakeUpTime,
@@ -53,10 +60,10 @@ async function getWeatherForecastAtHome() {
 
 async function run() {
   try {
-    const { event, connection, wakeUpTime } = await getWakeUpTimeForNextFirstEventOfDay();
+    const { event, connection, wakeUpTime } = await getWakeUpTimeForFirstEventOfToday();
 
-    const eventStart = moment(event.start).tz('Europe/Berlin').format('HH:mm');
-    const departure = moment(connection.departure).tz('Europe/Berlin').format('HH:mm');
+    const eventStart = moment(event.start).tz(timezone).format('HH:mm');
+    const departure = moment(connection.departure).tz(timezone).format('HH:mm');
 
     schedule.scheduleJob(wakeUpTime, async () => {
       await notifications.sendNotifications({
