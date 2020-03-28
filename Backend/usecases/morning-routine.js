@@ -9,6 +9,7 @@
  * calendar (VVS) and the weather forecast for the day. Dialog: If the user confirms that they want
  * to hear the daily quote, a daily quote is also presented to the user.
  */
+
 // TODO use preferences
 // TODO timespan of weather forecast?
 
@@ -23,7 +24,7 @@ const notifications = require('../modules/notifications');
 
 const logger = pino({ level: process.env.LOG_LEVEL || 'info' });
 
-const preparationTime = 45;
+const minutesForPreparation = 45;
 const timezone = 'Europe/Berlin';
 
 async function getWakeUpTimeForFirstEventOfToday() {
@@ -46,7 +47,7 @@ async function getWakeUpTimeForFirstEventOfToday() {
   const connection = await vvs.getConnection({
     originCoordinates: location, destinationAddress: event.location, arrival: event.start,
   });
-  const wakeUpTime = moment(connection.departure).subtract(preparationTime, 'minutes');
+  const wakeUpTime = moment(connection.departure).subtract(minutesForPreparation, 'minutes');
 
   return {
     event, connection, wakeUpTime,

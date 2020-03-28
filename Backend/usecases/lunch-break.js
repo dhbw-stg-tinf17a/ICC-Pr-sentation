@@ -24,17 +24,17 @@ const notifications = require('../modules/notifications');
 const logger = pino({ level: process.env.LOG_LEVEL || 'info' });
 
 const startHour = 11;
+const startMinute = 0;
 const endHour = 14;
-const minTime = 60;
-const radius = 1;
-const timeBeforeStart = 30;
+const endMinute = 0;
+const requiredMinutes = 60;
+const maxDistance = 1; // km
+const minutesBeforeStart = 30;
 const timezone = 'Europe/Berlin';
 
 async function getFreeSlotForLunchbreak() {
-  const start = new Date();
-  start.setHours(startHour, 0, 0, 0);
-  const end = new Date(start.getTime());
-  end.setHours(endHour, 0, 0, 0);
+  const start = moment.tz(timezone).hour(startHour).minute(startMinute).startOf('minute');
+  const end = start.clone().hour(endHour).minute(endMinute);
 
   const freeSlots = await calendar.getFreeSlotsBetween({ start, end });
   if (freeSlots.length === 0) {
@@ -43,7 +43,7 @@ async function getFreeSlotForLunchbreak() {
 
   // find the longest slot and check if it sufficiently long
   const freeSlot = freeSlots.sort((a, b) => (b.end - b.start) - (a.end - a.start))[0];
-  if (moment.duration(moment(freeSlot.end).diff(freeSlot.start)).asMinutes() < minTime) {
+  if (moment.duration(moment(freeSlot.end).diff(freeSlot.start)).asMinutes() < requiredMinutes) {
     return undefined;
   }
 
@@ -52,7 +52,7 @@ async function getFreeSlotForLunchbreak() {
 
 async function getRandomRestaurantNear({ latitude, longitude }) {
   const restaurants = await places.getPOIsAround({
-    latitude, longitude, category: 'restaurant', limit: 100, radius,
+    latitude, longitude, category: 'restaurant', limit: 100, radius: maxDistance,
   });
   if (restaurants.length === 0) {
     return undefined;
@@ -64,9 +64,8 @@ async function getRandomRestaurantNear({ latitude, longitude }) {
 async function run() {
   try {
     const freeSlot = await getFreeSlotForLunchbreak();
-    const freeSlotStart = moment(freeSlot.start).tz('Europe/Berlin').format('HH:mm');
-
-    const notificationTime = moment(freeSlot.start).subtract(timeBeforeStart, 'minutes');
+    const freeSlotStart = moment(freeSlot.start).tz(timezone).format('HH:mm');
+    const notificationTime = moment(freeSlot.start).subtract(minutesBeforeStart, 'minutes');
 
     schedule.scheduleJob(notificationTime, async () => {
       await notifications.sendNotifications({

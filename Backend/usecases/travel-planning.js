@@ -10,6 +10,7 @@
  * the assistant presents the route taken to the main station (VVS) and will not recommend that
  * destination again.
  */
+
 // TODO remember travel destination for weekend
 // TODO use preferences
 // TODO store visited destinations
@@ -24,6 +25,7 @@ const db = require('../modules/db');
 const notifications = require('../modules/notifications');
 
 const logger = pino({ level: process.env.LOG_LEVEL || 'info' });
+
 const home = { id: '8098096', latitude: 48.784084, longitude: 9.181635 }; // Stuttgart Hbf
 const minDistance = 100; // km
 const excluded = [
@@ -32,21 +34,23 @@ const excluded = [
 const timezone = 'Europe/Berlin';
 
 async function getWeekend() {
-  const today = moment().startOf('day');
-  const saturday = today.clone().day(today.day() === 6 ? 13 : 6);
-  const sunday = today.clone().day(today.day() === 6 ? 14 : 7);
+  const today = moment.tz(timezone).startOf('day');
+  const saturdayStart = today.clone().day(today.day() === 6 ? 13 : 6);
+  const saturdayEnd = saturdayStart.clone().endOf('day');
+  const sundayStart = today.clone().day(today.day() === 6 ? 14 : 7);
+  const sundayEnd = sundayStart.clone().endOf('day');
 
   const [
     saturdayEvent,
     sundayEvent,
   ] = await Promise.all([
-    calendar.getFirstEventOfDay(saturday),
-    calendar.getFirstEventOfDay(sunday),
+    calendar.getFirstEventStartingBetween({ start: saturdayStart, end: saturdayEnd }),
+    calendar.getFirstEventStartingBetween({ start: sundayStart, end: sundayEnd }),
   ]);
 
   return {
-    saturday,
-    sunday,
+    saturday: saturdayStart,
+    sunday: sundayStart,
     saturdayFree: saturdayEvent === undefined,
     sundayFree: sundayEvent === undefined,
   };
