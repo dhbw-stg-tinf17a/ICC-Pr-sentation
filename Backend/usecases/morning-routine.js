@@ -44,13 +44,25 @@ async function getWakeUpTimeForFirstEventOfToday() {
     return {};
   }
 
-  if (location === undefined) {
+  if (!event.location) {
+    // event has no location set
+    const wakeUpTime = moment(event.start).subtract(minutesForPreparation, 'minutes');
+    return { event, wakeUpTime };
+  }
 
+  if (location === undefined) {
+    throw new Error('Home location is not set');
   }
 
   const connection = await vvs.getConnection({
     originCoordinates: location, destinationAddress: event.location, arrival: event.start,
   });
+  if (connection === undefined) {
+    // no connection found
+    const wakeUpTime = moment(event.start).subtract(minutesForPreparation, 'minutes');
+    return { event, wakeUpTime };
+  }
+
   const wakeUpTime = moment(connection.departure).subtract(minutesForPreparation, 'minutes');
 
   return {
