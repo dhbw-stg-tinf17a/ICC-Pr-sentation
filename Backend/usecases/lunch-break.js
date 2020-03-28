@@ -2,21 +2,17 @@
  * Many people want to explore different alternatives during their lunch breaks, but the search for
  * restaurants is a time-consuming task. For this use case, the assistant sends a notification
  * shortly before the lunch break. This depends on the calendar and on the preferred lunch break
- * times (preferences). When the user clicks on the notification, the lunch break use case is
+ * time (preferences). When the user clicks on the notification, the lunch break use case is
  * opened. The user can also open the use case at any other time using the web app. After opening
  * the use case, the assistant presents a restaurant to go to during the lunch break (maps).
  * Dialog: If the user wants to go to that restaurant during the lunch break, the assistant presents
- * the route taken to the destination (VVS). Extension 1: If the user wants to go to a different
- * restaurant, the assistant presents an alternative restaurant. Extension 2: The user can rate
- * different restaurants, to which the assistant applies learning techniques for selecting new
- * restaurants.
+ * the route taken to the destination (VVS).
  */
 
 const schedule = require('node-schedule');
 const pino = require('pino');
 const moment = require('moment-timezone');
 const calendar = require('../modules/calendar');
-const preferences = require('../modules/preferences');
 const places = require('../modules/places');
 const notifications = require('../modules/notifications');
 
@@ -29,38 +25,40 @@ const minTime = 60;
 const radius = 1;
 const timeBeforeStart = 30;
 
+async function getFreeSlotForLunchbreak() {
+  const start = new Date();
+  start.setHours(startHour, 0, 0, 0);
+  const end = new Date(start.getTime());
+  end.setHours(endHour, 0, 0, 0);
+
+  const freeSlots = await calendar.getFreeSlots({ start, end });
+  if (freeSlots.length === 0) {
+    return undefined;
+  }
+
+  // find the longest slot and check if it sufficiently long
+  const freeSlot = freeSlots.sort((a, b) => (b.end - b.start) - (a.end - a.start))[0];
+  if (moment.duration(moment(freeSlot.end).diff(freeSlot.start)).asMinutes() < minTime) {
+    return undefined;
+  }
+
+  return freeSlot;
+}
+
+async function getRandomRestaurantNear({ latitude, longitude }) {
+  const restaurants = await places.getPOIsAround({
+    latitude, longitude, category: 'restaurant', limit: 100, radius,
+  });
+  if (restaurants.length === 0) {
+    return undefined;
+  }
+
+  return restaurants[Math.floor(Math.random() * restaurants.length)];
+}
+
 async function run() {
   try {
-    const start = new Date();
-    start.setHours(startHour, 0, 0, 0);
-    const end = new Date(start.getTime());
-    end.setHours(endHour, 0, 0, 0);
-
-    const [
-      freeSlots,
-      { location },
-    ] = await Promise.all([
-      calendar.getFreeSlots({ start, end }),
-      preferences.get(),
-    ]);
-    if (freeSlots.length === 0) {
-      return;
-    }
-
-    // find the longest slot and check if it sufficiently long
-    const freeSlot = freeSlots.sort((a, b) => (b.end - b.start) - (a.end - a.start))[0];
-    if (moment.duration(moment(freeSlot.end).diff(freeSlot.start)).asMinutes() < minTime) {
-      return;
-    }
-
-    const restaurants = await places.getPOIsAround({
-      ...location, category: 'restaurant', limit: 100, radius,
-    });
-    if (restaurants.length === 0) {
-      return;
-    }
-
-    const restaurant = restaurants[Math.floor(Math.random() * restaurants.length)];
+    const freeSlot = await getFreeSlotForLunchbreak();
 
     const notificationTime = moment(freeSlot.start).subtract(timeBeforeStart, 'minutes');
 
@@ -68,18 +66,11 @@ async function run() {
       await notifications.sendNotifications({
         title: 'Recommended restaurant for your lunch break',
         options: {
-          body: `You have some time to spare during your lunch break, why not go to ${restaurant.poi.name}?`,
+          body: `You have some time to spare during your lunch break at ${moment(freeSlot.start)}, why not try a restaurant?`,
           icon: '/favicon.jpg',
           badge: '/badge.png',
           data: {
             usecase: 'lunch-break',
-            restaurant: {
-              name: restaurant.poi.name,
-              categories: restaurant.poi.categories,
-              address: restaurant.address.freeformAddress,
-              latitude: restaurant.position.lat,
-              longitude: restaurant.position.lon,
-            },
           },
         },
       });
@@ -95,5 +86,5 @@ function init() {
 }
 
 module.exports = {
-  init, run,
+  init, run, getFreeSlotForLunchbreak, getRandomRestaurantNear,
 };
