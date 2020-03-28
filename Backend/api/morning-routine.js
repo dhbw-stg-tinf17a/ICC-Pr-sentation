@@ -7,7 +7,7 @@ const router = express.Router();
 
 router.get('/', wrapAsync(async (req, res) => {
   const [
-    { event, departure, wakeUpTime },
+    { event, connection, wakeUpTime },
     weatherForecast,
   ] = await Promise.all([
     morningRoutine.getWakeUpTimeForNextFirstEventOfDay(),
@@ -15,7 +15,7 @@ router.get('/', wrapAsync(async (req, res) => {
   ]);
 
   res.send({
-    event, departure, wakeUpTime, weatherForecast,
+    event, connection, wakeUpTime, weatherForecast,
   });
 }));
 
