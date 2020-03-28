@@ -35,7 +35,7 @@ async function getFreeSlotForLunchbreak() {
   const end = new Date(start.getTime());
   end.setHours(endHour, 0, 0, 0);
 
-  const freeSlots = await calendar.getFreeSlots({ start, end });
+  const freeSlots = await calendar.getFreeSlotsBetween({ start, end });
   if (freeSlots.length === 0) {
     return undefined;
   }
