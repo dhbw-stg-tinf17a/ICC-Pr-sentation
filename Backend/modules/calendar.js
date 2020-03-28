@@ -25,18 +25,6 @@ async function getFirstEventOfDay(date) {
     .find(() => true);
 }
 
-async function getNextFirstEventOfDay() {
-  const day = new Date();
-  const firstEventOfToday = await getFirstEventOfDay(day);
-  if (firstEventOfToday !== undefined && firstEventOfToday.start >= day) {
-    return firstEventOfToday;
-  }
-
-  day.setUTCDate(day.getUTCDate() + 1);
-  const firstEventOfTomorrow = await getFirstEventOfDay(day);
-  return firstEventOfTomorrow;
-}
-
 async function getFreeSlots({ start, end }) {
   const events = await fetchCalendarEvents();
 
@@ -63,4 +51,4 @@ async function getFreeSlots({ start, end }) {
   return freeSlots;
 }
 
-module.exports = { getFirstEventOfDay, getNextFirstEventOfDay, getFreeSlots };
+module.exports = { getFirstEventOfDay, getFreeSlots };
