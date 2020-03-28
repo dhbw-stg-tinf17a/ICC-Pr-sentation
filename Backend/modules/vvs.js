@@ -25,11 +25,11 @@ function parseContinuousLeg(continuousLeg) {
 }
 
 function parseTripLeg(tripLeg) {
-  if (tripLeg.TimedLeg) {
+  if (tripLeg.TimedLeg !== undefined) {
     return parseTimedLeg(tripLeg.TimedLeg[0]);
   }
 
-  if (tripLeg.ContinuousLeg) {
+  if (tripLeg.ContinuousLeg !== undefined) {
     return parseContinuousLeg(tripLeg.ContinuousLeg[0]);
   }
 
@@ -39,7 +39,7 @@ function parseTripLeg(tripLeg) {
 async function parseXML(xml) {
   const object = await xml2js.parseStringPromise(xml, { ignoreAttrs: true });
   const tripResponse = object.Trias.ServiceDelivery[0].DeliveryPayload[0].TripResponse[0];
-  if (tripResponse.ErrorMessage) {
+  if (tripResponse.ErrorMessage !== undefined) {
     const error = tripResponse.ErrorMessage[0].Text[0].Text[0];
     if (error === 'TRIP_NOTRIPFOUND') {
       return undefined;
@@ -67,7 +67,7 @@ async function parseXML(xml) {
 }
 
 function getLocationRef({ coordinates, address }) {
-  if (coordinates) {
+  if (coordinates !== undefined) {
     return `
       <LocationRef>
         <GeoPosition>

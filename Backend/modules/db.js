@@ -73,13 +73,13 @@ async function getConnections({ startID, destinationID, departure }) {
   };
   const response = await axios.get(endpoint, { params });
 
-  if (response.data.error) {
+  if (response.data.error !== undefined) {
     if (response.data.error.t === 'Keine Verbindungen gefunden') {
       return [];
     }
 
     let message = response.data.error.t;
-    if (response.data.error.tsys) {
+    if (response.data.error.tsys !== undefined) {
       message += ` - ${response.data.error.tsys}`;
     }
     throw new Error(`DB prices API returned: ${message}`);

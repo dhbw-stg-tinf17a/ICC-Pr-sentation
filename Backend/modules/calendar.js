@@ -4,7 +4,7 @@ const preferences = require('./preferences');
 
 async function getCalendarURL() {
   const { calendarURL } = await preferences.get();
-  if (!calendarURL) {
+  if (calendarURL === undefined) {
     throw new Error('Calendar URL is not set');
   }
 
@@ -28,7 +28,7 @@ async function getFirstEventOfDay(date) {
 async function getNextFirstEventOfDay() {
   const day = new Date();
   const firstEventOfToday = await getFirstEventOfDay(day);
-  if (firstEventOfToday && firstEventOfToday.start >= day) {
+  if (firstEventOfToday !== undefined && firstEventOfToday.start >= day) {
     return firstEventOfToday;
   }
 

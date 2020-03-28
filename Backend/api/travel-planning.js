@@ -15,7 +15,7 @@ router.get('/', wrapAsync(async (req, res) => {
   let destination;
   let connectionToDestination;
   let connectionFromDestination;
-  if (destinationID) {
+  if (destinationID !== undefined) {
     [
       destination,
       { connectionToDestination, connectionFromDestination },
