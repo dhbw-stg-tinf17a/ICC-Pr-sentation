@@ -34,7 +34,7 @@ async function getWakeUpTimeForNextFirstEventOfDay() {
   ]);
 
   const connection = await vvs.getLastConnection({
-    startCoordinates: location, destinationAddress: event.location, arrival: event.start,
+    originCoordinates: location, destinationAddress: event.location, arrival: event.start,
   });
 
   const wakeUpTime = moment(connection.departure).subtract(preparationTime || 0, 'minutes');

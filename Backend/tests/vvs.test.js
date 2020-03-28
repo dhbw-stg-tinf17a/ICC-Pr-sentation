@@ -26,7 +26,7 @@ describe('vvs module', () => {
 
       axios.post.mockResolvedValue({ data: response });
 
-      await expect(vvs.getLastConnection({ startCoordinates: { latitude: 48.77355689485371, longitude: 9.17095497616363 }, destinationAddress: 'Neckartalstraße, 70376 Stuttgart, Germany', arrival: '2020-03-23T22:00:00Z' })).resolves.toStrictEqual(connection);
+      await expect(vvs.getLastConnection({ originCoordinates: { latitude: 48.77355689485371, longitude: 9.17095497616363 }, destinationAddress: 'Neckartalstraße, 70376 Stuttgart, Germany', arrival: '2020-03-23T22:00:00Z' })).resolves.toStrictEqual(connection);
 
       // check conversion to API request (only in this test case)
       expect(axios.post).toHaveBeenLastCalledWith(vvs.endpoint, expect.any(String), { headers: { 'Content-Type': 'text/xml' } });
@@ -39,7 +39,7 @@ describe('vvs module', () => {
 
       axios.post.mockResolvedValue({ data: response });
 
-      await expect(vvs.getLastConnection({ startCoordinates: { latitude: 48.77355689485371, longitude: 9.17095497616363 }, destinationAddress: 'Schlumpfhausen', arrival: '2020-03-23T22:00:00Z' })).resolves.toBeUndefined();
+      await expect(vvs.getLastConnection({ originCoordinates: { latitude: 48.77355689485371, longitude: 9.17095497616363 }, destinationAddress: 'Schlumpfhausen', arrival: '2020-03-23T22:00:00Z' })).resolves.toBeUndefined();
     });
 
     it('should throw an error if the API returns an error', async () => {
@@ -47,7 +47,7 @@ describe('vvs module', () => {
 
       axios.post.mockResolvedValue({ data: response });
 
-      await expect(vvs.getLastConnection({ startCoordinates: { latitude: 48.77355689485371, longitude: 9.17095497616363 }, destinationAddress: 'Schlumpfhausen II', arrival: '2020-03-23T22:00:00Z' })).rejects.toThrow('VVS API returned: DROELFISNOTANUMBER');
+      await expect(vvs.getLastConnection({ originCoordinates: { latitude: 48.77355689485371, longitude: 9.17095497616363 }, destinationAddress: 'Schlumpfhausen II', arrival: '2020-03-23T22:00:00Z' })).rejects.toThrow('VVS API returned: DROELFISNOTANUMBER');
     });
   });
 });

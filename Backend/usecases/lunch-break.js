@@ -27,20 +27,20 @@ const startHour = 11;
 const endHour = 14;
 const minTime = 60;
 const radius = 1;
-const beforeStart = 30;
+const timeBeforeStart = 30;
 
 async function run() {
   try {
-    const startDatetime = new Date();
-    startDatetime.setHours(startHour, 0, 0, 0);
-    const endDatetime = new Date(startDatetime.getTime());
-    endDatetime.setHours(endHour, 0, 0, 0);
+    const start = new Date();
+    start.setHours(startHour, 0, 0, 0);
+    const end = new Date(start.getTime());
+    end.setHours(endHour, 0, 0, 0);
 
     const [
       freeSlots,
       { location },
     ] = await Promise.all([
-      calendar.getFreeSlots({ startDatetime, endDatetime }),
+      calendar.getFreeSlots({ start, end }),
       preferences.get(),
     ]);
     if (freeSlots.length === 0) {
@@ -62,7 +62,7 @@ async function run() {
 
     const restaurant = restaurants[Math.floor(Math.random() * restaurants.length)];
 
-    const notificationTime = moment(freeSlot.start).subtract(beforeStart, 'minutes');
+    const notificationTime = moment(freeSlot.start).subtract(timeBeforeStart, 'minutes');
 
     schedule.scheduleJob(notificationTime, async () => {
       await notifications.sendNotifications({

@@ -58,12 +58,12 @@ async function parseData(data) {
   return connections;
 }
 
-async function getConnections({ startID, destinationID, departure }) {
+async function getConnections({ originID, destinationID, departure }) {
   const date = moment(departure).tz('Europe/Berlin').format('DD.MM.YY');
   const time = moment(departure).tz('Europe/Berlin').format('HH:mm');
   const params = {
     data: JSON.stringify({
-      s: startID,
+      s: originID,
       d: destinationID,
       dt: date,
       t: time,

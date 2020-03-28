@@ -50,12 +50,12 @@ async function planTrip({ departure, arrival, destinationID }) {
     connectionsFromDestination,
   ] = await Promise.all([
     db.getConnections({
-      startID: home.id,
+      originID: home.id,
       destinationID,
       departure,
     }),
     db.getConnections({
-      startID: destinationID,
+      originID: destinationID,
       destinationID: home.id,
       departure: arrival,
     }),

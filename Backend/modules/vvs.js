@@ -82,7 +82,7 @@ function getWaypoint({ coordinates, address, datetime }) {
 }
 
 async function getLastConnection({
-  startCoordinates, startAddress, destinationCoordinates, destinationAddress, departure, arrival,
+  originCoordinates, originAddress, destinationCoordinates, destinationAddress, departure, arrival,
 }) {
   const request = `
     <?xml version="1.0" encoding="UTF-8"?>
@@ -92,7 +92,7 @@ async function getLastConnection({
         <RequestPayload>
           <TripRequest>
             <Origin>
-              ${getWaypoint({ coordinates: startCoordinates, address: startAddress, datetime: departure })}
+              ${getWaypoint({ coordinates: originCoordinates, address: originAddress, datetime: departure })}
             </Origin>
             <Destination>
               ${getWaypoint({ coordinates: destinationCoordinates, address: destinationAddress, datetime: arrival })}

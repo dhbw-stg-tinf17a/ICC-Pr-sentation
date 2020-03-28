@@ -37,24 +37,24 @@ async function getNextFirstEventOfDay() {
   return firstEventOfTomorrow;
 }
 
-async function getFreeSlots({ startDatetime, endDatetime }) {
+async function getFreeSlots({ start, end }) {
   const events = await fetchCalendarEvents();
 
-  let freeSlots = [{ start: new Date(startDatetime), end: new Date(endDatetime) }];
+  let freeSlots = [{ start: new Date(start), end: new Date(end) }];
 
   Object.values(events).forEach((event) => {
-    freeSlots = freeSlots.flatMap(({ start, end }) => {
-      if (start >= event.end || end <= event.start) {
+    freeSlots = freeSlots.flatMap(({ start: slotStart, end: slotEnd }) => {
+      if (slotStart >= event.end || slotEnd <= event.start) {
         // slot and event do not intersect
-        return [{ start, end }];
+        return [{ start: slotStart, end: slotEnd }];
       }
 
       const subSlots = [];
-      if (start < event.start) {
-        subSlots.push({ start, end: event.start });
+      if (slotStart < event.start) {
+        subSlots.push({ start: slotStart, end: event.start });
       }
-      if (end > event.end) {
-        subSlots.push({ start: event.end, end });
+      if (slotEnd > event.end) {
+        subSlots.push({ start: event.end, end: slotEnd });
       }
       return subSlots;
     });

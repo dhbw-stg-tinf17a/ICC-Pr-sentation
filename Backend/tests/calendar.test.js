@@ -64,7 +64,7 @@ describe('calendar module', () => {
         3: { type: 'VEVENT', start: new Date('2020-03-28T07:00Z'), end: new Date('2020-03-28T09:00Z') },
       });
 
-      await expect(calendar.getFreeSlots({ startDatetime: '2020-03-27T00:00Z', endDatetime: '2020-03-27T15:00Z' })).resolves.toStrictEqual([
+      await expect(calendar.getFreeSlots({ start: '2020-03-27T00:00Z', end: '2020-03-27T15:00Z' })).resolves.toStrictEqual([
         { start: new Date('2020-03-27T07:00Z'), end: new Date('2020-03-27T12:00Z') },
       ]);
     });
