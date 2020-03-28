@@ -9,6 +9,11 @@
  * the route taken to the destination (VVS).
  */
 
+// TODO store recommended restaurant for day
+// TODO use preferences
+// TODO look at tomorrow if todays slot is over
+// TODO store visited restaurants
+
 const schedule = require('node-schedule');
 const pino = require('pino');
 const moment = require('moment-timezone');
@@ -18,7 +23,6 @@ const notifications = require('../modules/notifications');
 
 const logger = pino({ level: process.env.LOG_LEVEL || 'info' });
 
-// TODO from preferences
 const startHour = 11;
 const endHour = 14;
 const minTime = 60;
@@ -87,5 +91,5 @@ function init() {
 }
 
 module.exports = {
-  init, run, getFreeSlotForLunchbreak, getRandomRestaurantNear,
+  init, getFreeSlotForLunchbreak, getRandomRestaurantNear,
 };

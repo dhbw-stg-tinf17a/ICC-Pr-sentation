@@ -19,6 +19,7 @@ router.get('/', wrapAsync(async (req, res) => {
   res.send({ freeSlot, restaurant });
 }));
 
+// TODO use token instead of passing all the parameters. or even remeber last request to /
 router.get('/connection', wrapAsync(async (req, res) => {
   const {
     originLatitude, originLongitude, destinationLatitude, destinationLongitude, departure,
