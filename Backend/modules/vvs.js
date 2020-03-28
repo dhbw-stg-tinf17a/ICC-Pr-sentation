@@ -66,28 +66,23 @@ async function parseXML(xml) {
   };
 }
 
-function getLocationRef({ coordinates, address }) {
+function getWaypoint({ coordinates, address, datetime }) {
+  let locationRefContent;
   if (coordinates !== undefined) {
-    return `
-      <LocationRef>
-        <GeoPosition>
-          <Latitude>${coordinates.latitude}</Latitude>
-          <Longitude>${coordinates.longitude}</Longitude>
-        </GeoPosition>
-      </LocationRef>`;
+    locationRefContent = `<GeoPosition><Latitude>${coordinates.latitude}</Latitude><Longitude>${coordinates.longitude}</Longitude></GeoPosition>`;
+  } else {
+    locationRefContent = `<AddressRef><AddressCode>Address</AddressCode><AddressName>${address}</AddressName></AddressRef>`;
   }
 
-  return `
-    <LocationRef>
-      <AddressRef>
-        <AddressCode>Address</AddressCode>
-        <AddressName>${address}</AddressName>
-      </AddressRef>
-    </LocationRef>`;
+  if (datetime !== undefined) {
+    return `<LocationRef>${locationRefContent}</LocationRef><DepArrTime>${new Date(datetime).toISOString()}</DepArrTime>`;
+  }
+
+  return `<LocationRef>${locationRefContent}</LocationRef>`;
 }
 
 async function getLastConnection({
-  startCoordinates, startAddress, destinationCoordinates, destinationAddress, arrival,
+  startCoordinates, startAddress, destinationCoordinates, destinationAddress, departure, arrival,
 }) {
   const request = `
     <?xml version="1.0" encoding="UTF-8"?>
@@ -97,11 +92,10 @@ async function getLastConnection({
         <RequestPayload>
           <TripRequest>
             <Origin>
-              ${getLocationRef({ coordinates: startCoordinates, address: startAddress })}
+              ${getWaypoint({ coordinates: startCoordinates, address: startAddress, datetime: departure })}
             </Origin>
             <Destination>
-              ${getLocationRef({ coordinates: destinationCoordinates, address: destinationAddress })}
-              <DepArrTime>${new Date(arrival).toISOString()}</DepArrTime>
+              ${getWaypoint({ coordinates: destinationCoordinates, address: destinationAddress, datetime: arrival })}
             </Destination>
             <Params>
               <NumberOfResults>1</NumberOfResults>
