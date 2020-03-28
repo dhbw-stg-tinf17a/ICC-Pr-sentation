@@ -64,6 +64,10 @@ async function getRandomRestaurantNear({ latitude, longitude }) {
 async function run() {
   try {
     const freeSlot = await getFreeSlotForLunchbreak();
+    if (freeSlot === undefined) {
+      return;
+    }
+
     const freeSlotStart = moment(freeSlot.start).tz(timezone).format('HH:mm');
     const notificationTime = moment(freeSlot.start).subtract(minutesBeforeStart, 'minutes');
 
