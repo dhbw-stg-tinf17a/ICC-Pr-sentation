@@ -33,7 +33,7 @@ async function getWakeUpTimeForNextFirstEventOfDay() {
     preferences.get(),
   ]);
 
-  const connection = await vvs.getLastConnection({
+  const connection = await vvs.getConnection({
     originCoordinates: location, destinationAddress: event.location, arrival: event.start,
   });
 

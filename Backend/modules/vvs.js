@@ -81,7 +81,7 @@ function getWaypoint({ coordinates, address, datetime }) {
   return `<LocationRef>${locationRefContent}</LocationRef>`;
 }
 
-async function getLastConnection({
+async function getConnection({
   originCoordinates, originAddress, destinationCoordinates, destinationAddress, departure, arrival,
 }) {
   const request = `
@@ -111,4 +111,4 @@ async function getLastConnection({
   return parseXML(response.data);
 }
 
-module.exports = { endpoint, getLastConnection };
+module.exports = { endpoint, getConnection };
