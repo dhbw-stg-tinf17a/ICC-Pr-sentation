@@ -52,7 +52,7 @@ async function getFreeSlotForLunchbreak() {
 
 async function getRandomRestaurantNear({ latitude, longitude }) {
   const restaurants = await places.getPOIsAround({
-    latitude, longitude, category: 'restaurant', limit: 100, radius: maxDistance,
+    latitude, longitude, category: 'RESTAURANT', limit: 100, radius: maxDistance,
   });
   if (restaurants.length === 0) {
     return undefined;
