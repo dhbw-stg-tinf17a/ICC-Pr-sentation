@@ -23,14 +23,14 @@ const calendar = require('../modules/calendar');
 const db = require('../modules/db');
 const weather = require('../modules/weather');
 const notifications = require('../modules/notifications');
+const vvs = require('../modules/vvs');
+const preferences = require('../modules/preferences');
 
 const logger = pino({ level: process.env.LOG_LEVEL || 'info' });
 
-const home = { id: '8098096', latitude: 48.784084, longitude: 9.181635 }; // Stuttgart Hbf
+const mainStation = { id: '8098096', location: { latitude: 48.784084, longitude: 9.181635 } }; // Stuttgart Hbf
 const minDistance = 100; // km
-const excluded = [
-  { id: '8098096', latitude: 48.784084, longitude: 9.181635 },
-];
+const excludedStationIDs = ['8098096'];
 const timezone = 'Europe/Berlin';
 
 async function getWeekend() {
@@ -62,13 +62,13 @@ async function planTrip({ departure, arrival, destinationID }) {
     connectionsFromDestination,
   ] = await Promise.all([
     db.getConnections({
-      originID: home.id,
+      originID: mainStation.id,
       destinationID,
       departure,
     }),
     db.getConnections({
       originID: destinationID,
-      destinationID: home.id,
+      destinationID: mainStation.id,
       departure: arrival,
     }),
   ]);
@@ -83,8 +83,8 @@ async function planTrip({ departure, arrival, destinationID }) {
 
 async function planRandomTrip({ departure, arrival }) {
   const stations = await db.getFilteredStations((station) => station.location
-    && geolib.getDistance(home, station.location) / 1000 >= minDistance // convert m to km
-    && !excluded.findIndex((otherStation) => station.id === otherStation.id) >= 0);
+    && geolib.getDistance(mainStation.location, station.location) / 1000 >= minDistance // m to km
+    && !excludedStationIDs.findIndex((stationID) => station.id === stationID) >= 0);
 
   let connectionToDestination;
   let connectionFromDestination;
@@ -112,6 +112,19 @@ async function getWeather({ destination, saturday, sunday }) {
   });
 
   return { saturdayWeather: forecast[daysToSaturday], sundayWeather: forecast[daysToSunday] };
+}
+
+async function getConnectionToMainStation(arrival) {
+  const { location } = await preferences.get();
+  if (location === undefined) {
+    throw new Error('Home location is not set');
+  }
+
+  return vvs.getConnection({
+    originCoordinates: location,
+    destinationCoordinates: mainStation.location,
+    arrival,
+  });
 }
 
 async function run() {
@@ -152,5 +165,5 @@ function init() {
 }
 
 module.exports = {
-  init, getWeekend, planTrip, planRandomTrip, getWeather,
+  init, getWeekend, planTrip, planRandomTrip, getWeather, getConnectionToMainStation,
 };

@@ -47,4 +47,11 @@ router.get('/', wrapAsync(async (req, res) => {
   });
 }));
 
+// TODO remeber last request to /
+// TODO store destination and don't recommend it again
+router.get('/confirm', wrapAsync(async (req, res) => {
+  const connection = await travelPlanning.getConnectionToMainStation(req.query.arrival);
+  res.send({ connection });
+}));
+
 module.exports = router;
