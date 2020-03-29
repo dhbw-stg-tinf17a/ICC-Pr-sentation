@@ -28,7 +28,7 @@ const preferences = require('../modules/preferences');
 
 const logger = pino({ level: process.env.LOG_LEVEL || 'info' });
 
-const mainStation = { id: '8098096', location: { latitude: 48.784084, longitude: 9.181635 } }; // Stuttgart Hbf
+const mainStation = { dbID: '8098096', location: { latitude: 48.784084, longitude: 9.181635 }, vvsID: 'de:08111:6115' }; // Stuttgart Hbf
 const minDistance = 100; // km
 const excludedStationIDs = ['8098096'];
 const timezone = 'Europe/Berlin';
@@ -62,13 +62,13 @@ async function planTrip({ departure, arrival, destinationID }) {
     connectionsFromDestination,
   ] = await Promise.all([
     db.getConnections({
-      originID: mainStation.id,
+      originID: mainStation.dbID,
       destinationID,
       departure,
     }),
     db.getConnections({
       originID: destinationID,
-      destinationID: mainStation.id,
+      destinationID: mainStation.dbID,
       departure: arrival,
     }),
   ]);
@@ -120,9 +120,10 @@ async function getConnectionToMainStation(arrival) {
     throw new Error('Home location is not set');
   }
 
+  // TODO use station id instead of coordinates
   return vvs.getConnection({
     originCoordinates: location,
-    destinationCoordinates: mainStation.location,
+    destinationStop: mainStation.vvsID,
     arrival,
   });
 }
