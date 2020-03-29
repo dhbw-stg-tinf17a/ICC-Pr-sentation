@@ -17,6 +17,7 @@ const endpoint = 'https://ps.bahn.de/preissuche/preissuche/psc_service.go';
 async function parseData(data) {
   const connections = Object.values(data.verbindungen).map((connection) => {
     const legs = connection.trains.map((leg) => ({
+      mode: 'transport',
       from: leg.sn,
       to: leg.dn,
       departure: new Date(Number(leg.dep.m)),
@@ -70,6 +71,7 @@ async function getConnections({ originID, destinationID, departure }) {
       ...options,
     }),
     service: 'pscangebotsuche',
+    lang: 'en',
   };
   const response = await axios.get(endpoint, { params });
 

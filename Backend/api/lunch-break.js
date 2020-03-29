@@ -19,7 +19,9 @@ router.get('/', wrapAsync(async (req, res) => {
   res.send({ freeSlot, restaurant });
 }));
 
-router.get('/connection', wrapAsync(async (req, res) => {
+// TODO use token instead of passing all the parameters. or even remeber last request to /
+// TODO store POI ID and don't recommend it again
+router.get('/confirm', wrapAsync(async (req, res) => {
   const {
     originLatitude, originLongitude, destinationLatitude, destinationLongitude, departure,
   } = req.query;

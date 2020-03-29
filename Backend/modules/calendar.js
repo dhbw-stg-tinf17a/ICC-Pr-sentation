@@ -1,5 +1,4 @@
 const ical = require('node-ical');
-const moment = require('moment-timezone');
 const preferences = require('./preferences');
 
 async function getCalendarURL() {
@@ -15,29 +14,18 @@ async function fetchCalendarEvents() {
   return ical.async.fromURL(await getCalendarURL());
 }
 
-async function getFirstEventOfDay(date) {
+async function getFirstEventStartingBetween({ start, end }) {
   const events = await fetchCalendarEvents();
-  const day = moment(date);
+  const startDt = new Date(start);
+  const endDt = new Date(end);
 
   return Object.values(events)
-    .filter((event) => event.type === 'VEVENT' && day.isSame(event.start, 'day'))
+    .filter((event) => event.type === 'VEVENT' && event.start >= startDt && event.start <= endDt)
     .sort((a, b) => a.start - b.start)
     .find(() => true);
 }
 
-async function getNextFirstEventOfDay() {
-  const day = new Date();
-  const firstEventOfToday = await getFirstEventOfDay(day);
-  if (firstEventOfToday !== undefined && firstEventOfToday.start >= day) {
-    return firstEventOfToday;
-  }
-
-  day.setUTCDate(day.getUTCDate() + 1);
-  const firstEventOfTomorrow = await getFirstEventOfDay(day);
-  return firstEventOfTomorrow;
-}
-
-async function getFreeSlots({ start, end }) {
+async function getFreeSlotsBetween({ start, end }) {
   const events = await fetchCalendarEvents();
 
   let freeSlots = [{ start: new Date(start), end: new Date(end) }];
@@ -63,4 +51,4 @@ async function getFreeSlots({ start, end }) {
   return freeSlots;
 }
 
-module.exports = { getFirstEventOfDay, getNextFirstEventOfDay, getFreeSlots };
+module.exports = { getFirstEventStartingBetween, getFreeSlotsBetween };

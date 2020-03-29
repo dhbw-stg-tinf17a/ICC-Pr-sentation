@@ -32,15 +32,14 @@ describe('places module', () => {
           entryPoints: [{ type: 'main', position: { lat: 48.78249, lon: 9.17612 } }],
         }],
       };
-      axios.get.mockResolvedValue({
-        data: response,
-      });
+      axios.get.mockResolvedValueOnce({ data: response });
 
       expect(places.getPOIsAround({
         latitude: 48.78232, longitude: 9.17702, category: 'restaurant', limit: 1, radius: 2,
       })).resolves.toStrictEqual(response.results);
 
       // check conversion to API request
+      expect(axios.get).toHaveBeenCalledTimes(1);
       expect(axios.get).toHaveBeenCalledWith(places.endpoint, {
         params: {
           'subscription-key': process.env.AZURE_MAPS_KEY, 'api-version': '1.0', lat: 48.78232, lon: 9.17702, query: 'restaurant', limit: 1, radius: 2000,

@@ -6,7 +6,7 @@ jest.mock('axios');
 describe('db module', () => {
   describe('getConnections', () => {
     it('should return the requested connections', async () => {
-      axios.get.mockResolvedValue({
+      axios.get.mockResolvedValueOnce({
         data: {
           angebote: {
             0: {
@@ -28,7 +28,7 @@ describe('db module', () => {
               }],
             },
           },
-          peTexte: { 71851: { name: 'Super Sparpreis Aktion', hinweis: 'Sie können alle Züge bzw. IC Busse nutzen, die auf Ihrer Fahrkarte angegeben sind. Für Züge des Nahverkehrs (z.B. RE, RB, S) besteht keine Zugbindung. Bei Zahlung mit Kreditkarte ist ggf. ein 3-D Secure-Code erforderlich.<br/>Eine Stornierung (Umtausch oder Erstattung) Ihrer Fahrkarte ist ausgeschlossen.' } },
+          peTexte: { 71851: { name: 'Super Sparpreis', hinweis: 'You can use all trains and IC Bus services indicated on your ticket. You can use any local train (i.e. RE, RB, S). Passengers on train and IC Bus services with mandatory reservation must reserve a seat. A 3-D Secure Code may be required for credit card payments.<br/>Cancellation (exchange or refund) of your ticket is excluded.' } },
           sbf: [{ nummer: '8000096', name: 'Stuttgart Hbf' }],
           dbf: [{ nummer: '8000105', name: 'Frankfurt(Main)Hbf' }],
           durs: { min: '1:35', max: '1:35' },
@@ -40,7 +40,7 @@ describe('db module', () => {
 
       const parsedConnections = [{
         legs: [{
-          from: 'Stuttgart Hbf', to: 'Frankfurt(Main)Hbf', departure: new Date('2020-03-23T22:05:00.000Z'), arrival: new Date('2020-03-23T23:40:00.000Z'), trainNumber: 'ICE  990',
+          mode: 'transport', from: 'Stuttgart Hbf', to: 'Frankfurt(Main)Hbf', departure: new Date('2020-03-23T22:05:00.000Z'), arrival: new Date('2020-03-23T23:40:00.000Z'), trainNumber: 'ICE  990',
         }],
         departure: new Date('2020-03-23T22:05:00.000Z'),
         arrival: new Date('2020-03-23T23:40:00.000Z'),
@@ -48,17 +48,18 @@ describe('db module', () => {
         reducedPrice: true,
         price: 12.9,
         boundToTrain: true,
-        notes: { name: 'Super Sparpreis Aktion', text: 'Sie können alle Züge bzw. IC Busse nutzen, die auf Ihrer Fahrkarte angegeben sind. Für Züge des Nahverkehrs (z.B. RE, RB, S) besteht keine Zugbindung. Bei Zahlung mit Kreditkarte ist ggf. ein 3-D Secure-Code erforderlich. Eine Stornierung (Umtausch oder Erstattung) Ihrer Fahrkarte ist ausgeschlossen.' },
+        notes: { name: 'Super Sparpreis', text: 'You can use all trains and IC Bus services indicated on your ticket. You can use any local train (i.e. RE, RB, S). Passengers on train and IC Bus services with mandatory reservation must reserve a seat. A 3-D Secure Code may be required for credit card payments. Cancellation (exchange or refund) of your ticket is excluded.' },
       }];
 
       await expect(db.getConnections({ originID: '8000096', destinationID: '8000105', departure: new Date('2020-03-23T22:00:00Z') })).resolves.toStrictEqual(parsedConnections);
 
       // check conversion to API request (only in this test case)
-      expect(axios.get).toHaveBeenLastCalledWith(db.endpoint, { params: { data: '{"s":"8000096","d":"8000105","dt":"23.03.20","t":"23:00","c":2,"ohneICE":false,"tct":0,"dur":86400,"travellers":[{"bc":0,"typ":"E","alter":30}],"sv":true,"device":"HANDY"}', service: 'pscangebotsuche' } });
+      expect(axios.get).toHaveBeenCalledTimes(1);
+      expect(axios.get).toHaveBeenCalledWith(db.endpoint, { params: { data: '{"s":"8000096","d":"8000105","dt":"23.03.20","t":"23:00","c":2,"ohneICE":false,"tct":0,"dur":86400,"travellers":[{"bc":0,"typ":"E","alter":30}],"sv":true,"device":"HANDY"}', service: 'pscangebotsuche', lang: 'en' } });
     });
 
     it('should return an empty array if no connections are found', async () => {
-      axios.get.mockResolvedValue({
+      axios.get.mockResolvedValueOnce({
         data: {
           error: {
             s: 'PE', n: '17', t: 'Keine Verbindungen gefunden', tsys: 'keine Verbindung gefunden', zi: '', k: '1',
@@ -72,7 +73,7 @@ describe('db module', () => {
     });
 
     it('should throw an error if the API returns an error', async () => {
-      axios.get.mockResolvedValue({
+      axios.get.mockResolvedValueOnce({
         data: {
           error: {
             s: 'PE', n: '2', t: 'XML der Anfrage fehlerhaft', tsys: 'Ungueltige XML-Daten gefunden: s=null.', zi: '', k: '2',
@@ -84,7 +85,7 @@ describe('db module', () => {
     });
 
     it('should throw an error if the API returns an error with no tsys property', async () => {
-      axios.get.mockResolvedValue({
+      axios.get.mockResolvedValueOnce({
         data: {
           error: {
             s: 'PE', n: '7', t: 'Nummer des Zielbahnhofs existiert nicht', zi: '', k: '2',

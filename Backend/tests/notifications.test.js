@@ -14,7 +14,6 @@ const webpush = require('web-push');
 const notifications = require('../modules/notifications');
 
 jest.mock('web-push');
-webpush.sendNotification.mockImplementation();
 
 const subscriptions = [
   {
