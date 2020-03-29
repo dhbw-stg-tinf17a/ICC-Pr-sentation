@@ -70,6 +70,7 @@ async function getConnections({ originID, destinationID, departure }) {
       ...options,
     }),
     service: 'pscangebotsuche',
+    lang: 'en',
   };
   const response = await axios.get(endpoint, { params });
 
