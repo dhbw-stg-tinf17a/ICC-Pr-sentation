@@ -141,10 +141,11 @@ async function run() {
     const { destination, connectionToDestination, connectionFromDestination } = trip;
     const price = connectionToDestination.price + connectionFromDestination.price;
 
-    notifications.sendNotifications({
+    const body = `Your weekend seems to be free, why not travel to ${destination.address.city} and back for just ${price} €?`;
+    const job = notifications.sendNotifications({
       title: 'Recommended trip for this weekend',
       options: {
-        body: `Your weekend seems to be free, why not travel to ${destination.address.city} and back for just ${price} €?`,
+        body,
         icon: '/favicon.jpg',
         badge: '/badge.png',
         data: {
@@ -153,6 +154,9 @@ async function run() {
         },
       },
     });
+    if (job !== null) {
+      logger.debug(`Travel planning usecase: Notification at ${job.nextInvocation().toISOString()} with body '${body}'`);
+    }
   } catch (error) {
     logger.error(error);
   }
@@ -160,9 +164,10 @@ async function run() {
 
 function init() {
   // every Friday at 07:00
-  schedule.scheduleJob({
+  const job = schedule.scheduleJob({
     minute: 0, hour: 7, dayOfWeek: 5, tz: timezone,
   }, run);
+  logger.info(`Travel planning usecase: First invocation at ${job.nextInvocation().toISOString()}`);
 }
 
 module.exports = {

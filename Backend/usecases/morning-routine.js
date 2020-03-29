@@ -82,11 +82,12 @@ async function run() {
     const eventStart = moment(event.start).tz(timezone).format('HH:mm');
     const departure = moment(connection.departure).tz(timezone).format('HH:mm');
 
-    schedule.scheduleJob(wakeUpTime, async () => {
+    const body = `${event.summary} starts at ${eventStart}. You have to leave at ${departure}.`;
+    const job = schedule.scheduleJob(wakeUpTime, async () => {
       await notifications.sendNotifications({
         title: 'Wake up!',
         options: {
-          body: `${event.summary} starts at ${eventStart}. You have to leave at ${departure}.`,
+          body,
           icon: '/favicon.jpg',
           badge: '/badge.png',
           data: {
@@ -95,6 +96,9 @@ async function run() {
         },
       });
     });
+    if (job !== null) {
+      logger.debug(`Morning routine usecase: Notification at ${job.nextInvocation().toISOString()} with body '${body}'`);
+    }
   } catch (error) {
     logger.error(error);
   }
@@ -102,9 +106,10 @@ async function run() {
 
 function init() {
   // every day at 00:00, but not on the weekend
-  schedule.scheduleJob({
+  const job = schedule.scheduleJob({
     minute: 0, hour: 0, dayOfWeek: [1, 2, 3, 4, 5], tz: timezone,
   }, run);
+  logger.info(`Morning routine usecase: First invocation at ${job.nextInvocation().toISOString()}`);
 }
 
 module.exports = {
