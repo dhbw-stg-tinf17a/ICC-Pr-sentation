@@ -16,11 +16,11 @@ describe('vvs module', () => {
         arrival: '2020-03-23T21:52:00Z',
         duration: { hours: 0, minutes: 23 },
         legs: [
-          { mode: 'walk', from: 'Altstadt (Stuttgart), Rotebühlplatz 41', to: 'Stadtmitte' },
+          { mode: 'walking', from: 'Altstadt (Stuttgart), Rotebühlplatz 41', to: 'Stadtmitte' },
           {
             mode: 'transport', from: 'Rotebühlplatz', to: 'Wilhelma', departure: '2020-03-23T21:35:00Z', arrival: '2020-03-23T21:47:00Z', lineName: 'U14', lineDestination: 'Mühlhausen (Stgt.)',
           },
-          { mode: 'walk', from: 'Wilhelma', to: 'Stuttgart, Neckartalstraße' },
+          { mode: 'walking', from: 'Wilhelma', to: 'Stuttgart, Neckartalstraße' },
         ],
       };
 

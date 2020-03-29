@@ -18,7 +18,7 @@ function parseTimedLeg(timedLeg) {
 
 function parseContinuousLeg(continuousLeg) {
   return {
-    mode: 'walk',
+    mode: 'walking',
     from: continuousLeg.LegStart[0].LocationName[0].Text[0],
     to: continuousLeg.LegEnd[0].LocationName[0].Text[0],
   };

@@ -40,7 +40,7 @@ describe('db module', () => {
 
       const parsedConnections = [{
         legs: [{
-          from: 'Stuttgart Hbf', to: 'Frankfurt(Main)Hbf', departure: new Date('2020-03-23T22:05:00.000Z'), arrival: new Date('2020-03-23T23:40:00.000Z'), trainNumber: 'ICE  990',
+          mode: 'transport', from: 'Stuttgart Hbf', to: 'Frankfurt(Main)Hbf', departure: new Date('2020-03-23T22:05:00.000Z'), arrival: new Date('2020-03-23T23:40:00.000Z'), trainNumber: 'ICE  990',
         }],
         departure: new Date('2020-03-23T22:05:00.000Z'),
         arrival: new Date('2020-03-23T23:40:00.000Z'),
