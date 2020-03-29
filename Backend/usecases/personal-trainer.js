@@ -3,13 +3,12 @@
  * case, the assistant sends a notification to the user between set times (preferences) when there
  * is a free slot in the calendar. When the user clicks on the notification, the personal trainer
  * use case is opened. The user can also open the use case at any other time using the web app.
- * After opening the use case, the assistant presents a sport activity to the user depending on the
- * current weather. Dialog: If the user confirms that they want to do the presented activity, the
- * assistant searches for a sports facility (maps) and presents the route to the sports facility
- * (VVS) if required.
+ * After opening the use case, the assistant presents a place for doing some sport to the user
+ * depending on the current weather. Dialog: If the user confirms that they want to do the presented
+ * activity, the assistant  presents the route to the place (VVS) .
  */
 
-// TODO store recommended restaurant for day
+// TODO store recommended place for day
 // TODO use preferences
 // TODO look at tomorrow if todays slot is over
 
@@ -21,6 +20,7 @@ const notifications = require('../modules/notifications');
 const places = require('../modules/places');
 const preferences = require('../modules/preferences');
 const weather = require('../modules/weather');
+const vvs = require('../modules/vvs');
 
 const logger = pino({ level: process.env.LOG_LEVEL || 'info' });
 
@@ -32,6 +32,19 @@ const endMinute = 0;
 const requiredMinutes = 60;
 const minutesBeforeStart = 30;
 const maxDistance = 1;
+
+async function getConnectionToPlace({ latitude, longitude, departure }) {
+  const { location } = await preferences.get();
+  if (location === undefined) {
+    throw new Error('Home location is not set');
+  }
+
+  return vvs.getConnection({
+    originCoordinates: location,
+    destinationCoordinates: { latitude, longitude },
+    departure,
+  });
+}
 
 async function getFreeSlotForActivity() {
   const start = moment.tz(timezone).hour(startHour).minute(startMinute).startOf('minute');
@@ -77,14 +90,14 @@ async function getRandomParkRecreationArea() {
   return getRandomPOI('PARK_RECREATION_AREA');
 }
 
-async function todayHasPrecipitation() {
+async function getWeather() {
   const { location } = await preferences.get();
   if (location === undefined) {
     throw new Error('Home location is not set');
   }
 
   const forecast = await weather.getForecast({ ...location, duration: 1 });
-  return forecast[0].day.hasPrecipitation;
+  return forecast[0];
 }
 
 async function run() {
@@ -94,9 +107,9 @@ async function run() {
       return;
     }
 
-    const precipiation = await todayHasPrecipitation();
+    const precipitation = (await getWeather()).day.hasPrecipitation;
     let place;
-    if (precipiation) {
+    if (precipitation) {
       place = await getRandomSportsCenter();
     } else {
       place = await getRandomParkRecreationArea();
@@ -112,7 +125,7 @@ async function run() {
       await notifications.sendNotifications({
         title: 'Recommended sports activity',
         options: {
-          body: `You have got a little time at ${freeSlotStart}. Since it ${precipiation ? 'rains' : 'does not rain'} today, why don't you do some sports at ${place.poi.name}?`,
+          body: `You have got a little time at ${freeSlotStart}. Since it ${precipitation ? 'rains' : 'does not rain'} today, why don't you do some sports at ${place.poi.name}?`,
           icon: '/favicon.jpg',
           badge: '/badge.png',
           data: {
@@ -133,4 +146,11 @@ function init() {
   }, run);
 }
 
-module.exports = { init };
+module.exports = {
+  init,
+  getFreeSlotForActivity,
+  getWeather,
+  getRandomSportsCenter,
+  getRandomParkRecreationArea,
+  getConnectionToPlace,
+};
