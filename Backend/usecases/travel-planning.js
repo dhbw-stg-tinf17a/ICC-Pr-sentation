@@ -14,7 +14,6 @@
 // TODO remember travel destination for weekend
 // TODO use preferences
 // TODO store visited destinations
-// TODO weather
 
 const schedule = require('node-schedule');
 const moment = require('moment-timezone');
@@ -22,6 +21,7 @@ const geolib = require('geolib');
 const pino = require('pino');
 const calendar = require('../modules/calendar');
 const db = require('../modules/db');
+const weather = require('../modules/weather');
 const notifications = require('../modules/notifications');
 
 const logger = pino({ level: process.env.LOG_LEVEL || 'info' });
@@ -97,8 +97,21 @@ async function planRandomTrip({ departure, arrival }) {
     } = await planTrip({ departure, arrival, destinationID: destination.id }));
   } while (!connectionToDestination || !connectionFromDestination);
 
-
   return { destination, connectionToDestination, connectionFromDestination };
+}
+
+async function getWeather({ destination, saturday, sunday }) {
+  const now = moment().startOf('day');
+  const daysToSaturday = moment(saturday).endOf('day').diff(now, 'days');
+  const daysToSunday = moment(sunday).endOf('day').diff(now, 'days');
+
+  const forecast = await weather.getForecast({
+    latitude: destination.location.latitude,
+    longitude: destination.location.longitude,
+    duration: 10,
+  });
+
+  return { saturdayWeather: forecast[daysToSaturday], sundayWeather: forecast[daysToSunday] };
 }
 
 async function run() {
@@ -139,5 +152,5 @@ function init() {
 }
 
 module.exports = {
-  init,
+  init, getWeekend, planTrip, planRandomTrip, getWeather,
 };
