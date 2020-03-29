@@ -35,9 +35,9 @@ const timezone = 'Europe/Berlin';
 
 async function getWeekend() {
   const today = moment.tz(timezone).startOf('day');
-  const saturdayStart = today.clone().day(today.day() === 6 ? 13 : 6);
+  const saturdayStart = today.clone().day(6);
   const saturdayEnd = saturdayStart.clone().endOf('day');
-  const sundayStart = today.clone().day(today.day() === 6 ? 14 : 7);
+  const sundayStart = today.clone().day(7);
   const sundayEnd = sundayStart.clone().endOf('day');
 
   const [
