@@ -71,11 +71,12 @@ async function run() {
     const freeSlotStart = moment(freeSlot.start).tz(timezone).format('HH:mm');
     const notificationTime = moment(freeSlot.start).subtract(minutesBeforeStart, 'minutes');
 
-    schedule.scheduleJob(notificationTime, async () => {
+    const body = `You have some time to spare during your lunch break at ${freeSlotStart}, why not try a restaurant?`;
+    const job = schedule.scheduleJob(notificationTime, async () => {
       await notifications.sendNotifications({
         title: 'Recommended restaurant for your lunch break',
         options: {
-          body: `You have some time to spare during your lunch break at ${freeSlotStart}, why not try a restaurant?`,
+          body,
           icon: '/favicon.jpg',
           badge: '/badge.png',
           data: {
@@ -84,6 +85,9 @@ async function run() {
         },
       });
     });
+    if (job !== null) {
+      logger.debug(`Lunch break usecase: Notification at ${job.nextInvocation().toISOString()} with body '${body}'`);
+    }
   } catch (error) {
     logger.error(error);
   }
@@ -91,9 +95,10 @@ async function run() {
 
 function init() {
   // every day at 00:00, but not on the weekend
-  schedule.scheduleJob({
+  const job = schedule.scheduleJob({
     minute: 0, hour: 0, dayOfWeek: [1, 2, 3, 4, 5], tz: timezone,
   }, run);
+  logger.info(`Lunch break usecase: First invocation at ${job.nextInvocation().toISOString()}`);
 }
 
 module.exports = {

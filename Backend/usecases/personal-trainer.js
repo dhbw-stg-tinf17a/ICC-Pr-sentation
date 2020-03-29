@@ -121,11 +121,12 @@ async function run() {
     const freeSlotStart = moment(freeSlot.start).tz(timezone).format('HH:mm');
     const notificationTime = moment(freeSlot.start).subtract(minutesBeforeStart, 'minutes');
 
-    schedule.scheduleJob(notificationTime, async () => {
+    const body = `You have got a little time at ${freeSlotStart}. Since it ${precipitation ? 'rains' : 'does not rain'} today, why don't you do some sports at ${place.poi.name}?`;
+    const job = schedule.scheduleJob(notificationTime, async () => {
       await notifications.sendNotifications({
         title: 'Recommended sports activity',
         options: {
-          body: `You have got a little time at ${freeSlotStart}. Since it ${precipitation ? 'rains' : 'does not rain'} today, why don't you do some sports at ${place.poi.name}?`,
+          body,
           icon: '/favicon.jpg',
           badge: '/badge.png',
           data: {
@@ -134,16 +135,20 @@ async function run() {
         },
       });
     });
+    if (job !== null) {
+      logger.debug(`Personal trainer usecase: Notification at ${job.nextInvocation().toISOString()} with body '${body}'`);
+    }
   } catch (err) {
     logger.error(err);
   }
 }
 
 function init() {
-// every day at 00:00
-  schedule.scheduleJob({
+  // every day at 00:00
+  const job = schedule.scheduleJob({
     minute: 0, hour: 0, tz: timezone,
   }, run);
+  logger.info(`Personal trainer usecase: First invocation at ${job.nextInvocation().toISOString()}`);
 }
 
 module.exports = {
