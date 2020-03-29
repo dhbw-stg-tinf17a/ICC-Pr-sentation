@@ -95,7 +95,8 @@ describe('weather module', () => {
         .resolves.toStrictEqual(response.forecasts);
 
       // check conversion to API request
-      expect(axios.get).toHaveBeenLastCalledWith(weather.endpoint, {
+      expect(axios.get).toHaveBeenCalledTimes(1);
+      expect(axios.get).toHaveBeenCalledWith(weather.endpoint, {
         params: {
           'subscription-key': process.env.AZURE_MAPS_KEY, 'api-version': '1.0', query: '48.78232,9.17702', duration: 1,
         },
