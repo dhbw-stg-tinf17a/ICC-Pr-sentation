@@ -66,45 +66,82 @@ async function parseXML(xml) {
   };
 }
 
-function getWaypoint({ coordinates, address, datetime }) {
-  let locationRefContent;
-  if (coordinates !== undefined) {
-    locationRefContent = `<GeoPosition><Latitude>${coordinates.latitude}</Latitude><Longitude>${coordinates.longitude}</Longitude></GeoPosition>`;
-  } else {
-    locationRefContent = `<AddressRef><AddressCode>Address</AddressCode><AddressName>${address}</AddressName></AddressRef>`;
-  }
-
-  if (datetime !== undefined) {
-    return `<LocationRef>${locationRefContent}</LocationRef><DepArrTime>${new Date(datetime).toISOString()}</DepArrTime>`;
-  }
-
-  return `<LocationRef>${locationRefContent}</LocationRef>`;
-}
-
-async function getConnection({
-  originCoordinates, originAddress, destinationCoordinates, destinationAddress, departure, arrival,
-}) {
-  const request = `
-    <?xml version="1.0" encoding="UTF-8"?>
+function getRequest(requestPayload) {
+  return `
     <Trias version="1.1" xmlns="http://www.vdv.de/trias" xmlns:siri="http://www.siri.org.uk/siri">
       <ServiceRequest>
         <siri:RequestorRef>${process.env.VVS_KEY}</siri:RequestorRef>
-        <RequestPayload>
-          <TripRequest>
-            <Origin>
-              ${getWaypoint({ coordinates: originCoordinates, address: originAddress, datetime: departure })}
-            </Origin>
-            <Destination>
-              ${getWaypoint({ coordinates: destinationCoordinates, address: destinationAddress, datetime: arrival })}
-            </Destination>
-            <Params>
-              <NumberOfResults>1</NumberOfResults>
-              <WalkSpeed>100</WalkSpeed>
-            </Params>
-          </TripRequest>
-        </RequestPayload>
+        <RequestPayload>${requestPayload}</RequestPayload>
       </ServiceRequest>
     </Trias>`;
+}
+
+async function getAddressCode(address) {
+  const request = getRequest(`
+    <LocationInformationRequest>
+      <InitialInput>
+        <LocationName>${address}</LocationName>
+      </InitialInput>
+    </LocationInformationRequest>`);
+
+  const response = await axios.post(endpoint, request, { headers: { 'Content-Type': 'text/xml' } });
+  const object = await xml2js.parseStringPromise(response.data, { ignoreAttrs: true });
+  return object.Trias.ServiceDelivery[0].DeliveryPayload[0]
+    .LocationInformationResponse[0].Location[0].Location[0].Address[0].AddressCode[0];
+}
+
+async function getWaypoint({
+  coordinates, address, stop, datetime,
+}) {
+  let locationRefContent;
+  if (coordinates !== undefined) {
+    locationRefContent = `
+      <GeoPosition>
+        <Latitude>${coordinates.latitude}</Latitude>
+        <Longitude>${coordinates.longitude}</Longitude>
+      </GeoPosition>`;
+  } else if (stop !== undefined) {
+    locationRefContent = `<StopPointRef>${stop}</StopPointRef>`;
+  } else {
+    const addressCode = await getAddressCode(address);
+    locationRefContent = `<AddressRef>${addressCode}</AddressRef>`;
+  }
+
+  let waypoint = `<LocationRef>${locationRefContent}</LocationRef>`;
+  if (datetime !== undefined) {
+    waypoint += `<DepArrTime>${new Date(datetime).toISOString()}</DepArrTime>`;
+  }
+
+  return waypoint;
+}
+
+async function getConnection({
+  originCoordinates, originAddress, originStop, destinationCoordinates, destinationAddress,
+  destinationStop, departure, arrival,
+}) {
+  const [origin, destination] = await Promise.all([
+    getWaypoint({
+      coordinates: originCoordinates,
+      address: originAddress,
+      stop: originStop,
+      datetime: departure,
+    }),
+    getWaypoint({
+      coordinates: destinationCoordinates,
+      address: destinationAddress,
+      stop: destinationStop,
+      datetime: arrival,
+    }),
+  ]);
+  const request = getRequest(`
+    <TripRequest>
+      <Origin>${origin}</Origin>
+      <Destination>${destination}</Destination>
+      <Params>
+        <NumberOfResults>1</NumberOfResults>
+        <WalkSpeed>100</WalkSpeed>
+      </Params>
+    </TripRequest>`);
 
   const response = await axios.post(endpoint, request, { headers: { 'Content-Type': 'text/xml' } });
 
