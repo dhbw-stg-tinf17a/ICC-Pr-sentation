@@ -44,7 +44,7 @@ const mockPreferences = {
 jest.mock('@/services/SpeechSynthesis');
 jest.mock('axios', () => ({
   get: jest.fn(() => Promise.resolve(mockPreferences)),
-  patch: jest.fn(() => Promise.reject()),
+  patch: jest.fn(() => Promise.resolve()),
   create: () => mockAxios,
   defaults: {
     adapter: {},
