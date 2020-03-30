@@ -12,7 +12,6 @@
  */
 
 // TODO remember travel destination for weekend
-// TODO use preferences
 // TODO store visited destinations
 
 const schedule = require('node-schedule');
@@ -27,9 +26,7 @@ const vvs = require('../modules/vvs');
 const preferences = require('../modules/preferences');
 
 const logger = pino({ level: process.env.LOG_LEVEL || 'info' });
-
 const mainStation = { dbID: '8098096', location: { latitude: 48.784084, longitude: 9.181635 }, vvsID: 'de:08111:6115' }; // Stuttgart Hbf
-const minDistance = 100; // km
 const excludedStationIDs = ['8098096'];
 const timezone = 'Europe/Berlin';
 
@@ -81,9 +78,10 @@ async function planTrip({ departure, arrival, destinationID }) {
   return { connectionToDestination, connectionFromDestination };
 }
 
-async function planRandomTrip({ departure, arrival }) {
+async function planRandomTrip({ departure, arrival, pref }) {
   const stations = await db.getFilteredStations((station) => station.location
-    && geolib.getDistance(mainStation.location, station.location) / 1000 >= minDistance // m to km
+    && geolib.getDistance(mainStation.location, station.location) / 1000 // m to km
+       >= pref.travelPlanningMinDistance
     && !excludedStationIDs.findIndex((stationID) => station.id === stationID) >= 0);
 
   let connectionToDestination;
@@ -114,21 +112,22 @@ async function getWeather({ destination, saturday, sunday }) {
   return { saturdayWeather: forecast[daysToSaturday], sundayWeather: forecast[daysToSunday] };
 }
 
-async function getConnectionToMainStation(arrival) {
-  const { location } = await preferences.get();
-  if (location === undefined) {
+async function getConnectionToMainStation({ arrival, pref }) {
+  if (pref.location === undefined) {
     throw new Error('Home location is not set');
   }
 
   return vvs.getConnection({
-    originCoordinates: location,
+    originCoordinates: pref.location,
     destinationStop: mainStation.vvsID,
-    arrival,
+    arrival: moment(arrival).subtract(5, 'minutes'),
   });
 }
 
 async function run() {
   try {
+    const pref = await preferences.get();
+
     const {
       saturday, sunday, saturdayFree, sundayFree,
     } = await getWeekend();
@@ -136,7 +135,7 @@ async function run() {
       return;
     }
 
-    const trip = await planRandomTrip({ departure: saturday, arrival: sunday });
+    const trip = await planRandomTrip({ departure: saturday, arrival: sunday, pref });
     const { destination, connectionToDestination, connectionFromDestination } = trip;
     const price = connectionToDestination.price + connectionFromDestination.price;
 
