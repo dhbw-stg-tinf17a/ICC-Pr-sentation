@@ -10,8 +10,7 @@
  * to hear the daily quote, a daily quote is also presented to the user.
  */
 
-// TODO use preferences
-// TODO timespan of weather forecast?
+// TODO look at tomorrow if there is no event today or the first event today already started?
 
 const schedule = require('node-schedule');
 const moment = require('moment-timezone');
@@ -24,27 +23,17 @@ const notifications = require('../modules/notifications');
 const quote = require('../modules/quote');
 
 const logger = pino({ level: process.env.LOG_LEVEL || 'info' });
-
-const minutesForPreparation = 45;
-const quoteCategory = 'funny';
 const timezone = 'Europe/Berlin';
 
-async function getQuoteOfTheDay() {
-  return quote.getQuoteOfTheDay(quoteCategory);
+async function getQuoteOfTheDay(pref) {
+  return quote.getQuoteOfTheDay(pref.mornginRoutineQuoteCategory);
 }
 
-async function getWakeUpTimeForFirstEventOfToday() {
+async function getWakeUpTimeForFirstEventOfToday(pref) {
   const start = moment.tz(timezone).startOf('day');
   const end = start.clone().endOf('day');
 
-  const [
-    event,
-    { location },
-  ] = await Promise.all([
-    calendar.getFirstEventStartingBetween({ start, end }),
-    preferences.get(),
-  ]);
-
+  const event = await calendar.getFirstEventStartingBetween({ start, end });
   if (event === undefined) {
     // no event today
     return {};
@@ -52,38 +41,39 @@ async function getWakeUpTimeForFirstEventOfToday() {
 
   if (!event.location) {
     // event has no location set
-    const wakeUpTime = moment(event.start).subtract(minutesForPreparation, 'minutes');
+    const wakeUpTime = moment(event.start).subtract(pref.morningRoutineMinutesForPreparation, 'minutes');
     return { event, wakeUpTime };
   }
 
-  if (location === undefined) {
+  if (pref.location === undefined) {
     throw new Error('Home location is not set');
   }
 
   const connection = await vvs.getConnection({
-    originCoordinates: location, destinationAddress: event.location, arrival: event.start,
+    originCoordinates: pref.location, destinationAddress: event.location, arrival: event.start,
   });
   if (connection === undefined) {
     // no connection found
-    const wakeUpTime = moment(event.start).subtract(minutesForPreparation, 'minutes');
+    const wakeUpTime = moment(event.start).subtract(pref.morningRoutineMinutesForPreparation, 'minutes');
     return { event, wakeUpTime };
   }
 
-  const wakeUpTime = moment(connection.departure).subtract(minutesForPreparation, 'minutes');
+  const wakeUpTime = moment(connection.departure).subtract(pref.morningRoutineMinutesForPreparation, 'minutes');
 
   return {
     event, connection, wakeUpTime,
   };
 }
 
-async function getWeatherForecast() {
-  const { location } = await preferences.get();
-  return weather.getForecast({ ...location, duration: 1 });
+async function getWeatherForecast(pref) {
+  return weather.getForecast({ ...pref.location, duration: 1 })[0];
 }
 
 async function run() {
   try {
-    const { event, connection, wakeUpTime } = await getWakeUpTimeForFirstEventOfToday();
+    const pref = await preferences.get();
+
+    const { event, connection, wakeUpTime } = await getWakeUpTimeForFirstEventOfToday(pref);
 
     const eventStart = moment(event.start).tz(timezone).format('HH:mm');
     const departure = moment(connection.departure).tz(timezone).format('HH:mm');
