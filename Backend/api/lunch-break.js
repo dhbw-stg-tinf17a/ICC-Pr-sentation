@@ -1,6 +1,7 @@
 const express = require('express');
 const wrapAsync = require('../utilities/wrap-async');
 const lunchBreak = require('../usecases/lunch-break');
+const preferences = require('../modules/preferences');
 const vvs = require('../modules/vvs');
 
 const router = express.Router();
@@ -8,12 +9,14 @@ const router = express.Router();
 router.get('/', wrapAsync(async (req, res) => {
   const { latitude, longitude } = req.query;
 
+  const pref = await preferences.get();
+
   const [
     freeSlot,
     restaurant,
   ] = await Promise.all([
-    lunchBreak.getFreeSlotForLunchbreak(),
-    lunchBreak.getRandomRestaurantNear({ latitude, longitude }),
+    lunchBreak.getFreeSlotForLunchbreak(pref),
+    lunchBreak.getRandomRestaurantNear({ latitude, longitude, pref }),
   ]);
 
   res.send({ freeSlot, restaurant });
