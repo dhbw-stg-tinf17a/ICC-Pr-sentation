@@ -128,15 +128,23 @@ export default {
   beforeRouteEnter(to, from, next) {
     next((vm) => {
       vm.submitMyMessage(to.query.usecase);
-      if (to.query.usecase === 'morning-routine') vm.morningRoutineUseCase();
+      const functionName = vm.transformRouteNameToFunctionName(to.query.usecase);
+      vm[functionName]();
     });
   },
   beforeRouteUpdate(to, from, next) {
     this.submitMyMessage(to.query.usecase);
-    if (to.query.usecase === 'morning-routine') this.morningRoutineUseCase();
+    const functionName = this.transformRouteNameToFunctionName(to.query.usecase);
+    this[functionName]();
     next();
   },
   methods: {
+    // transformation to get 'morningRoutineUseCase' out of morning-routine
+    transformRouteNameToFunctionName(routeName) {
+      return `${routeName.split('-')[0]
+            + routeName.charAt(routeName.indexOf('-') + 1).toUpperCase()
+            + routeName.split('-')[1].substr(1)}UseCase`;
+    },
     handleApiError(error) {
       this.$buefy.toast.open({
         message: `Error ${error.response.data.status}: ${error.response.data.error}`,
