@@ -7,19 +7,19 @@ const router = express.Router();
 
 router.get('/', wrapAsync(async (req, res) => {
   const [
-    { event, departure, wakeUpTime },
+    { event, connection, wakeUpTime },
     weatherForecast,
   ] = await Promise.all([
-    morningRoutine.getWakeUpTimeForNextFirstEventOfDay(),
-    morningRoutine.getWeatherForecastAtHome(),
+    morningRoutine.getWakeUpTimeForFirstEventOfToday(),
+    morningRoutine.getWeatherForecast(),
   ]);
 
   res.send({
-    event, departure, wakeUpTime, weatherForecast,
+    event, connection, wakeUpTime, weatherForecast,
   });
 }));
 
-router.get('/quote-of-the-day', wrapAsync(async (req, res) => {
+router.get('/confirm', wrapAsync(async (req, res) => {
   const quoteOfTheDay = await quote.getPreferredQuoteOfTheDay();
   res.send(quoteOfTheDay);
 }));

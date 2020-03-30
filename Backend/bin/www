@@ -4,12 +4,10 @@ const logger = require('pino')({ level: process.env.LOG_LEVEL || 'info' });
 const http = require('http');
 const app = require('../app');
 
-const port = Number(process.env.PORT || 3000);
-app.set('port', port);
-
 const server = http.createServer(app);
 
-server.listen(port, () => logger.info('Gunter has woken up'));
+const port = Number(process.env.PORT || 3000);
+server.listen(port, () => logger.info(`Gunter is listening on ${server.address().address}:${server.address().port}`));
 
 server.on('error', (error) => {
   if (error.syscall !== 'listen') {

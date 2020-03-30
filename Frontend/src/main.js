@@ -18,6 +18,7 @@ window.addEventListener('load', async () => {
 
   navigator.serviceWorker.addEventListener('message', (event) => {
     const { usecase } = event.data;
+    // TODO prevent error if route is already open
     router.push({ path: `/dialog?usecase=${usecase}` });
   });
 });

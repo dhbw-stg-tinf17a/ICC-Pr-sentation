@@ -3,13 +3,12 @@ const weather = require('../modules/weather');
 
 jest.mock('axios');
 
+process.env.AZURE_MAPS_KEY = 'AZURE_MAPS_KEY';
+
 describe('weather module', () => {
   describe('getForecast', () => {
     it('should return the forecast', async () => {
       const response = {
-        summary: {
-          startDate: '2020-03-28T18:00:00+00:00', endDate: '2020-03-29T00:00:00+00:00', severity: 5, phrase: 'Expect showers Saturday evening', category: 'rain',
-        },
         forecasts: [
           {
             date: '2020-03-24T06:00:00+00:00',
@@ -93,8 +92,11 @@ describe('weather module', () => {
       });
 
       expect(weather.getForecast({ latitude: 48.78232, longitude: 9.17702, duration: 1 }))
-        .resolves.toStrictEqual(response);
-      expect(axios.get).toHaveBeenLastCalledWith(weather.endpoint, {
+        .resolves.toStrictEqual(response.forecasts);
+
+      // check conversion to API request
+      expect(axios.get).toHaveBeenCalledTimes(1);
+      expect(axios.get).toHaveBeenCalledWith(weather.endpoint, {
         params: {
           'subscription-key': process.env.AZURE_MAPS_KEY, 'api-version': '1.0', query: '48.78232,9.17702', duration: 1,
         },

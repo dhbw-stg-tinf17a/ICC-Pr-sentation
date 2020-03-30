@@ -1,41 +1,54 @@
 const ical = require('node-ical');
-const moment = require('moment-timezone');
-const user = require('./user');
+const preferences = require('./preferences');
 
 async function getCalendarURL() {
-  const preferences = await user.getUserPreferences();
-
-  if (preferences.calendarUrl === undefined) {
-    throw new Error('User has not set their calendar url yet.');
+  const { calendarURL } = await preferences.get();
+  if (calendarURL === undefined) {
+    throw new Error('Calendar URL is not set');
   }
 
-  return preferences.calendarUrl;
+  return calendarURL;
 }
 
 async function fetchCalendarEvents() {
   return ical.async.fromURL(await getCalendarURL());
 }
 
-async function getFirstEventOfDay(date) {
+async function getFirstEventStartingBetween({ start, end }) {
   const events = await fetchCalendarEvents();
-  const day = moment(date).utc().format('YYYY-MM-DD');
+  const startDt = new Date(start);
+  const endDt = new Date(end);
 
   return Object.values(events)
-    .filter((event) => event.type === 'VEVENT' && moment(event.start).utc().format('YYYY-MM-DD') === day)
+    .filter((event) => event.type === 'VEVENT' && event.start >= startDt && event.start <= endDt)
     .sort((a, b) => a.start - b.start)
     .find(() => true);
 }
 
-async function getNextFirstEventOfDay() {
-  const today = moment();
-  const firstEventOfToday = await getFirstEventOfDay(today);
-  if (firstEventOfToday && firstEventOfToday.start >= today) {
-    return firstEventOfToday;
-  }
+async function getFreeSlotsBetween({ start, end }) {
+  const events = await fetchCalendarEvents();
 
-  const tomorrow = today.add(1, 'day');
-  const firstEventOfTomorrow = await getFirstEventOfDay(tomorrow);
-  return firstEventOfTomorrow;
+  let freeSlots = [{ start: new Date(start), end: new Date(end) }];
+
+  Object.values(events).forEach((event) => {
+    freeSlots = freeSlots.flatMap(({ start: slotStart, end: slotEnd }) => {
+      if (slotStart >= event.end || slotEnd <= event.start) {
+        // slot and event do not intersect
+        return [{ start: slotStart, end: slotEnd }];
+      }
+
+      const subSlots = [];
+      if (slotStart < event.start) {
+        subSlots.push({ start: slotStart, end: event.start });
+      }
+      if (slotEnd > event.end) {
+        subSlots.push({ start: event.end, end: slotEnd });
+      }
+      return subSlots;
+    });
+  });
+
+  return freeSlots;
 }
 
-module.exports = { fetchCalendarEvents, getFirstEventOfDay, getNextFirstEventOfDay };
+module.exports = { getFirstEventStartingBetween, getFreeSlotsBetween };

@@ -1,53 +1,50 @@
 const ical = require('node-ical');
 const calendar = require('../modules/calendar');
-const user = require('../modules/user');
+const preferences = require('../modules/preferences');
 
 jest.mock('node-ical');
-jest.mock('../modules/user');
+jest.mock('../modules/preferences');
 
 describe('calendar module', () => {
-  describe('getNextFirstEventOfDay', () => {
+  describe('getFirstEventStartingBetween', () => {
     it('should throw an error if no calendar URL is set', async () => {
-      user.getUserPreferences.mockResolvedValue({});
+      preferences.get.mockResolvedValueOnce({});
 
-      await expect(calendar.getFirstEventOfDay()).rejects.toThrow('User has not set their calendar url yet.');
+      await expect(calendar.getFirstEventStartingBetween({ start: '2020-03-28T00:00:00Z', end: '2020-03-29T00:00:00Z' })).rejects.toThrow('Calendar URL is not set');
     });
 
     it('should return the first event of today if it did not start yet', async () => {
-      const calendarUrl = 'https://example.com';
-      user.getUserPreferences.mockResolvedValue({ calendarUrl });
+      const calendarURL = 'https://example.com';
+      preferences.get.mockResolvedValueOnce({ calendarURL });
 
-      const now = new Date();
-      const inOneMinute = new Date(now.getTime());
-      inOneMinute.setUTCMinutes(inOneMinute.getUTCMinutes() + 1);
-      const inTwoMinutes = new Date(now.getTime());
-      inTwoMinutes.setUTCMinutes(inTwoMinutes.getUTCMinutes() + 1);
-      ical.async.fromURL.mockResolvedValue({
-        1: { type: 'VEVENT', start: inTwoMinutes },
-        2: { type: 'VEVENT', start: inOneMinute },
-      });
+      const events = {
+        1: { type: 'VEVENT', start: new Date('2020-03-28T08:00:00Z') },
+        2: { type: 'VEVENT', start: new Date('2020-03-28T07:00:00Z') },
+      };
+      ical.async.fromURL.mockResolvedValueOnce(events);
 
-      const event = await calendar.getNextFirstEventOfDay();
-      expect(event.start).toStrictEqual(inOneMinute);
-      expect(ical.async.fromURL).toHaveBeenLastCalledWith(calendarUrl);
+      await expect(calendar.getFirstEventStartingBetween({ start: '2020-03-28T00:00:00Z', end: '2020-03-29T00:00:00Z' })).resolves.toStrictEqual(events[2]);
+
+      // check conversion to API request (only in this test case)
+      expect(ical.async.fromURL).toHaveBeenCalledTimes(1);
+      expect(ical.async.fromURL).toHaveBeenCalledWith(calendarURL);
     });
+  });
 
-    it('should return the first event of tomorrow if the first event of today already started', async () => {
-      const calendarUrl = 'https://example.com';
-      user.getUserPreferences.mockResolvedValue({ calendarUrl });
+  describe('getFreeSlotsBetween', () => {
+    it('should return all free slots during the given time', async () => {
+      const calendarURL = 'https://example.com';
+      preferences.get.mockResolvedValueOnce({ calendarURL });
 
-      const now = new Date();
-      const oneMinuteAgo = new Date(now.getTime());
-      oneMinuteAgo.setUTCMinutes(oneMinuteAgo.getUTCMinutes() - 1);
-      const inOneDay = new Date(now.getTime());
-      inOneDay.setUTCDate(inOneDay.getUTCDate() + 1);
-      ical.async.fromURL.mockResolvedValue({
-        1: { type: 'VEVENT', start: inOneDay },
-        2: { type: 'VEVENT', start: oneMinuteAgo },
+      ical.async.fromURL.mockResolvedValueOnce({
+        1: { type: 'VEVENT', start: new Date('2020-03-27T00:00Z'), end: new Date('2020-03-27T07:00Z') },
+        2: { type: 'VEVENT', start: new Date('2020-03-27T12:00Z'), end: new Date('2020-03-27T15:00Z') },
+        3: { type: 'VEVENT', start: new Date('2020-03-28T07:00Z'), end: new Date('2020-03-28T09:00Z') },
       });
 
-      const event = await calendar.getNextFirstEventOfDay();
-      expect(event.start).toStrictEqual(inOneDay);
+      await expect(calendar.getFreeSlotsBetween({ start: '2020-03-27T00:00Z', end: '2020-03-27T15:00Z' })).resolves.toStrictEqual([
+        { start: new Date('2020-03-27T07:00Z'), end: new Date('2020-03-27T12:00Z') },
+      ]);
     });
   });
 });
