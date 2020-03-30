@@ -64,7 +64,7 @@ export default {
   },
   methods: {
     showPosition(position) {
-      PreferencesService.updateLocation({
+      PreferencesService.updatePreferences({
         location: {
           latitude: position.coords.latitude,
           longitude: position.coords.longitude,

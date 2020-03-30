@@ -1,12 +1,15 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: '/api/usecases/',
+  baseURL: '/api/',
 });
 
 const functions = {
   getCommuteUseCase() {
-    return api.get('1');
+    return api.get('travel-planning');
+  },
+  getTravelUseCase() {
+    return api.get('travel-planning');
   },
 };
 
