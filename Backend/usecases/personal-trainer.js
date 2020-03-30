@@ -52,7 +52,7 @@ async function getFreeSlotForActivity(pref) {
   // find the longest slot and check if it sufficiently long
   const freeSlot = freeSlots.sort((a, b) => (b.end - b.start) - (a.end - a.start))[0];
   if (moment.duration(moment(freeSlot.end).diff(freeSlot.start)).asMinutes()
-      < pref.personalTraierRequiredMinutes) {
+      < pref.personalTrainerRequiredMinutes) {
     return undefined;
   }
 
@@ -65,7 +65,10 @@ async function getRandomPOI({ category, pref }) {
   }
 
   const pois = await places.getPOIsAround({
-    category, limit: 100, radius: pref.personalTrainerMaxDistance, ...pref.location,
+    category,
+    limit: 100,
+    radius: pref.personalTrainerMaxDistance,
+    ...pref.location,
   });
 
   if (pois.length === 0) {
@@ -76,12 +79,18 @@ async function getRandomPOI({ category, pref }) {
 }
 
 async function getRandomSportsCenter(pref) {
-  return getRandomPOI({ category: 'SPORTS_CENTER', pref });
+  return getRandomPOI({
+    category: 'SPORTS_CENTER',
+    pref,
+  });
 }
 
 
 async function getRandomParkRecreationArea(pref) {
-  return getRandomPOI({ category: 'PARK_RECREATION_AREA', pref });
+  return getRandomPOI({
+    category: 'PARK_RECREATION_AREA',
+    pref,
+  });
 }
 
 async function getWeather(pref) {
@@ -89,7 +98,10 @@ async function getWeather(pref) {
     throw new Error('Home location is not set');
   }
 
-  const forecast = await weather.getForecast({ ...pref.location, duration: 1 });
+  const forecast = await weather.getForecast({
+    ...pref.location,
+    duration: 1,
+  });
   return forecast[0];
 }
 
@@ -103,6 +115,7 @@ async function run() {
     }
 
     const precipitation = (await getWeather()).day.hasPrecipitation;
+
     let place;
     if (precipitation) {
       place = await getRandomSportsCenter(pref);
@@ -141,9 +154,13 @@ async function run() {
 
 function init() {
   // every day at 00:00
-  const job = schedule.scheduleJob({
-    minute: 0, hour: 0, tz: timezone,
-  }, run);
+  const job = schedule.scheduleJob(
+    {
+      minute: 0,
+      hour: 0,
+      tz: timezone,
+    }, run,
+  );
   logger.info(`Personal trainer usecase: First invocation at ${job.nextInvocation().toISOString()}`);
 }
 

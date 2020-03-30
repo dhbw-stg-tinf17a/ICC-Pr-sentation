@@ -26,14 +26,17 @@ const logger = pino({ level: process.env.LOG_LEVEL || 'info' });
 const timezone = 'Europe/Berlin';
 
 async function getQuoteOfTheDay(pref) {
-  return quote.getQuoteOfTheDay(pref.mornginRoutineQuoteCategory);
+  return quote.getQuoteOfTheDay(pref.morningRoutineQuoteCategory);
 }
 
 async function getWakeUpTimeForFirstEventOfToday(pref) {
   const start = moment.tz(timezone).startOf('day');
   const end = start.clone().endOf('day');
 
-  const event = await calendar.getFirstEventStartingBetween({ start, end });
+  const event = await calendar.getFirstEventStartingBetween({
+    start,
+    end,
+  });
   if (event === undefined) {
     // no event today
     return {};
@@ -41,8 +44,12 @@ async function getWakeUpTimeForFirstEventOfToday(pref) {
 
   if (!event.location) {
     // event has no location set
-    const wakeUpTime = moment(event.start).subtract(pref.morningRoutineMinutesForPreparation, 'minutes');
-    return { event, wakeUpTime };
+    const wakeUpTime = moment(event.start)
+      .subtract(pref.morningRoutineMinutesForPreparation, 'minutes');
+    return {
+      event,
+      wakeUpTime,
+    };
   }
 
   if (pref.location === undefined) {
@@ -50,23 +57,36 @@ async function getWakeUpTimeForFirstEventOfToday(pref) {
   }
 
   const connection = await vvs.getConnection({
-    originCoordinates: pref.location, destinationAddress: event.location, arrival: event.start,
+    originCoordinates: pref.location,
+    destinationAddress: event.location,
+    arrival: event.start,
   });
   if (connection === undefined) {
     // no connection found
-    const wakeUpTime = moment(event.start).subtract(pref.morningRoutineMinutesForPreparation, 'minutes');
-    return { event, wakeUpTime };
+    const wakeUpTime = moment(event.start)
+      .subtract(pref.morningRoutineMinutesForPreparation, 'minutes');
+    return {
+      event,
+      wakeUpTime,
+    };
   }
 
-  const wakeUpTime = moment(connection.departure).subtract(pref.morningRoutineMinutesForPreparation, 'minutes');
+  const wakeUpTime = moment(connection.departure)
+    .subtract(pref.morningRoutineMinutesForPreparation, 'minutes');
 
   return {
-    event, connection, wakeUpTime,
+    event,
+    connection,
+    wakeUpTime,
   };
 }
 
 async function getWeatherForecast(pref) {
-  const forecast = await weather.getForecast({ ...pref.location, duration: 1 });
+  const forecast = await weather.getForecast({
+    ...pref.location,
+    duration: 1,
+  });
+
   return forecast[0];
 }
 
@@ -103,12 +123,21 @@ async function run() {
 
 function init() {
   // every day at 00:00, but not on the weekend
-  const job = schedule.scheduleJob({
-    minute: 0, hour: 0, dayOfWeek: [1, 2, 3, 4, 5], tz: timezone,
-  }, run);
+  const job = schedule.scheduleJob(
+    {
+      minute: 0,
+      hour: 0,
+      dayOfWeek: [1, 2, 3, 4, 5],
+      tz: timezone,
+    },
+    run,
+  );
   logger.info(`Morning routine usecase: First invocation at ${job.nextInvocation().toISOString()}`);
 }
 
 module.exports = {
-  init, getWakeUpTimeForFirstEventOfToday, getWeatherForecast, getQuoteOfTheDay,
+  init,
+  getWakeUpTimeForFirstEventOfToday,
+  getWeatherForecast,
+  getQuoteOfTheDay,
 };
