@@ -172,7 +172,7 @@ async function run() {
     const price = connectionToDestination.price + connectionFromDestination.price;
 
     const body = `Your weekend seems to be free, why not travel to ${destination.address.city} and back for just ${price} €?`;
-    const job = notifications.sendNotifications({
+    notifications.sendNotifications({
       title: 'Recommended trip for this weekend',
       options: {
         body,
@@ -184,9 +184,7 @@ async function run() {
         },
       },
     });
-    if (job !== null) {
-      logger.debug(`Travel planning usecase: Notification at ${job.nextInvocation().toISOString()} with body '${body}'`);
-    }
+    logger.debug(`Travel planning usecase: Notification with body '${body}'`);
   } catch (error) {
     logger.error(error);
   }

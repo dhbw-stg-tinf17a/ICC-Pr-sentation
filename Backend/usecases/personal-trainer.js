@@ -114,7 +114,7 @@ async function run() {
       return;
     }
 
-    const precipitation = (await getWeatherForecast()).day.hasPrecipitation;
+    const precipitation = (await getWeatherForecast(pref)).day.hasPrecipitation;
 
     let place;
     if (precipitation) {
