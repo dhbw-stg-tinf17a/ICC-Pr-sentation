@@ -128,12 +128,12 @@ export default {
   beforeRouteEnter(to, from, next) {
     next((vm) => {
       vm.submitMyMessage(to.query.usecase);
-      if (to.query.usecase === 'commute') vm.commuteUseCase();
+      if (to.query.usecase === 'morning-routine') vm.morningRoutineUseCase();
     });
   },
   beforeRouteUpdate(to, from, next) {
     this.submitMyMessage(to.query.usecase);
-    if (to.query.usecase === 'commute') this.commuteUseCase();
+    if (to.query.usecase === 'morning-routine') this.morningRoutineUseCase();
     next();
   },
   methods: {
@@ -163,8 +163,8 @@ export default {
         millisecond: date.getMilliseconds(),
       };
     },
-    commuteUseCase() {
-      UseCasesService.getCommuteUseCase()
+    morningRoutineUseCase() {
+      UseCasesService.getMorningRoutineUseCase()
         .then((response) => {
           const messageString = `Next Event: ${response.data.data.firstEvent.summary}\n`
             + `At: ${response.data.data.firstEvent.location}\n`
@@ -192,8 +192,8 @@ export default {
           this.handleApiError(error);
         });
     },
-    travelUseCase() {
-      UseCasesService.getTravelUseCase().then((response) => {
+    travelPlanningUseCase() {
+      UseCasesService.getTravelPlanningUseCase().then((response) => {
         this.submitMessage({
           content: response.data.textToDisplay,
           myself: false,
@@ -207,7 +207,7 @@ export default {
         this.handleApiError(error);
       });
     },
-    restaurantUseCase() {
+    lunchBreakUseCase() {
       this.submitMessage({
         content: 'Coming soon. I promise...',
         myself: false,
@@ -215,7 +215,7 @@ export default {
         timestamp: this.getCurrentTimestamp(),
       });
     },
-    trainerUseCase() {
+    personalTrainerUseCase() {
       this.submitMessage({
         content: 'Coming soon. I promise...',
         myself: false,

@@ -5,10 +5,10 @@ const api = axios.create({
 });
 
 const functions = {
-  getCommuteUseCase() {
+  getMorningRoutineUseCase() {
     return api.get('travel-planning');
   },
-  getTravelUseCase() {
+  getTravelPlanningUseCase() {
     return api.get('travel-planning');
   },
 };

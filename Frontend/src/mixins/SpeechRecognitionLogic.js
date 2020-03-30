@@ -3,7 +3,7 @@ import SpeechService from '@/services/SpeechSynthesis';
 export default {
   data() {
     return {
-      usecase: ['commute', 'trainer', 'restaurant', 'travel'],
+      usecase: ['morning-routine', 'personal-trainer', 'lunch-break', 'travel-planning'],
     };
   },
   watch: {
