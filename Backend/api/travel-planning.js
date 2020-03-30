@@ -70,24 +70,24 @@ router.get('/', wrapAsync(async (req, res) => {
   }
 
   res.send({
-    textToDisplay: `Free on: ${freeDays}\n
-                    Destination: ${destination.name} in ${destination.address.city}\n
-                    Depart from ${connectionToDestination.legs[0].from}, ${connectionToDestination.legs[0].departure}\n
-                    Arrive at ${connectionToDestination.legs[connectionToDestination.legs.length - 1].to}, 
-                    ${connectionToDestination.legs[connectionToDestination.legs.length - 1].arrival}\n\n
+    textToDisplay: `Free on: ${freeDays}\n`
+                    + `Destination: ${destination.name} in ${destination.address.city}\n`
+                    + `Depart from ${connectionToDestination.legs[0].from}, ${connectionToDestination.legs[0].departure}\n`
+                    + `Arrive at ${connectionToDestination.legs[connectionToDestination.legs.length - 1].to},`
+                    + `${connectionToDestination.legs[connectionToDestination.legs.length - 1].arrival}\n\n`
 
-                    Return from ${connectionFromDestination.legs[0].from}, ${connectionFromDestination.legs[0].departure}\n
-                    Arrive home at ${connectionFromDestination.legs[connectionFromDestination.legs.length - 1].to}, 
-                    ${connectionFromDestination.legs[connectionFromDestination.legs.length - 1].arrival}\n\n
-                    
-                    ${weatherForecast}`,
+                    + `Return from ${connectionFromDestination.legs[0].from}, ${connectionFromDestination.legs[0].departure}\n`
+                    + `Arrive home at ${connectionFromDestination.legs[connectionFromDestination.legs.length - 1].to},`
+                    + `${connectionFromDestination.legs[connectionFromDestination.legs.length - 1].arrival}\n\n`
 
-    textToRead: `You are free on ${freeDays}. You could travel to ${destination.name} in
-                ${destination.address.city}. Your train leaves from ${connectionToDestination.legs[0].from} at 
-                ${connectionToDestination.legs[0].departure}. You will arrive at 
-                ${connectionToDestination.legs[connectionToDestination.legs.length - 1].to} at 
-                ${connectionToDestination.legs[connectionToDestination.legs.length - 1].arrival}.
-                The weather will be ${saturdayWeatherForecast.day.shortPhrase}`,
+                    + `${weatherForecast}`,
+
+    textToRead: `You are free on ${freeDays}. You could travel to ${destination.name} in`
+                + `${destination.address.city}. Your train leaves from ${connectionToDestination.legs[0].from} at`
+                + `${connectionToDestination.legs[0].departure}. You will arrive at`
+                + `${connectionToDestination.legs[connectionToDestination.legs.length - 1].to} at`
+                + `${connectionToDestination.legs[connectionToDestination.legs.length - 1].arrival}.`
+                + `The weather will be ${saturdayWeatherForecast.day.shortPhrase}`,
 
     displayRouteOnMap: {
       origin: connectionToDestination.legs[0].from,
