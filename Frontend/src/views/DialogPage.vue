@@ -166,27 +166,14 @@ export default {
     morningRoutineUseCase() {
       UseCasesService.getMorningRoutineUseCase()
         .then((response) => {
-          const messageString = `Next Event: ${response.data.data.firstEvent.summary}\n`
-            + `At: ${response.data.data.firstEvent.location}\n`
-            + `Start: ${response.data.data.firstEvent.start}\n`
-            + `Leave home: ${response.data.data.timeToLeave}\n\n`
-            + `${response.data.data.weather.weather[0].description} `
-            + `${response.data.data.weather.main.temp}°C\n\n`
-            + `Quote of the day: ${response.data.data.quote.quote} -`
-            + `${response.data.data.quote.author}`;
-
           this.submitMessage({
-            content: messageString,
+            content: response.data.textToDisplay,
             myself: false,
             participantId: 1,
             timestamp: this.getCurrentTimestamp(),
           });
           if (localStorage.getItem('soundEnabled') === 'true') {
-            SpeechService.speak(
-              `Next Event: ${response.data.data.firstEvent.summary}`
-                + ` at ${response.data.data.firstEvent.start}.`
-                + ` You have to leave at ${response.data.data.timeToLeave}`,
-            );
+            SpeechService.speak(response.data.textToRead);
           }
         }).catch((error) => {
           this.handleApiError(error);
@@ -208,19 +195,33 @@ export default {
       });
     },
     lunchBreakUseCase() {
-      this.submitMessage({
-        content: 'Coming soon. I promise...',
-        myself: false,
-        participantId: 1,
-        timestamp: this.getCurrentTimestamp(),
+      UseCasesService.getLunchBreakUseCase().then((response) => {
+        this.submitMessage({
+          content: response.data.textToDisplay,
+          myself: false,
+          participantId: 1,
+          timestamp: this.getCurrentTimestamp(),
+        });
+        if (localStorage.getItem('soundEnabled') === 'true') {
+          SpeechService.speak(response.data.textToRead);
+        }
+      }).catch((error) => {
+        this.handleApiError(error);
       });
     },
     personalTrainerUseCase() {
-      this.submitMessage({
-        content: 'Coming soon. I promise...',
-        myself: false,
-        participantId: 1,
-        timestamp: this.getCurrentTimestamp(),
+      UseCasesService.getPersonalTrainerUseCase().then((response) => {
+        this.submitMessage({
+          content: response.data.textToDisplay,
+          myself: false,
+          participantId: 1,
+          timestamp: this.getCurrentTimestamp(),
+        });
+        if (localStorage.getItem('soundEnabled') === 'true') {
+          SpeechService.speak(response.data.textToRead);
+        }
+      }).catch((error) => {
+        this.handleApiError(error);
       });
     },
     onType(event) {

@@ -6,10 +6,16 @@ const api = axios.create({
 
 const functions = {
   getMorningRoutineUseCase() {
-    return api.get('travel-planning');
+    return api.get('morning-routine');
   },
   getTravelPlanningUseCase() {
     return api.get('travel-planning');
+  },
+  getPersonalTrainerUseCase() {
+    return api.get('personal-trainer');
+  },
+  getLunchBreakUseCase() {
+    return api.get('lunch-break');
   },
 };
 
