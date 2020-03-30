@@ -2,11 +2,7 @@ const axios = require('axios').default;
 
 const endpoint = 'https://quotes.rest/qod';
 
-// TODO from preferences
-const category = 'funny';
-
-// TODO cache?
-async function getPreferredQuoteOfTheDay() {
+async function getQuoteOfTheDay(category) {
   try {
     const response = await axios.get(endpoint, { params: { category } });
     const { quote, author } = response.data.contents.quotes[0];
@@ -20,4 +16,4 @@ async function getPreferredQuoteOfTheDay() {
   }
 }
 
-module.exports = { endpoint, category, getPreferredQuoteOfTheDay };
+module.exports = { endpoint, getQuoteOfTheDay };

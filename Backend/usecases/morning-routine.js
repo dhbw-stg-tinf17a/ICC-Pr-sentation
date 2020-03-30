@@ -21,11 +21,17 @@ const vvs = require('../modules/vvs');
 const weather = require('../modules/weather');
 const preferences = require('../modules/preferences');
 const notifications = require('../modules/notifications');
+const quote = require('../modules/quote');
 
 const logger = pino({ level: process.env.LOG_LEVEL || 'info' });
 
 const minutesForPreparation = 45;
+const quoteCategory = 'funny';
 const timezone = 'Europe/Berlin';
+
+async function getQuoteOfTheDay() {
+  return quote.getQuoteOfTheDay(quoteCategory);
+}
 
 async function getWakeUpTimeForFirstEventOfToday() {
   const start = moment.tz(timezone).startOf('day');
@@ -113,5 +119,5 @@ function init() {
 }
 
 module.exports = {
-  init, getWakeUpTimeForFirstEventOfToday, getWeatherForecast,
+  init, getWakeUpTimeForFirstEventOfToday, getWeatherForecast, getQuoteOfTheDay,
 };

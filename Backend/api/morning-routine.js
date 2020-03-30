@@ -1,7 +1,6 @@
 const express = require('express');
 const wrapAsync = require('../utilities/wrap-async');
 const morningRoutine = require('../usecases/morning-routine');
-const quote = require('../modules/quote');
 
 const router = express.Router();
 
@@ -20,7 +19,7 @@ router.get('/', wrapAsync(async (req, res) => {
 }));
 
 router.get('/confirm', wrapAsync(async (req, res) => {
-  const quoteOfTheDay = await quote.getPreferredQuoteOfTheDay();
+  const quoteOfTheDay = await morningRoutine.getQuoteOfTheDay();
   res.send(quoteOfTheDay);
 }));
 
