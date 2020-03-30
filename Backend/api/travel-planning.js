@@ -2,11 +2,14 @@ const express = require('express');
 const travelPlanning = require('../usecases/travel-planning');
 const wrapAsync = require('../utilities/wrap-async');
 const db = require('../modules/db');
+const preferences = require('../modules/preferences');
 
 const router = express.Router();
 
 router.get('/', wrapAsync(async (req, res) => {
   const { destinationID } = req.query;
+
+  const pref = await preferences.get();
 
   const {
     saturday, sunday, saturdayFree, sundayFree,
@@ -15,25 +18,41 @@ router.get('/', wrapAsync(async (req, res) => {
   let destination;
   let connectionToDestination;
   let connectionFromDestination;
-  let saturdayWeather;
-  let sundayWeather;
+  let saturdayWeatherForecast;
+  let sundayWeatherForecast;
+
   if (destinationID !== undefined) {
     [
       destination,
       { connectionToDestination, connectionFromDestination },
-      { saturdayWeather, sundayWeather },
     ] = await Promise.all([
       db.getStationByID(destinationID),
-      travelPlanning.planTrip({ departure: saturday, arrival: sunday, destinationID }),
-      travelPlanning.getWeather({ saturday, sunday }),
+      travelPlanning.planTrip({
+        departure: saturday,
+        arrival: sunday,
+        destinationID,
+      }),
     ]);
+
+    ({ saturdayWeatherForecast, sundayWeatherForecast } = await travelPlanning.getWeatherForecast({
+      saturday,
+      sunday,
+      destination,
+    }));
   } else {
     ({
       destination, connectionToDestination, connectionFromDestination,
-    } = await travelPlanning.planRandomTrip({ departure: saturday, arrival: sunday }));
-    ({
-      saturdayWeather, sundayWeather,
-    } = await travelPlanning.getWeather({ saturday, sunday, destination }));
+    } = await travelPlanning.planRandomTrip({
+      departure: saturday,
+      arrival: sunday,
+      pref,
+    }));
+
+    ({ saturdayWeatherForecast, sundayWeatherForecast } = await travelPlanning.getWeatherForecast({
+      saturday,
+      sunday,
+      destination,
+    }));
   }
 
   res.send({
@@ -42,15 +61,21 @@ router.get('/', wrapAsync(async (req, res) => {
     destination,
     connectionToDestination,
     connectionFromDestination,
-    saturdayWeather,
-    sundayWeather,
+    saturdayWeatherForecast,
+    sundayWeatherForecast,
   });
 }));
 
 // TODO remeber last request to /
 // TODO store destination and don't recommend it again
 router.get('/confirm', wrapAsync(async (req, res) => {
-  const connection = await travelPlanning.getConnectionToMainStation(req.query.arrival);
+  const pref = await preferences.get();
+
+  const connection = await travelPlanning.getConnectionToMainStation({
+    arrival: req.query.arrival,
+    pref,
+  });
+
   res.send({ connection });
 }));
 

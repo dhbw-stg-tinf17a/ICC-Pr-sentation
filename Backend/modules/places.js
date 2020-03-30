@@ -22,4 +22,7 @@ async function getPOIsAround({
     .filter((result) => result.poi.classifications.findIndex((c) => c.code === category) >= 0);
 }
 
-module.exports = { endpoint, getPOIsAround };
+module.exports = {
+  endpoint,
+  getPOIsAround,
+};
