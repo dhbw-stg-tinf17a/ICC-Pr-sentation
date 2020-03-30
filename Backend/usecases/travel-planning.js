@@ -122,7 +122,7 @@ async function planRandomTrip({ departure, arrival, pref }) {
   };
 }
 
-async function getWeather({ destination, saturday, sunday }) {
+async function getWeatherForecast({ destination, saturday, sunday }) {
   const now = moment().startOf('day');
   const daysToSaturday = moment(saturday).endOf('day').diff(now, 'days');
   const daysToSunday = moment(sunday).endOf('day').diff(now, 'days');
@@ -134,8 +134,8 @@ async function getWeather({ destination, saturday, sunday }) {
   });
 
   return {
-    saturdayWeather: forecast[daysToSaturday],
-    sundayWeather: forecast[daysToSunday],
+    saturdayWeatherForecast: forecast[daysToSaturday],
+    sundayWeatherForecast: forecast[daysToSunday],
   };
 }
 
@@ -205,6 +205,6 @@ module.exports = {
   getWeekend,
   planTrip,
   planRandomTrip,
-  getWeather,
+  getWeatherForecast,
   getConnectionToMainStation,
 };

@@ -82,12 +82,12 @@ async function getWakeUpTimeForFirstEventOfToday(pref) {
 }
 
 async function getWeatherForecast(pref) {
-  const forecast = await weather.getForecast({
+  const weatherForecast = await weather.getForecast({
     ...pref.location,
     duration: 1,
   });
 
-  return forecast[0];
+  return weatherForecast[0];
 }
 
 async function run() {

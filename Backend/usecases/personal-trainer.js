@@ -93,7 +93,7 @@ async function getRandomParkRecreationArea(pref) {
   });
 }
 
-async function getWeather(pref) {
+async function getWeatherForecast(pref) {
   if (pref.location === undefined) {
     throw new Error('Home location is not set');
   }
@@ -114,7 +114,7 @@ async function run() {
       return;
     }
 
-    const precipitation = (await getWeather()).day.hasPrecipitation;
+    const precipitation = (await getWeatherForecast()).day.hasPrecipitation;
 
     let place;
     if (precipitation) {
@@ -167,7 +167,7 @@ function init() {
 module.exports = {
   init,
   getFreeSlotForActivity,
-  getWeather,
+  getWeatherForecast,
   getRandomSportsCenter,
   getRandomParkRecreationArea,
   getConnectionToPlace,

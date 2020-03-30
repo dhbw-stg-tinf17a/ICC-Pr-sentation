@@ -10,14 +10,14 @@ router.get('/', wrapAsync(async (req, res) => {
 
   const [
     freeSlot,
-    weather,
+    weatherForecast,
   ] = await Promise.all([
     personalTrainer.getFreeSlotForActivity(pref),
-    personalTrainer.getWeather(pref),
+    personalTrainer.getWeatherForecast(pref),
   ]);
 
   let place;
-  if (weather.day.hasPrecipitation) {
+  if (weatherForecast.day.hasPrecipitation) {
     place = await personalTrainer.getRandomSportsCenter(pref);
   } else {
     place = await personalTrainer.getRandomParkRecreationArea(pref);
@@ -25,7 +25,7 @@ router.get('/', wrapAsync(async (req, res) => {
 
   res.send({
     freeSlot,
-    weather,
+    weatherForecast,
     place,
   });
 }));

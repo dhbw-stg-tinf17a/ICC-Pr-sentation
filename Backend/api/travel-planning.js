@@ -18,14 +18,13 @@ router.get('/', wrapAsync(async (req, res) => {
   let destination;
   let connectionToDestination;
   let connectionFromDestination;
-  let saturdayWeather;
-  let sundayWeather;
+  let saturdayWeatherForecast;
+  let sundayWeatherForecast;
 
   if (destinationID !== undefined) {
     [
       destination,
       { connectionToDestination, connectionFromDestination },
-      { saturdayWeather, sundayWeather },
     ] = await Promise.all([
       db.getStationByID(destinationID),
       travelPlanning.planTrip({
@@ -33,27 +32,27 @@ router.get('/', wrapAsync(async (req, res) => {
         arrival: sunday,
         destinationID,
       }),
-      travelPlanning.getWeather({
-        saturday,
-        sunday,
-      }),
     ]);
+
+    ({ saturdayWeatherForecast, sundayWeatherForecast } = await travelPlanning.getWeatherForecast({
+      saturday,
+      sunday,
+      destination,
+    }));
   } else {
-    [
-      { destination, connectionToDestination, connectionFromDestination },
-      { saturdayWeather, sundayWeather },
-    ] = await Promise.all([
-      travelPlanning.planRandomTrip({
-        departure: saturday,
-        arrival: sunday,
-        pref,
-      }),
-      travelPlanning.getWeather({
-        saturday,
-        sunday,
-        destination,
-      }),
-    ]);
+    ({
+      destination, connectionToDestination, connectionFromDestination,
+    } = await travelPlanning.planRandomTrip({
+      departure: saturday,
+      arrival: sunday,
+      pref,
+    }));
+
+    ({ saturdayWeatherForecast, sundayWeatherForecast } = await travelPlanning.getWeatherForecast({
+      saturday,
+      sunday,
+      destination,
+    }));
   }
 
   res.send({
@@ -62,8 +61,8 @@ router.get('/', wrapAsync(async (req, res) => {
     destination,
     connectionToDestination,
     connectionFromDestination,
-    saturdayWeather,
-    sundayWeather,
+    saturdayWeatherForecast,
+    sundayWeatherForecast,
   });
 }));
 
