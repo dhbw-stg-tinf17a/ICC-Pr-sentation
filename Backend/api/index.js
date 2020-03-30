@@ -5,10 +5,22 @@ const router = express.Router();
 router.get('/', (req, res) => {
   res.send({
     usecases: [
-      { route: '/api/morning-routine', name: 'Morning routine' },
-      { route: '/api/personal-trainer', name: 'Personal trainer' },
-      { route: '/api/travel-planning', name: 'Travel planning' },
-      { route: '/api/lunch-break', name: 'Lunch break' },
+      {
+        route: '/api/morning-routine',
+        name: 'Morning routine',
+      },
+      {
+        route: '/api/personal-trainer',
+        name: 'Personal trainer',
+      },
+      {
+        route: '/api/travel-planning',
+        name: 'Travel planning',
+      },
+      {
+        route: '/api/lunch-break',
+        name: 'Lunch break',
+      },
     ],
   });
 });

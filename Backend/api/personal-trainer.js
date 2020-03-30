@@ -23,7 +23,11 @@ router.get('/', wrapAsync(async (req, res) => {
     place = await personalTrainer.getRandomParkRecreationArea(pref);
   }
 
-  res.send({ freeSlot, weather, place });
+  res.send({
+    freeSlot,
+    weather,
+    place,
+  });
 }));
 
 // TODO use token instead of passing all the parameters. or even remeber last request to /
@@ -32,8 +36,12 @@ router.get('/confirm', wrapAsync(async (req, res) => {
   const { latitude, longitude, departure } = req.query;
 
   const pref = await preferences.get();
+
   const connection = await personalTrainer.getConnectionToPlace({
-    latitude, longitude, departure, pref,
+    latitude,
+    longitude,
+    departure,
+    pref,
   });
 
   res.send({ connection });

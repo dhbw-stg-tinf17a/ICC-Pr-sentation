@@ -17,14 +17,19 @@ router.get('/', wrapAsync(async (req, res) => {
   ]);
 
   res.send({
-    event, connection, wakeUpTime, weatherForecast,
+    event,
+    connection,
+    wakeUpTime,
+    weatherForecast,
   });
 }));
 
 router.get('/confirm', wrapAsync(async (req, res) => {
   const pref = await preferences.get();
+
   const quoteOfTheDay = await morningRoutine.getQuoteOfTheDay(pref);
-  res.send(quoteOfTheDay);
+
+  res.send({ quoteOfTheDay });
 }));
 
 module.exports = router;

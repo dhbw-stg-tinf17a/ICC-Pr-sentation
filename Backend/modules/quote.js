@@ -5,7 +5,9 @@ const endpoint = 'https://quotes.rest/qod';
 async function getQuoteOfTheDay(category) {
   try {
     const response = await axios.get(endpoint, { params: { category } });
+
     const { quote, author } = response.data.contents.quotes[0];
+
     return { quote, author };
   } catch (error) {
     if (error.response.status === 429) {
@@ -16,4 +18,7 @@ async function getQuoteOfTheDay(category) {
   }
 }
 
-module.exports = { endpoint, getQuoteOfTheDay };
+module.exports = {
+  endpoint,
+  getQuoteOfTheDay,
+};

@@ -16,10 +16,17 @@ router.get('/', wrapAsync(async (req, res) => {
     restaurant,
   ] = await Promise.all([
     lunchBreak.getFreeSlotForLunchbreak(pref),
-    lunchBreak.getRandomRestaurantNear({ latitude, longitude, pref }),
+    lunchBreak.getRandomRestaurantNear({
+      latitude,
+      longitude,
+      pref,
+    }),
   ]);
 
-  res.send({ freeSlot, restaurant });
+  res.send({
+    freeSlot,
+    restaurant,
+  });
 }));
 
 // TODO use token instead of passing all the parameters. or even remeber last request to /
@@ -30,8 +37,14 @@ router.get('/confirm', wrapAsync(async (req, res) => {
   } = req.query;
 
   const connection = await vvs.getConnection({
-    originCoordinates: { latitude: originLatitude, longitude: originLongitude },
-    destinationCoordinates: { latitude: destinationLatitude, longitude: destinationLongitude },
+    originCoordinates: {
+      latitude: originLatitude,
+      longitude: originLongitude,
+    },
+    destinationCoordinates: {
+      latitude: destinationLatitude,
+      longitude: destinationLongitude,
+    },
     departure,
   });
 

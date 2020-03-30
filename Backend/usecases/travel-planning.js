@@ -26,7 +26,14 @@ const vvs = require('../modules/vvs');
 const preferences = require('../modules/preferences');
 
 const logger = pino({ level: process.env.LOG_LEVEL || 'info' });
-const mainStation = { dbID: '8098096', location: { latitude: 48.784084, longitude: 9.181635 }, vvsID: 'de:08111:6115' }; // Stuttgart Hbf
+const mainStation = {
+  dbID: '8098096',
+  location: {
+    latitude: 48.784084,
+    longitude: 9.181635,
+  },
+  vvsID: 'de:08111:6115',
+}; // Stuttgart Hbf
 const excludedStationIDs = ['8098096'];
 const timezone = 'Europe/Berlin';
 
@@ -41,8 +48,14 @@ async function getWeekend() {
     saturdayEvent,
     sundayEvent,
   ] = await Promise.all([
-    calendar.getFirstEventStartingBetween({ start: saturdayStart, end: saturdayEnd }),
-    calendar.getFirstEventStartingBetween({ start: sundayStart, end: sundayEnd }),
+    calendar.getFirstEventStartingBetween({
+      start: saturdayStart,
+      end: saturdayEnd,
+    }),
+    calendar.getFirstEventStartingBetween({
+      start: sundayStart,
+      end: sundayEnd,
+    }),
   ]);
 
   return {
@@ -75,7 +88,10 @@ async function planTrip({ departure, arrival, destinationID }) {
   const connectionFromDestination = connectionsFromDestination.sort((a, b) => a.price - b.price)
     .find(() => true);
 
-  return { connectionToDestination, connectionFromDestination };
+  return {
+    connectionToDestination,
+    connectionFromDestination,
+  };
 }
 
 async function planRandomTrip({ departure, arrival, pref }) {
@@ -92,10 +108,18 @@ async function planRandomTrip({ departure, arrival, pref }) {
 
     ({
       connectionToDestination, connectionFromDestination,
-    } = await planTrip({ departure, arrival, destinationID: destination.id }));
+    } = await planTrip({
+      departure,
+      arrival,
+      destinationID: destination.id,
+    }));
   } while (!connectionToDestination || !connectionFromDestination);
 
-  return { destination, connectionToDestination, connectionFromDestination };
+  return {
+    destination,
+    connectionToDestination,
+    connectionFromDestination,
+  };
 }
 
 async function getWeather({ destination, saturday, sunday }) {
@@ -109,7 +133,10 @@ async function getWeather({ destination, saturday, sunday }) {
     duration: 10,
   });
 
-  return { saturdayWeather: forecast[daysToSaturday], sundayWeather: forecast[daysToSunday] };
+  return {
+    saturdayWeather: forecast[daysToSaturday],
+    sundayWeather: forecast[daysToSunday],
+  };
 }
 
 async function getConnectionToMainStation({ arrival, pref }) {
@@ -135,8 +162,13 @@ async function run() {
       return;
     }
 
-    const trip = await planRandomTrip({ departure: saturday, arrival: sunday, pref });
-    const { destination, connectionToDestination, connectionFromDestination } = trip;
+    const {
+      destination, connectionToDestination, connectionFromDestination,
+    } = await planRandomTrip({
+      departure: saturday,
+      arrival: sunday,
+      pref,
+    });
     const price = connectionToDestination.price + connectionFromDestination.price;
 
     const body = `Your weekend seems to be free, why not travel to ${destination.address.city} and back for just ${price} €?`;
@@ -169,5 +201,10 @@ function init() {
 }
 
 module.exports = {
-  init, getWeekend, planTrip, planRandomTrip, getWeather, getConnectionToMainStation,
+  init,
+  getWeekend,
+  planTrip,
+  planRandomTrip,
+  getWeather,
+  getConnectionToMainStation,
 };

@@ -7,7 +7,11 @@ const options = {
   ohneICE: false, // no ICE trains
   tct: 0, // transfer time
   dur: 24 * 60 * 60, // search for routes in the next 24 hours
-  travellers: [{ bc: 0, typ: 'E', alter: 30 }], // one traveller without BahnCard (bc: 0), adult (typ: 'E'), age of 30 (alter: 30)
+  travellers: [{ // one traveller
+    bc: 0, // no BahnCard
+    typ: 'E', // adult
+    alter: 20, // age of 20
+  }],
   sv: true, // prefer fast routes
   device: 'HANDY', // prevent mimimi
 };
@@ -42,7 +46,10 @@ async function parseData(data) {
 
   const notes = {};
   Object.entries(data.peTexte).forEach(([ref, note]) => {
-    notes[ref] = { name: note.name, text: note.hinweis.replace('<br/>', ' ') };
+    notes[ref] = {
+      name: note.name,
+      text: note.hinweis.replace('<br/>', ' '),
+    };
   });
 
   Object.values(data.angebote).forEach((offer) => offer.sids.forEach((id) => {

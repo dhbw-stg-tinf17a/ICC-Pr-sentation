@@ -25,10 +25,14 @@ const logger = pino({ level: process.env.LOG_LEVEL || 'info' });
 const timezone = 'Europe/Berlin';
 
 async function getFreeSlotForLunchbreak(pref) {
-  const start = moment.tz(timezone).hour(pref.lunchBreakStart.hour).minute(pref.lunchBreakStart.minute).startOf('minute');
+  const start = moment.tz(timezone).hour(pref.lunchBreakStart.hour)
+    .minute(pref.lunchBreakStart.minute).startOf('minute');
   const end = start.clone().hour(pref.lunchBreakEnd.hour).minute(pref.lunchBreakEnd.minute);
 
-  const freeSlots = await calendar.getFreeSlotsBetween({ start, end });
+  const freeSlots = await calendar.getFreeSlotsBetween({
+    start,
+    end,
+  });
   if (freeSlots.length === 0) {
     return undefined;
   }
@@ -45,7 +49,11 @@ async function getFreeSlotForLunchbreak(pref) {
 
 async function getRandomRestaurantNear({ latitude, longitude, pref }) {
   const restaurants = await places.getPOIsAround({
-    latitude, longitude, category: 'RESTAURANT', limit: 100, radius: pref.lunchBreakMaxDistance,
+    latitude,
+    longitude,
+    category: 'RESTAURANT',
+    limit: 100,
+    radius: pref.lunchBreakMaxDistance,
   });
   if (restaurants.length === 0) {
     return undefined;
@@ -64,7 +72,8 @@ async function run() {
     }
 
     const freeSlotStart = moment(freeSlot.start).tz(timezone).format('HH:mm');
-    const notificationTime = moment(freeSlot.start).subtract(pref.lunchBreakMinutesBeforeStart, 'minutes');
+    const notificationTime = moment(freeSlot.start)
+      .subtract(pref.lunchBreakMinutesBeforeStart, 'minutes');
 
     const body = `You have some time to spare during your lunch break at ${freeSlotStart}, why not try a restaurant?`;
     const job = schedule.scheduleJob(notificationTime, async () => {
@@ -90,12 +99,20 @@ async function run() {
 
 function init() {
   // every day at 00:00, but not on the weekend
-  const job = schedule.scheduleJob({
-    minute: 0, hour: 0, dayOfWeek: [1, 2, 3, 4, 5], tz: timezone,
-  }, run);
+  const job = schedule.scheduleJob(
+    {
+      minute: 0,
+      hour: 0,
+      dayOfWeek: [1, 2, 3, 4, 5],
+      tz: timezone,
+    },
+    run,
+  );
   logger.info(`Lunch break usecase: First invocation at ${job.nextInvocation().toISOString()}`);
 }
 
 module.exports = {
-  init, getFreeSlotForLunchbreak, getRandomRestaurantNear,
+  init,
+  getFreeSlotForLunchbreak,
+  getRandomRestaurantNear,
 };
