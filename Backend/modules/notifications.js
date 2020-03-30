@@ -6,7 +6,9 @@ const database = initDatabase('notifications', { subscriptions: [] });
 async function addSubscription(subscription) {
   const subscriptions = (await database).get('subscriptions');
 
-  if (await subscriptions.findIndex({ endpoint: subscription.endpoint }).value() >= 0) {
+  const subscriptionIndex = await subscriptions.findIndex({ endpoint: subscription.endpoint })
+    .value();
+  if (subscriptionIndex >= 0) {
     // subscription already stored
     return;
   }
@@ -34,9 +36,13 @@ async function sendNotification(payload, subscription) {
 
 async function sendNotifications(payload) {
   const subscriptions = await (await database).get('subscriptions').value();
+
   await Promise.all(subscriptions.map((subscription) => sendNotification(payload, subscription)));
 }
 
 module.exports = {
-  addSubscription, removeSubscription, sendNotification, sendNotifications,
+  addSubscription,
+  removeSubscription,
+  sendNotification,
+  sendNotifications,
 };

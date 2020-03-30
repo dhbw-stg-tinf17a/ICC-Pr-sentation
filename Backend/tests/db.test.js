@@ -55,7 +55,7 @@ describe('db module', () => {
 
       // check conversion to API request (only in this test case)
       expect(axios.get).toHaveBeenCalledTimes(1);
-      expect(axios.get).toHaveBeenCalledWith(db.endpoint, { params: { data: '{"s":"8000096","d":"8000105","dt":"23.03.20","t":"23:00","c":2,"ohneICE":false,"tct":0,"dur":86400,"travellers":[{"bc":0,"typ":"E","alter":30}],"sv":true,"device":"HANDY"}', service: 'pscangebotsuche', lang: 'en' } });
+      expect(axios.get).toHaveBeenCalledWith(db.endpoint, { params: { data: '{"s":"8000096","d":"8000105","dt":"23.03.20","t":"23:00","c":2,"ohneICE":false,"tct":0,"dur":86400,"travellers":[{"bc":0,"typ":"E","alter":20}],"sv":true,"device":"HANDY"}', service: 'pscangebotsuche', lang: 'en' } });
     });
 
     it('should return an empty array if no connections are found', async () => {

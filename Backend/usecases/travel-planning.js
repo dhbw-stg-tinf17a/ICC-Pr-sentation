@@ -12,7 +12,6 @@
  */
 
 // TODO remember travel destination for weekend
-// TODO use preferences
 // TODO store visited destinations
 
 const schedule = require('node-schedule');
@@ -27,9 +26,14 @@ const vvs = require('../modules/vvs');
 const preferences = require('../modules/preferences');
 
 const logger = pino({ level: process.env.LOG_LEVEL || 'info' });
-
-const mainStation = { dbID: '8098096', location: { latitude: 48.784084, longitude: 9.181635 }, vvsID: 'de:08111:6115' }; // Stuttgart Hbf
-const minDistance = 100; // km
+const mainStation = {
+  dbID: '8098096',
+  location: {
+    latitude: 48.784084,
+    longitude: 9.181635,
+  },
+  vvsID: 'de:08111:6115',
+}; // Stuttgart Hbf
 const excludedStationIDs = ['8098096'];
 const timezone = 'Europe/Berlin';
 
@@ -44,8 +48,14 @@ async function getWeekend() {
     saturdayEvent,
     sundayEvent,
   ] = await Promise.all([
-    calendar.getFirstEventStartingBetween({ start: saturdayStart, end: saturdayEnd }),
-    calendar.getFirstEventStartingBetween({ start: sundayStart, end: sundayEnd }),
+    calendar.getFirstEventStartingBetween({
+      start: saturdayStart,
+      end: saturdayEnd,
+    }),
+    calendar.getFirstEventStartingBetween({
+      start: sundayStart,
+      end: sundayEnd,
+    }),
   ]);
 
   return {
@@ -78,12 +88,16 @@ async function planTrip({ departure, arrival, destinationID }) {
   const connectionFromDestination = connectionsFromDestination.sort((a, b) => a.price - b.price)
     .find(() => true);
 
-  return { connectionToDestination, connectionFromDestination };
+  return {
+    connectionToDestination,
+    connectionFromDestination,
+  };
 }
 
-async function planRandomTrip({ departure, arrival }) {
+async function planRandomTrip({ departure, arrival, pref }) {
   const stations = await db.getFilteredStations((station) => station.location
-    && geolib.getDistance(mainStation.location, station.location) / 1000 >= minDistance // m to km
+    && geolib.getDistance(mainStation.location, station.location) / 1000 // m to km
+       >= pref.travelPlanningMinDistance
     && !excludedStationIDs.findIndex((stationID) => station.id === stationID) >= 0);
 
   let connectionToDestination;
@@ -94,13 +108,21 @@ async function planRandomTrip({ departure, arrival }) {
 
     ({
       connectionToDestination, connectionFromDestination,
-    } = await planTrip({ departure, arrival, destinationID: destination.id }));
+    } = await planTrip({
+      departure,
+      arrival,
+      destinationID: destination.id,
+    }));
   } while (!connectionToDestination || !connectionFromDestination);
 
-  return { destination, connectionToDestination, connectionFromDestination };
+  return {
+    destination,
+    connectionToDestination,
+    connectionFromDestination,
+  };
 }
 
-async function getWeather({ destination, saturday, sunday }) {
+async function getWeatherForecast({ destination, saturday, sunday }) {
   const now = moment().startOf('day');
   const daysToSaturday = moment(saturday).endOf('day').diff(now, 'days');
   const daysToSunday = moment(sunday).endOf('day').diff(now, 'days');
@@ -111,25 +133,28 @@ async function getWeather({ destination, saturday, sunday }) {
     duration: 10,
   });
 
-  return { saturdayWeather: forecast[daysToSaturday], sundayWeather: forecast[daysToSunday] };
+  return {
+    saturdayWeatherForecast: forecast[daysToSaturday],
+    sundayWeatherForecast: forecast[daysToSunday],
+  };
 }
 
-async function getConnectionToMainStation(arrival) {
-  const { location } = await preferences.get();
-  if (location === undefined) {
+async function getConnectionToMainStation({ arrival, pref }) {
+  if (pref.location === undefined) {
     throw new Error('Home location is not set');
   }
 
-  // TODO use station id instead of coordinates
   return vvs.getConnection({
-    originCoordinates: location,
+    originCoordinates: pref.location,
     destinationStop: mainStation.vvsID,
-    arrival,
+    arrival: moment(arrival).subtract(5, 'minutes'),
   });
 }
 
 async function run() {
   try {
+    const pref = await preferences.get();
+
     const {
       saturday, sunday, saturdayFree, sundayFree,
     } = await getWeekend();
@@ -137,12 +162,17 @@ async function run() {
       return;
     }
 
-    const trip = await planRandomTrip({ departure: saturday, arrival: sunday });
-    const { destination, connectionToDestination, connectionFromDestination } = trip;
+    const {
+      destination, connectionToDestination, connectionFromDestination,
+    } = await planRandomTrip({
+      departure: saturday,
+      arrival: sunday,
+      pref,
+    });
     const price = connectionToDestination.price + connectionFromDestination.price;
 
     const body = `Your weekend seems to be free, why not travel to ${destination.address.city} and back for just ${price} €?`;
-    const job = notifications.sendNotifications({
+    notifications.sendNotifications({
       title: 'Recommended trip for this weekend',
       options: {
         body,
@@ -154,9 +184,7 @@ async function run() {
         },
       },
     });
-    if (job !== null) {
-      logger.debug(`Travel planning usecase: Notification at ${job.nextInvocation().toISOString()} with body '${body}'`);
-    }
+    logger.debug(`Travel planning usecase: Notification with body '${body}'`);
   } catch (error) {
     logger.error(error);
   }
@@ -171,5 +199,10 @@ function init() {
 }
 
 module.exports = {
-  init, getWeekend, planTrip, planRandomTrip, getWeather, getConnectionToMainStation,
+  init,
+  getWeekend,
+  planTrip,
+  planRandomTrip,
+  getWeatherForecast,
+  getConnectionToMainStation,
 };
