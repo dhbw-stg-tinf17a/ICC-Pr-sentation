@@ -137,6 +137,20 @@ export default {
     next();
   },
   methods: {
+    handleApiError(error) {
+      this.$buefy.toast.open({
+        message: `Error ${error.response.data.status}: ${error.response.data.error}`,
+        duration: 3000,
+        type: 'is-danger',
+      });
+      if (localStorage.getItem('soundEnabled') === 'true') SpeechService.speak(`${error.response.data.error}. Sorry!`);
+      this.submitMessage({
+        content: `Error ${error.response.data.status}: ${error.response.data.error}`,
+        myself: false,
+        participantId: 1,
+        timestamp: this.getCurrentTimestamp(),
+      });
+    },
     getCurrentTimestamp() {
       const date = new Date();
       return {
@@ -174,28 +188,23 @@ export default {
                 + ` You have to leave at ${response.data.data.timeToLeave}`,
             );
           }
-        })
-        .catch((error) => {
-          this.$buefy.toast.open({
-            message: `Error ${error.response.data.status}: ${error.response.data.error}`,
-            duration: 3000,
-            type: 'is-danger',
-          });
-          if (localStorage.getItem('soundEnabled') === 'true') SpeechService.speak(`${error.response.data.error}. Sorry!`);
-          this.submitMessage({
-            content: `Error ${error.response.data.status}: ${error.response.data.error}`,
-            myself: false,
-            participantId: 1,
-            timestamp: this.getCurrentTimestamp(),
-          });
+        }).catch((error) => {
+          this.handleApiError(error);
         });
     },
     travelUseCase() {
-      this.submitMessage({
-        content: 'Coming soon. I promise...',
-        myself: false,
-        participantId: 1,
-        timestamp: this.getCurrentTimestamp(),
+      UseCasesService.getTravelUseCase().then((response) => {
+        this.submitMessage({
+          content: response.data.textToDisplay,
+          myself: false,
+          participantId: 1,
+          timestamp: this.getCurrentTimestamp(),
+        });
+        if (localStorage.getItem('soundEnabled') === 'true') {
+          SpeechService.speak(response.data.textToRead);
+        }
+      }).catch((error) => {
+        this.handleApiError(error);
       });
     },
     restaurantUseCase() {
