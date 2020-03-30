@@ -23,7 +23,7 @@ import SpeechService from '@/services/SpeechSynthesis';
 import Navbar from './components/Navbar.vue';
 import SpeechRecognition from './components/SpeechRecognition.vue';
 import SpeechRecognitionLogic from './mixins/SpeechRecognitionLogic';
-import LocationService from './services/Location';
+import PreferencesService from './services/Preferences';
 
 export default {
   components: {
@@ -64,9 +64,11 @@ export default {
   },
   methods: {
     showPosition(position) {
-      LocationService.sendPosition({
-        lat: position.coords.latitude,
-        lon: position.coords.longitude,
+      PreferencesService.updatePreferences({
+        location: {
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+        },
       }).catch((error) => this.$buefy.toast.open({
         message: `Error ${error.response.data.status}: ${error.response.data.error}`,
         duration: 3000,

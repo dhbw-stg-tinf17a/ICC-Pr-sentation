@@ -11,10 +11,10 @@ exports[`Navbar.vue Elements are rendered correctly Component renders 1`] = `
       <div class="navbar-item"><span data-label="Sound Off" class="is-light is-bottom is-medium b-tooltip" style="transition-delay: 0ms;"><button class="button is-info"><span class="icon"><i class="fas fa-volume-up fa-2x"></i></span></button></span> <span data-label="Sound On" class="is-light is-bottom is-medium b-tooltip" style="transition-delay: 0ms;"></span></div>
     </div>
     <div class="navbar-end">
-      <div class="navbar-item"><a href="#/dialog?usecase=commute" class="button is-white is-outlined"><span class="icon"><i class="fas fa-train"></i></span> <span>Commute</span></a></div>
-      <div class="navbar-item"><a href="#/dialog?usecase=travel" class="button is-white is-outlined"><span class="icon"><i class="fas fa-plane-departure"></i></span> <span>Travel</span></a></div>
-      <div class="navbar-item"><a href="#/dialog?usecase=restaurant" class="button is-white is-outlined"><span class="icon"><i class="fas fa-utensils"></i></span> <span>Restaurant</span></a></div>
-      <div class="navbar-item"><a href="#/dialog?usecase=trainer" class="button is-white is-outlined"><span class="icon"><i class="fas fa-swimmer"></i></span> <span>Trainer</span></a></div>
+      <div class="navbar-item"><a href="#/dialog?usecase=morning-routine" class="button is-white is-outlined"><span class="icon"><i class="fas fa-train"></i></span> <span>Morning Routine</span></a></div>
+      <div class="navbar-item"><a href="#/dialog?usecase=travel-planning" class="button is-white is-outlined"><span class="icon"><i class="fas fa-plane-departure"></i></span> <span>Travel Planning</span></a></div>
+      <div class="navbar-item"><a href="#/dialog?usecase=lunch-break" class="button is-white is-outlined"><span class="icon"><i class="fas fa-utensils"></i></span> <span>Lunch Break</span></a></div>
+      <div class="navbar-item"><a href="#/dialog?usecase=personal-trainer" class="button is-white is-outlined"><span class="icon"><i class="fas fa-swimmer"></i></span> <span>Personal Trainer</span></a></div>
       <div class="navbar-item">
         <div class="field has-addons">
           <p class="control"><a href="#/calendar" class="button is-white is-outlined"><span class="icon"><i class="far fa-calendar-alt fa-2x"></i></span></a></p>
