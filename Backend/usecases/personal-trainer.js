@@ -9,7 +9,6 @@
  */
 
 // TODO store recommended place for day
-// TODO use preferences
 // TODO look at tomorrow if todays slot is over
 
 const schedule = require('node-schedule');
@@ -23,32 +22,27 @@ const weather = require('../modules/weather');
 const vvs = require('../modules/vvs');
 
 const logger = pino({ level: process.env.LOG_LEVEL || 'info' });
-
 const timezone = 'Europe/Berlin';
-const startHour = 15;
-const startMinute = 0;
-const endHour = 22;
-const endMinute = 0;
-const requiredMinutes = 60;
-const minutesBeforeStart = 30;
-const maxDistance = 1;
 
-async function getConnectionToPlace({ latitude, longitude, departure }) {
-  const { location } = await preferences.get();
-  if (location === undefined) {
+async function getConnectionToPlace({
+  latitude, longitude, departure, pref,
+}) {
+  if (pref.location === undefined) {
     throw new Error('Home location is not set');
   }
 
   return vvs.getConnection({
-    originCoordinates: location,
+    originCoordinates: pref.location,
     destinationCoordinates: { latitude, longitude },
     departure,
   });
 }
 
-async function getFreeSlotForActivity() {
-  const start = moment.tz(timezone).hour(startHour).minute(startMinute).startOf('minute');
-  const end = start.clone().hour(endHour).minute(endMinute);
+async function getFreeSlotForActivity(pref) {
+  const start = moment.tz(timezone).hour(pref.personalTrainerStart.hour)
+    .minute(pref.personalTrainerStart.minute).startOf('minute');
+  const end = start.clone().hour(pref.personalTrainerEnd.hour)
+    .minute(pref.personalTrainerEnd.minute);
 
   const freeSlots = await calendar.getFreeSlotsBetween({ start, end });
   if (freeSlots.length === 0) {
@@ -57,21 +51,21 @@ async function getFreeSlotForActivity() {
 
   // find the longest slot and check if it sufficiently long
   const freeSlot = freeSlots.sort((a, b) => (b.end - b.start) - (a.end - a.start))[0];
-  if (moment.duration(moment(freeSlot.end).diff(freeSlot.start)).asMinutes() < requiredMinutes) {
+  if (moment.duration(moment(freeSlot.end).diff(freeSlot.start)).asMinutes()
+      < pref.personalTraierRequiredMinutes) {
     return undefined;
   }
 
   return freeSlot;
 }
 
-async function getRandomPOI(category) {
-  const { location } = await preferences.get();
-  if (location === undefined) {
+async function getRandomPOI({ category, pref }) {
+  if (pref.location === undefined) {
     throw new Error('Home location is not set');
   }
 
   const pois = await places.getPOIsAround({
-    category, limit: 100, radius: maxDistance, ...location,
+    category, limit: 100, radius: pref.personalTrainerMaxDistance, ...pref.location,
   });
 
   if (pois.length === 0) {
@@ -81,28 +75,29 @@ async function getRandomPOI(category) {
   return pois[Math.floor(Math.random() * pois.length)];
 }
 
-async function getRandomSportsCenter() {
-  return getRandomPOI('SPORTS_CENTER');
+async function getRandomSportsCenter(pref) {
+  return getRandomPOI({ category: 'SPORTS_CENTER', pref });
 }
 
 
-async function getRandomParkRecreationArea() {
-  return getRandomPOI('PARK_RECREATION_AREA');
+async function getRandomParkRecreationArea(pref) {
+  return getRandomPOI({ category: 'PARK_RECREATION_AREA', pref });
 }
 
-async function getWeather() {
-  const { location } = await preferences.get();
-  if (location === undefined) {
+async function getWeather(pref) {
+  if (pref.location === undefined) {
     throw new Error('Home location is not set');
   }
 
-  const forecast = await weather.getForecast({ ...location, duration: 1 });
+  const forecast = await weather.getForecast({ ...pref.location, duration: 1 });
   return forecast[0];
 }
 
 async function run() {
   try {
-    const freeSlot = await getFreeSlotForActivity();
+    const pref = await preferences.get();
+
+    const freeSlot = await getFreeSlotForActivity(pref);
     if (freeSlot === undefined) {
       return;
     }
@@ -110,16 +105,17 @@ async function run() {
     const precipitation = (await getWeather()).day.hasPrecipitation;
     let place;
     if (precipitation) {
-      place = await getRandomSportsCenter();
+      place = await getRandomSportsCenter(pref);
     } else {
-      place = await getRandomParkRecreationArea();
+      place = await getRandomParkRecreationArea(pref);
     }
     if (place === undefined) {
       return;
     }
 
     const freeSlotStart = moment(freeSlot.start).tz(timezone).format('HH:mm');
-    const notificationTime = moment(freeSlot.start).subtract(minutesBeforeStart, 'minutes');
+    const notificationTime = moment(freeSlot.start)
+      .subtract(pref.personalTrainerMinutesBeforeStart, 'minutes');
 
     const body = `You have got a little time at ${freeSlotStart}. Since it ${precipitation ? 'rains' : 'does not rain'} today, why don't you do some sports at ${place.poi.name}?`;
     const job = schedule.scheduleJob(notificationTime, async () => {
