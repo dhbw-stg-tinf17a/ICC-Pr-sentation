@@ -19,7 +19,7 @@ const router = new VueRouter({
   routes,
 });
 
-const mockUser = {
+const mockPreferences = {
   data: {
     data: {
       name: 'Gunter',
@@ -43,7 +43,8 @@ const mockUser = {
 
 jest.mock('@/services/SpeechSynthesis');
 jest.mock('axios', () => ({
-  get: jest.fn(() => Promise.resolve(mockUser)),
+  get: jest.fn(() => Promise.resolve(mockPreferences)),
+  patch: jest.fn(() => Promise.reject()),
   create: () => mockAxios,
   defaults: {
     adapter: {},
@@ -61,7 +62,7 @@ describe('Preferences.vue', () => {
   describe('Elements are rendered correctly', () => {
     it('Component renders', async () => {
       const wrapper = factory();
-      await wrapper.vm.getUser();
+      await wrapper.vm.getPreferences();
       wrapper.vm.$nextTick(() => {
         expect(wrapper).toMatchSnapshot();
       });
@@ -74,7 +75,7 @@ describe('Preferences.vue', () => {
 
     it('title is rendered', async () => {
       const wrapper = factory();
-      await wrapper.vm.getUser();
+      await wrapper.vm.getPreferences();
       wrapper.vm.$nextTick(() => {
         expect(wrapper.find('.title').text()).toBe('Preferences for Gunter');
       });
@@ -84,7 +85,7 @@ describe('Preferences.vue', () => {
   describe('functionality works', () => {
     it('preferences are saved', async () => {
       const wrapper = factory();
-      await wrapper.vm.getUser();
+      await wrapper.vm.getPreferences();
       wrapper.vm.$nextTick(() => {
         const spy = jest.spyOn(wrapper.vm, 'savePreferences');
         wrapper.find('.button.is-success').trigger('click');
@@ -94,7 +95,7 @@ describe('Preferences.vue', () => {
 
     it('notifications can be toggled on', async () => {
       const wrapper = factory();
-      await wrapper.vm.getUser();
+      await wrapper.vm.getPreferences();
       wrapper.vm.$nextTick(() => {
         wrapper.find('input[type=checkbox]').trigger('click');
         expect(wrapper.vm.notificationsEnabled).toBe(false); // TODO: should be true?
@@ -103,7 +104,7 @@ describe('Preferences.vue', () => {
 
     it('notifications can be toggled off', async () => {
       const wrapper = factory();
-      await wrapper.vm.getUser();
+      await wrapper.vm.getPreferences();
       wrapper.vm.$nextTick(() => {
         wrapper.find('input[type=checkbox]').trigger('click');
         wrapper.find('input[type=checkbox]').trigger('click');

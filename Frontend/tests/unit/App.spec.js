@@ -27,7 +27,7 @@ const router = new VueRouter({
 
 jest.mock('@/services/SpeechSynthesis');
 jest.mock('axios', () => ({
-  put: jest.fn(() => Promise.reject()),
+  patch: jest.fn(() => Promise.reject()),
   create: () => mockAxios,
   defaults: {
     adapter: {},
