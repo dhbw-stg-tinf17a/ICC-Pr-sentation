@@ -97,4 +97,9 @@ export default {
 .subtitle {
   text-decoration: underline;
 }
+.hero-body {
+  position: relative;
+  margin: 0rem 3rem 3rem 3rem;
+  padding-top: 1rem;
+}
 </style>
