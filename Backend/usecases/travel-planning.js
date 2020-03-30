@@ -120,7 +120,6 @@ async function getConnectionToMainStation(arrival) {
     throw new Error('Home location is not set');
   }
 
-  // TODO use station id instead of coordinates
   return vvs.getConnection({
     originCoordinates: location,
     destinationStop: mainStation.vvsID,
