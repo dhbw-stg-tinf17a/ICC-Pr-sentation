@@ -12,85 +12,160 @@
       v-if="!loading"
       class="container"
     >
-      <h1
-        v-if="user.name"
-        class="title"
-      >
-        Preferences for {{ user.name }}
-      </h1>
-      <h1
-        v-else
-        class="title"
-      >
-        Preferences for User
-      </h1>
       <div class="columns">
         <div class="column">
-          <div class="field">
-            <label class="label has-text-white">Name</label>
-            <div class="control">
-              <input
-                v-model="user.name"
-                class="input"
-                type="text"
-                placeholder="Name"
-              >
-            </div>
+          <h1
+            class="title"
+          >
+            Preferences for Gunter
+          </h1>
+        </div>
+        <div class="column">
+          <div class="field is-pulled-right">
+            <b-switch
+              v-model="notificationsEnabled"
+              type="is-success"
+              @input="toggleNotifications"
+            >
+              Send notifications to this device
+            </b-switch>
           </div>
+        </div>
+      </div>
+      <div class="field">
+        <label class="label has-text-white">Calendar URL</label>
+        <div class="control">
+          <input
+            v-model="preferences.calendarURL"
+            class="input"
+            type="text"
+            placeholder="Calendar URL"
+          >
+        </div>
+      </div>
+      <div class="columns">
+        <div class="column">
+          <h2 class="subtitle">
+            Morning Routine
+          </h2>
           <div class="field">
-            <label class="label has-text-white">Preparation Time in Minutes</label>
+            <label class="label has-text-white">Preparation Time (min)</label>
             <div class="control">
               <input
-                v-model="user.preferences.preparationTimeInMinutes"
+                v-model="preferences.morningRoutineMinutesForPreparation"
                 class="input"
-                type="text"
-                placeholder="Preparation Time in Minutes"
+                type="number"
+                placeholder="Time to get ready"
               >
             </div>
           </div>
           <div class="field">
             <label class="label has-text-white">Favourite Quote Category</label>
             <div class="control">
+              <div class="select">
+                <select @click="changeSelectedQuoteCategory($event.target.value)">
+                  <option
+                    v-for="(quoteCategory, index) in quoteCategories"
+                    :key="index"
+                    :selected="preferences.morningRoutineQuoteCategory === quoteCategory"
+                  >
+                    {{ quoteCategory }}
+                  </option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="column">
+          <h2 class="subtitle">
+            Personal Trainer
+          </h2>
+          <div class="field">
+            <label class="label has-text-white">Min. Duration of Training (min)</label>
+            <div class="control">
               <input
-                v-model="user.preferences.quoteCategory"
+                v-model="preferences.personalTrainerRequiredMinutes"
                 class="input"
-                type="text"
-                placeholder="Favourite Quote Category"
+                type="number"
+                placeholder="Required Time in Minutes"
               >
             </div>
           </div>
           <div class="field">
-            <label class="label has-text-white">Main City</label>
+            <label class="label has-text-white">Max. Distance (km)</label>
             <div class="control">
               <input
-                v-model="user.preferences.weatherCity"
+                v-model="preferences.personalTrainerMaxDistance"
                 class="input"
-                type="text"
-                placeholder="Main City"
+                type="number"
+                placeholder="Maximum Distance"
+              >
+            </div>
+          </div>
+          <div class="field">
+            <label class="label has-text-white">Notification before Training (min)</label>
+            <div class="control">
+              <input
+                v-model="preferences.personalTrainerMinutesBeforeStart"
+                class="input"
+                type="number"
+                placeholder="Buffer before Training"
               >
             </div>
           </div>
         </div>
         <div class="column">
+          <h2 class="subtitle">
+            Lunch Break
+          </h2>
           <div class="field">
-            <label class="label has-text-white">Current Location</label>
+            <label class="label has-text-white">Min. Duration of Lunch Break (min)</label>
             <div class="control">
               <input
-                v-model="user.preferences.currentLocationAddress"
-                disabled
+                v-model="preferences.lunchBreakRequiredMinutes"
                 class="input"
-                type="text"
-                placeholder="Current Location"
+                type="number"
+                placeholder="Required Time in Minutes"
               >
             </div>
           </div>
           <div class="field">
-            <b-checkbox
-              v-model="notificationsEnabled"
-              @input="toggleNotifications"
-            >
-              Send notifications to this device
-            </b-checkbox>
+            <label class="label has-text-white">Max. Distance (km)</label>
+            <div class="control">
+              <input
+                v-model="preferences.lunchBreakMaxDistance"
+                class="input"
+                type="number"
+                placeholder="Maximum Distance"
+              >
+            </div>
+          </div>
+          <div class="field">
+            <label class="label has-text-white">Notification before Break (min)</label>
+            <div class="control">
+              <input
+                v-model="preferences.lunchBreakMinutesBeforeStart"
+                class="input"
+                type="number"
+                placeholder="Buffer before lunch break"
+              >
+            </div>
+          </div>
+        </div>
+        <div class="column">
+          <h2 class="subtitle">
+            Travel Planning
+          </h2>
+          <div class="field">
+            <label class="label has-text-white">Min. Distance (km)</label>
+            <div class="control">
+              <input
+                v-model="preferences.travelPlanningMinDistance"
+                class="input"
+                type="number"
+                placeholder="Minimum Distance"
+              >
+            </div>
           </div>
           <div class="field is-grouped is-grouped-right">
             <p class="control">
@@ -118,14 +193,15 @@
 
 <script>
 import SpeechService from '@/services/SpeechSynthesis';
-import UserService from '@/services/User';
+import PreferencesService from '@/services/Preferences';
 
 export default {
   data() {
     return {
-      user: null,
+      preferences: null,
       loading: true,
       notificationsEnabled: localStorage.getItem('notificationsEnabled') === 'true',
+      quoteCategories: ['inspire', 'management', 'sports', 'life', 'funny', 'love', 'art', 'students'],
     };
   },
   watch: {
@@ -135,26 +211,36 @@ export default {
   },
   created() {
     if (localStorage.getItem('soundEnabled') === 'true') SpeechService.speak('Edit your Preferences');
-    this.getUser();
+    this.getPreferences();
   },
   methods: {
-    getUser() {
-      UserService.getUser().then((result) => {
-        this.user = result.data.data;
+    changeSelectedQuoteCategory(newCategory) {
+      this.preferences.morningRoutineQuoteCategory = newCategory;
+    },
+    getPreferences() {
+      PreferencesService.getPreferences().then((response) => {
+        this.preferences = response.data;
         this.loading = false;
       });
     },
     savePreferences() {
-      this.$buefy.toast.open({
-        message: 'Data theoretically saved! (Not yet implemented.)',
-        duration: 3000,
-        type: 'is-success',
+      PreferencesService.updatePreferences(this.preferences).then(
+        this.$buefy.toast.open({
+          message: 'Preferences saved!',
+          duration: 3000,
+          type: 'is-success',
+        }),
+      ).catch((error) => {
+        this.$buefy.toast.open({
+          message: `Error ${error.response.data.status}: ${error.response.data.error}`,
+          duration: 3000,
+          type: 'is-danger',
+        });
       });
 
       if (localStorage.getItem('soundEnabled') === 'true') SpeechService.speak('Saved successfully.');
     },
 
-    // TODO state is not stored in local storage :(
     async toggleNotifications() {
       if (this.notificationsEnabled) {
         await this.enableNotifications();
@@ -236,5 +322,9 @@ export default {
 .hero-body {
   position: relative;
   margin: 0rem 3rem 3rem 3rem;
+  padding-top: 1rem;
+}
+.subtitle {
+  text-decoration: underline;
 }
 </style>
