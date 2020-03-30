@@ -18,7 +18,7 @@
             :border-style="borderStyle"
             :hide-close-button="true"
             close-button-icon-size="20px"
-            submit-icon-size="30px"
+            :submit-icon-size="30"
             :load-more-messages="toLoad.length > 0 ? loadMoreMessages : null"
             :async-mode="false"
             :scroll-bottom="scrollBottom"
@@ -32,7 +32,7 @@
             height="600"
             frameborder="0"
             style="border:0;"
-            allowfullscreen=""
+            allowfullscreen
             aria-hidden="false"
             tabindex="0"
           />
@@ -73,7 +73,8 @@ export default {
       },
       messages: [
         {
-          content: 'Hello my name is Gunter. Ask me for information about the use cases i provide!',
+          content:
+            'Hello my name is Gunter. Ask me for information about the use cases i provide!',
           myself: false,
           participantId: 1,
           timestamp: this.getCurrentTimestamp(),
@@ -114,8 +115,13 @@ export default {
   },
   watch: {
     userInput() {
-      if (document.getElementsByClassName('message-input')[0].innerText !== this.userInput) {
-        document.getElementsByClassName('message-input')[0].innerText = this.userInput;
+      if (
+        document.getElementsByClassName('message-input')[0].innerText
+        !== this.userInput
+      ) {
+        document.getElementsByClassName(
+          'message-input',
+        )[0].innerText = this.userInput;
       }
     },
   },
@@ -144,39 +150,45 @@ export default {
       };
     },
     commuteUseCase() {
-      UseCasesService.getCommuteUseCase().then((response) => {
-        const messageString = `Next Event: ${response.data.data.firstEvent.summary}\n`
-                                + `At: ${response.data.data.firstEvent.location}\n`
-                                + `Start: ${response.data.data.firstEvent.start}\n`
-                                + `Leave home: ${response.data.data.timeToLeave}\n\n`
-                                + `${response.data.data.weather.weather[0].description} `
-                                + `${response.data.data.weather.main.temp}°C\n\n`
-                                + `Quote of the day: ${response.data.data.quote.quote} - ${response.data.data.quote.author}`;
-        this.submitMessage({
-          content: messageString,
-          myself: false,
-          participantId: 1,
-          timestamp: this.getCurrentTimestamp(),
+      UseCasesService.getCommuteUseCase()
+        .then((response) => {
+          const messageString = `Next Event: ${response.data.data.firstEvent.summary}\n`
+            + `At: ${response.data.data.firstEvent.location}\n`
+            + `Start: ${response.data.data.firstEvent.start}\n`
+            + `Leave home: ${response.data.data.timeToLeave}\n\n`
+            + `${response.data.data.weather.weather[0].description} `
+            + `${response.data.data.weather.main.temp}°C\n\n`
+            + `Quote of the day: ${response.data.data.quote.quote} -`
+            + `${response.data.data.quote.author}`;
+
+          this.submitMessage({
+            content: messageString,
+            myself: false,
+            participantId: 1,
+            timestamp: this.getCurrentTimestamp(),
+          });
+          if (localStorage.getItem('soundEnabled') === 'true') {
+            SpeechService.speak(
+              `Next Event: ${response.data.data.firstEvent.summary}`
+                + ` at ${response.data.data.firstEvent.start}.`
+                + ` You have to leave at ${response.data.data.timeToLeave}`,
+            );
+          }
+        })
+        .catch((error) => {
+          this.$buefy.toast.open({
+            message: `Error ${error.response.data.status}: ${error.response.data.error}`,
+            duration: 3000,
+            type: 'is-danger',
+          });
+          if (localStorage.getItem('soundEnabled') === 'true') SpeechService.speak(`${error.response.data.error}. Sorry!`);
+          this.submitMessage({
+            content: `Error ${error.response.data.status}: ${error.response.data.error}`,
+            myself: false,
+            participantId: 1,
+            timestamp: this.getCurrentTimestamp(),
+          });
         });
-        if (localStorage.getItem('soundEnabled') === 'true') {
-          SpeechService.speak(`Next Event: ${response.data.data.firstEvent.summary}`
-                            + ` at ${response.data.data.firstEvent.start}.`
-                            + ` You have to leave at ${response.data.data.timeToLeave}`);
-        }
-      }).catch((error) => {
-        this.$buefy.toast.open({
-          message: `Error ${error.response.data.status}: ${error.response.data.error}`,
-          duration: 3000,
-          type: 'is-danger',
-        });
-        if (localStorage.getItem('soundEnabled') === 'true') SpeechService.speak(`${error.response.data.error}. Sorry!`);
-        this.submitMessage({
-          content: `Error ${error.response.data.status}: ${error.response.data.error}`,
-          myself: false,
-          participantId: 1,
-          timestamp: this.getCurrentTimestamp(),
-        });
-      });
     },
     travelUseCase() {
       this.submitMessage({
