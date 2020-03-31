@@ -18,33 +18,41 @@ router.get('/', wrapAsync(async (req, res) => {
   ]);
 
   let place;
+  let trainingLocation;
   if (weatherForecast.day.hasPrecipitation) {
     place = await personalTrainer.getRandomSportsCenter(pref);
+    trainingLocation = 'indoor';
   } else {
     place = await personalTrainer.getRandomParkRecreationArea(pref);
+    trainingLocation = 'outdoor';
   }
 
   let textToDisplay;
   let textToRead;
   let displayPointOnMap = null;
-  if (freeSlot) {
+  if (freeSlot && place) {
     textToDisplay = 'Found a free slot to train!\n'
                     + `Start: ${formatTime(freeSlot.start)}\n`
                     + `End: ${formatTime(freeSlot.end)}\n\n`
-                    + `Todays location: ${place.poi.name}\n`
+                    + `Todays ${trainingLocation} location: ${place.poi.name}\n`
                     + `Distance: ${Math.trunc(place.dist)}m\n\n`
                     + `Weather: ${weatherForecast.day.shortPhrase} with ${weatherForecast.temperature.maximum.value}°C`;
     textToRead = `You have a free slot to train. You are free from ${formatTime(freeSlot.start)} `
-                  + `until ${formatTime(freeSlot.end)}. The training location is ${place.poi.name}. `
-                  + `Today it is ${weatherForecast.day.shortPhrase} with ${weatherForecast.temperature.maximum.value}°C.`;
+                  + `until ${formatTime(freeSlot.end)}. `
+                  + `The weather is ${weatherForecast.day.shortPhrase} with ${weatherForecast.temperature.maximum.value}°C. `
+                  + `Today it would be better to train ${trainingLocation} at ${place.poi.name}.`;
     displayPointOnMap = {
       longitude: place.position.lat,
       latitude: place.position.lon,
     };
-  } else {
+  } else if (place) {
     textToDisplay = 'No free slot to train.\nMaybe Tomorrow!';
     textToRead = 'Unfortunately there is no free slot for training today. '
                   + 'I will get back to you tomorrow!';
+  } else {
+    textToDisplay = 'No fitting location found.\nTrain at home!';
+    textToRead = 'Unfortunately I could not find a fitting location. '
+                  + 'You have to train at home today!';
   }
 
   res.send({
