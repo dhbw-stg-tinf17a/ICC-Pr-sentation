@@ -9,18 +9,18 @@ const router = express.Router();
 router.get('/', wrapAsync(async (req, res) => {
   const pref = await preferences.get();
 
-  const [
-    { event, connection, wakeUpTime },
-    weatherForecast,
-  ] = await Promise.all([
+  const { event, connection, wakeUpTime } = await Promise.resolve(
     morningRoutine.getWakeUpTimeForFirstEventOfToday(pref),
-    morningRoutine.getWeatherForecast(pref),
-  ]);
+  );
 
   let textToDisplay;
   let textToRead;
   let displayRouteOnMap = null;
   if (event) {
+    const weatherForecast = await morningRoutine.getWeatherForecast({
+      pref, datetime: event.start,
+    });
+
     textToDisplay = `Next Event: ${event.summary}\n`
                     + `At: ${event.location}\n`
                     + `Start: ${formatDate(event.start)}\n`
@@ -40,6 +40,8 @@ router.get('/', wrapAsync(async (req, res) => {
       destination: connection.legs[connection.legs.length - 1].to,
     };
   } else {
+    const weatherForecast = await morningRoutine.getWeatherForecast({ pref, datetime: new Date() });
+
     textToDisplay = 'No planned events.\n\n'
                     + `Weather: ${weatherForecast.day.shortPhrase} with ${weatherForecast.temperature.maximum.value}°C`;
 
