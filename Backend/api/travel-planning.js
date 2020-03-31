@@ -13,7 +13,7 @@ router.get('/', wrapAsync(async (req, res) => {
   const pref = await preferences.get();
 
   const {
-    saturday, sunday, saturdayFree, sundayFree,
+    saturday, sunday, weekendFree,
   } = await travelPlanning.getWeekend();
 
   let destination;
@@ -56,22 +56,11 @@ router.get('/', wrapAsync(async (req, res) => {
     }));
   }
 
-  let freeDays;
-  let weatherForecast;
-  if (saturdayFree) {
-    freeDays = 'Saturday';
-    weatherForecast = `Saturday: ${saturdayWeatherForecast.day.shortPhrase}`;
-    if (sundayFree) {
-      freeDays += ' and Sunday';
-      weatherForecast += `\nSunday: ${sundayWeatherForecast.day.shortPhrase}`;
-    }
-  } else if (sundayFree) {
-    freeDays = 'Sunday';
-    weatherForecast = `Sunday: ${sundayWeatherForecast.day.shortPhrase}`;
-  }
-
-  res.send({
-    textToDisplay: `Free on: ${freeDays}\n`
+  let textToDisplay;
+  let textToRead;
+  let displayRouteOnMap = null;
+  if (weekendFree) {
+    textToDisplay = 'Free next weekend\n'
                     + `Destination: ${destination.name} in ${destination.address.city}\n`
                     + `Depart from ${connectionToDestination.legs[0].from}, ${formatDate(connectionToDestination.legs[0].departure)}\n`
                     + `Arrive at ${connectionToDestination.legs[connectionToDestination.legs.length - 1].to},`
@@ -82,20 +71,32 @@ router.get('/', wrapAsync(async (req, res) => {
                     + `Arrive home at ${connectionFromDestination.legs[connectionFromDestination.legs.length - 1].to},`
                     + `${formatDate(connectionFromDestination.legs[connectionFromDestination.legs.length - 1].arrival)}\n\n`
 
-                    + `${weatherForecast}`,
+                    + `Saturday: ${saturdayWeatherForecast.day.shortPhrase}\n`
+                    + `Sunday: ${sundayWeatherForecast.day.shortPhrase}`;
 
-    textToRead: `You are free on ${freeDays}. You could travel to ${destination.name} in `
-                + `${destination.address.city}. Your train leaves from ${connectionToDestination.legs[0].from} at `
-                + `${formatDate(connectionToDestination.legs[0].departure)}. You will arrive at `
-                + `${connectionToDestination.legs[connectionToDestination.legs.length - 1].to} at `
-                + `${formatDate(connectionToDestination.legs[connectionToDestination.legs.length - 1].arrival)}. `
-                + `The total price will be ${connectionToDestination.price + connectionFromDestination.price}€. `
-                + `The weather will be ${saturdayWeatherForecast.day.shortPhrase}`,
+    textToRead = `You are free next weekend. You could travel to ${destination.name} in `
+                  + `${destination.address.city}. Your train leaves from ${connectionToDestination.legs[0].from} at `
+                  + `${formatDate(connectionToDestination.legs[0].departure)}. You will arrive at `
+                  + `${connectionToDestination.legs[connectionToDestination.legs.length - 1].to} at `
+                  + `${formatDate(connectionToDestination.legs[connectionToDestination.legs.length - 1].arrival)}. `
+                  + `The total price will be ${connectionToDestination.price + connectionFromDestination.price}€. `
+                  + `The weather will be ${saturdayWeatherForecast.day.shortPhrase}`;
 
-    displayRouteOnMap: {
+    displayRouteOnMap = {
       origin: connectionToDestination.legs[0].from,
       destination: connectionToDestination.legs[connectionToDestination.legs.length - 1].to,
-    },
+    };
+  } else {
+    textToDisplay = 'Not free at the weekend.\nCheck back next week!';
+
+    textToRead = 'Unfortunately you are not free at the weekend. '
+                  + 'Next week you will get your updated travel plan.';
+  }
+
+  res.send({
+    textToDisplay,
+    textToRead,
+    displayRouteOnMap,
     displayPointOnMap: null,
     furtherAction: 'Do you want to get information about how to get to your origin train station?',
     nextLink: '/confirm',
