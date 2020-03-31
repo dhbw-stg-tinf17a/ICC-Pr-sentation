@@ -20,13 +20,7 @@ router.get('/', wrapAsync(async (req, res) => {
   let textToDisplay;
   let textToRead;
   let displayRouteOnMap = null;
-  if (!event) {
-    textToDisplay = 'No planned events.\n\n'
-                    + `Weather: ${weatherForecast.day.shortPhrase} with ${weatherForecast.temperature.maximum.value}°C`;
-
-    textToRead = 'No planned events. '
-                  + `The weather is ${weatherForecast.day.shortPhrase} with ${weatherForecast.temperature.maximum.value}°C`;
-  } else {
+  if (event) {
     textToDisplay = `Next Event: ${event.summary}\n`
                     + `At: ${event.location}\n`
                     + `Start: ${formatDate(event.start)}\n`
@@ -45,6 +39,12 @@ router.get('/', wrapAsync(async (req, res) => {
       origin: connection.legs[0].from,
       destination: connection.legs[connection.legs.length - 1].to,
     };
+  } else {
+    textToDisplay = 'No planned events.\n\n'
+                    + `Weather: ${weatherForecast.day.shortPhrase} with ${weatherForecast.temperature.maximum.value}°C`;
+
+    textToRead = 'No planned events. '
+                  + `The weather is ${weatherForecast.day.shortPhrase} with ${weatherForecast.temperature.maximum.value}°C`;
   }
 
   res.send({
@@ -62,7 +62,15 @@ router.get('/confirm', wrapAsync(async (req, res) => {
 
   const quoteOfTheDay = await morningRoutine.getQuoteOfTheDay(pref);
 
-  res.send({ quoteOfTheDay });
+  res.send({
+    textToDisplay: 'Your quote of the day:\n'
+                    + `"${quoteOfTheDay.quote}" - ${quoteOfTheDay.author}`,
+    textToRead: `Your quote of the day is from ${quoteOfTheDay.author}. He said: ${quoteOfTheDay.quote}`,
+    displayRouteOnMap: null,
+    displayPointOnMap: null,
+    furtherAction: null,
+    nextLink: null,
+  });
 }));
 
 module.exports = router;
