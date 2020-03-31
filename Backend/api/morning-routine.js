@@ -33,7 +33,7 @@ router.get('/', wrapAsync(async (req, res) => {
 
     textToRead = `Your next Event is ${event.summary} at ${event.location}. It starts at ${formatDate(event.start)}. `
                   + `You have to leave at ${formatDate(connection.departure)}. `
-                  + `The weather is ${weatherForecast.day.shortPhrase} with ${weatherForecast.temperature.maximum.value}°C`;
+                  + `The weather will be ${weatherForecast.day.shortPhrase} with ${weatherForecast.temperature.maximum.value}°C`;
 
     displayRouteOnMap = {
       origin: connection.legs[0].from,
