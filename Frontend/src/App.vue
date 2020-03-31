@@ -38,8 +38,9 @@ export default {
   },
   watch: {
     // eslint-disable-next-line func-names
-    '$route.name': function () {
+    '$route.fullPath': function () {
       this.userInput = '';
+      speechSynthesis.cancel();
     },
   },
   created() {
