@@ -16,7 +16,7 @@ router.get('/', wrapAsync(async (req, res) => {
   let textToDisplay;
   let textToRead;
   let displayRouteOnMap = null;
-  if (event) {
+  if (event && connection) {
     const weatherForecast = await morningRoutine.getWeatherForecast({
       pref, datetime: event.start,
     });
@@ -39,7 +39,7 @@ router.get('/', wrapAsync(async (req, res) => {
       origin: connection.legs[0].from,
       destination: connection.legs[connection.legs.length - 1].to,
     };
-  } else {
+  } else if (connection) {
     const weatherForecast = await morningRoutine.getWeatherForecast({ pref, datetime: new Date() });
 
     textToDisplay = 'No planned events.\n\n'
