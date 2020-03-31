@@ -147,13 +147,13 @@ export default {
     },
     handleApiError(error) {
       this.$buefy.toast.open({
-        message: `Error ${error.response.data.status}: ${error.response.data.error}`,
+        message: `Error ${error.response.status}: ${error.response.statusText}`,
         duration: 3000,
         type: 'is-danger',
       });
-      if (localStorage.getItem('soundEnabled') === 'true') SpeechService.speak(`${error.response.data.error}. Sorry!`);
+      if (localStorage.getItem('soundEnabled') === 'true') SpeechService.speak(`${error.response.statusText}. Sorry!`);
       this.submitMessage({
-        content: `Error ${error.response.data.status}: ${error.response.data.error}`,
+        content: `Error ${error.response.status}: ${error.response.statusText}`,
         myself: false,
         participantId: 1,
         timestamp: this.getCurrentTimestamp(),
