@@ -1,6 +1,6 @@
 const express = require('express');
 const wrapAsync = require('../utilities/wrap-async');
-const formatDate = require('../utilities/date-formatter');
+const { formatDate } = require('../utilities/date-formatter');
 const morningRoutine = require('../usecases/morning-routine');
 const preferences = require('../modules/preferences');
 

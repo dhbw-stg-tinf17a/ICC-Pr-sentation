@@ -1,7 +1,7 @@
 const express = require('express');
 const travelPlanning = require('../usecases/travel-planning');
 const wrapAsync = require('../utilities/wrap-async');
-const formatDate = require('../utilities/date-formatter');
+const { formatDate } = require('../utilities/date-formatter');
 const db = require('../modules/db');
 const preferences = require('../modules/preferences');
 
