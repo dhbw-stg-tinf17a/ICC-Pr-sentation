@@ -145,9 +145,9 @@ async function run() {
     const pref = await preferences.get();
 
     const {
-      saturday, sunday, saturdayFree, sundayFree,
+      saturday, sunday, weekendFree,
     } = await getWeekend();
-    if (!saturdayFree || !sundayFree) {
+    if (!weekendFree) {
       return;
     }
 
