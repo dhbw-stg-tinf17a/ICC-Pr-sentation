@@ -40,29 +40,18 @@ const timezone = 'Europe/Berlin';
 async function getWeekend() {
   const today = moment.tz(timezone).startOf('day');
   const saturdayStart = today.clone().day(6);
-  const saturdayEnd = saturdayStart.clone().endOf('day');
   const sundayStart = today.clone().day(7);
   const sundayEnd = sundayStart.clone().endOf('day');
 
-  const [
-    saturdayEvent,
-    sundayEvent,
-  ] = await Promise.all([
-    calendar.getFirstEventStartingBetween({
-      start: saturdayStart,
-      end: saturdayEnd,
-    }),
-    calendar.getFirstEventStartingBetween({
-      start: sundayStart,
-      end: sundayEnd,
-    }),
-  ]);
+  const events = await calendar.getEventsStartingBetween({
+    start: saturdayStart,
+    end: sundayEnd,
+  });
 
   return {
     saturday: saturdayStart,
     sunday: sundayStart,
-    saturdayFree: saturdayEvent === undefined,
-    sundayFree: sundayEvent === undefined,
+    weekendFree: events.length === 0,
   };
 }
 

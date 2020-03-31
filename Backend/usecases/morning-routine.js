@@ -29,16 +29,34 @@ async function getQuoteOfTheDay(pref) {
   return quote.getQuoteOfTheDay(pref.morningRoutineQuoteCategory);
 }
 
+// TODO should be renamed, also looks at tomorrow if todays first event already started / there are
+// no events today
+/**
+ * @param pref Preferences as returned by `preferences.get`.
+ * @return Returns an object containing `wakeUpTime`, `event` and `connection`. If there is no event
+ *         today or tomorrow, all properties are undefined. If the event has no location or no
+ *         connection to the event location can be found, `connection` is undefined.
+ */
 async function getWakeUpTimeForFirstEventOfToday(pref) {
-  const start = moment.tz(timezone).startOf('day');
-  const end = start.clone().endOf('day');
+  const now = moment.tz(timezone);
+  const todayStart = now.clone().startOf('day');
+  const todayEnd = todayStart.clone().endOf('day');
+  const tomorrowStart = todayStart.clone().add(1, 'day');
+  const tomorrowEnd = tomorrowStart.clone().endOf('day');
 
-  const event = await calendar.getFirstEventStartingBetween({
-    start,
-    end,
+  const events = await calendar.getEventsStartingBetween({
+    todayStart,
+    tomorrowEnd,
   });
+
+  let event = events.filter((ev) => ev.end <= todayEnd).find(() => true);
+  if (event === undefined || event < now) {
+    // no event today or first event today already started - look for first event tomorrow
+    event = events.filter((ev) => ev.start > todayEnd).find(() => true);
+  }
+
   if (event === undefined) {
-    // no event today
+    // no event today, first event today already started, or no event tomorrow
     return {};
   }
 
@@ -95,11 +113,17 @@ async function run() {
     const pref = await preferences.get();
 
     const { event, connection, wakeUpTime } = await getWakeUpTimeForFirstEventOfToday(pref);
+    if (event === undefined) {
+      return;
+    }
 
     const eventStart = moment(event.start).tz(timezone).format('HH:mm');
+    let body = `${event.summary} starts at ${eventStart}.`;
+    if (connection !== undefined) {
     const departure = moment(connection.departure).tz(timezone).format('HH:mm');
+      body += ` You have to leave at ${departure}.`;
+    }
 
-    const body = `${event.summary} starts at ${eventStart}. You have to leave at ${departure}.`;
     schedule.scheduleJob(wakeUpTime, async () => {
       await notifications.sendNotifications({
         title: 'Wake up!',

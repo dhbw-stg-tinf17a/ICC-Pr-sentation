@@ -14,7 +14,7 @@ async function fetchCalendarEvents() {
   return ical.async.fromURL(await getCalendarURL());
 }
 
-async function getFirstEventStartingBetween({ start, end }) {
+async function getEventsStartingBetween({ start, end }) {
   const events = await fetchCalendarEvents();
 
   const startDate = new Date(start);
@@ -22,8 +22,7 @@ async function getFirstEventStartingBetween({ start, end }) {
 
   return Object.values(events)
     .filter((event) => event.type === 'VEVENT' && event.start >= startDate && event.start <= endDate)
-    .sort((a, b) => a.start - b.start)
-    .find(() => true);
+    .sort((a, b) => a.start - b.start);
 }
 
 async function getFreeSlotsBetween({ start, end }) {
@@ -65,6 +64,6 @@ async function getFreeSlotsBetween({ start, end }) {
 }
 
 module.exports = {
-  getFirstEventStartingBetween,
+  getEventsStartingBetween,
   getFreeSlotsBetween,
 };
