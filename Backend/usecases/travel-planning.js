@@ -184,7 +184,7 @@ async function run() {
         },
       },
     });
-    logger.debug(`Travel planning usecase: Notification with body '${body}'`);
+    logger.debug(`Travel planning usecase: Sent notification with body '${body}'`);
   } catch (error) {
     logger.error(error);
   }

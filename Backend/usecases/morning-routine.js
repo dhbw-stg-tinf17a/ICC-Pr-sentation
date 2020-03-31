@@ -100,7 +100,7 @@ async function run() {
     const departure = moment(connection.departure).tz(timezone).format('HH:mm');
 
     const body = `${event.summary} starts at ${eventStart}. You have to leave at ${departure}.`;
-    const job = schedule.scheduleJob(wakeUpTime, async () => {
+    schedule.scheduleJob(wakeUpTime, async () => {
       await notifications.sendNotifications({
         title: 'Wake up!',
         options: {
@@ -113,9 +113,7 @@ async function run() {
         },
       });
     });
-    if (job !== null) {
-      logger.debug(`Morning routine usecase: Notification at ${job.nextInvocation().toISOString()} with body '${body}'`);
-    }
+    logger.debug(`Morning routine usecase: Scheduled notification at ${wakeUpTime.toISOString()} with body '${body}'`);
   } catch (error) {
     logger.error(error);
   }
