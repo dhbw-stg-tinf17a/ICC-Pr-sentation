@@ -1,5 +1,6 @@
 const express = require('express');
 const wrapAsync = require('../utilities/wrap-async');
+const formatDate = require('../utilities/date-formatter');
 const lunchBreak = require('../usecases/lunch-break');
 const preferences = require('../modules/preferences');
 const vvs = require('../modules/vvs');
@@ -24,8 +25,19 @@ router.get('/', wrapAsync(async (req, res) => {
   ]);
 
   res.send({
-    freeSlot,
-    restaurant,
+    textToDisplay: `Lunch Break from: ${formatDate(freeSlot.start)}\n`
+                    + `To: ${formatDate(freeSlot.end)}\n\n`
+                    + `Restaurant: ${restaurant.poi.name}\n`
+                    + `On: ${restaurant.address.streetName} Street`,
+    textToRead: `Your have time for a Lunch Break from ${formatDate(freeSlot.start)} to `
+                + ` ${formatDate(freeSlot.end)}. I recommend ${restaurant.poi.name} on ${restaurant.address.streetName} Street.`,
+    displayRouteOnMap: null,
+    displayPointOnMap: {
+      longitude: restaurant.position.lat,
+      latitude: restaurant.position.lon,
+    },
+    furtherAction: null,
+    nextLink: null,
   });
 }));
 
@@ -48,7 +60,34 @@ router.get('/confirm', wrapAsync(async (req, res) => {
     departure,
   });
 
-  res.send({ connection });
+  let textToRead;
+  let textToDisplay;
+  let displayRouteOnMap;
+  if (connection) {
+    textToDisplay = `Leave home: ${formatDate(connection.departure)}\n`
+                    + `First stop: ${connection.legs[0].to}\n`
+                    + `Destination: ${connection.legs[connection.legs.length - 1].to}`;
+    textToRead = `You have to leave at ${formatDate(connection.departure)}. `
+                  + `Your first stop will be ${connection.legs[0].to}. `
+                  + `Your destination is ${connection.legs[connection.legs.length - 1].to}`;
+    displayRouteOnMap = {
+      origin: connection.legs[0].from,
+      destination: connection.legs[connection.legs.length - 1].to,
+    };
+  } else {
+    textToDisplay = 'Can not find route to restaurant!\nSorry!';
+    textToRead = 'I can not find a route to your restaurant. Sorry!';
+    displayRouteOnMap = null;
+  }
+
+  res.send({
+    textToDisplay,
+    textToRead,
+    displayRouteOnMap,
+    displayPointOnMap: null,
+    furtherAction: null,
+    nextLink: null,
+  });
 }));
 
 module.exports = router;

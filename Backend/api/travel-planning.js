@@ -1,6 +1,7 @@
 const express = require('express');
 const travelPlanning = require('../usecases/travel-planning');
 const wrapAsync = require('../utilities/wrap-async');
+const formatDate = require('../utilities/date-formatter');
 const db = require('../modules/db');
 const preferences = require('../modules/preferences');
 
@@ -55,14 +56,49 @@ router.get('/', wrapAsync(async (req, res) => {
     }));
   }
 
+  let freeDays;
+  let weatherForecast;
+  if (saturdayFree) {
+    freeDays = 'Saturday';
+    weatherForecast = `Saturday: ${saturdayWeatherForecast.day.shortPhrase}`;
+    if (sundayFree) {
+      freeDays += ' and Sunday';
+      weatherForecast += `\nSunday: ${sundayWeatherForecast.day.shortPhrase}`;
+    }
+  } else if (sundayFree) {
+    freeDays = 'Sunday';
+    weatherForecast = `Sunday: ${sundayWeatherForecast.day.shortPhrase}`;
+  }
+
   res.send({
-    saturdayFree,
-    sundayFree,
-    destination,
-    connectionToDestination,
-    connectionFromDestination,
-    saturdayWeatherForecast,
-    sundayWeatherForecast,
+    textToDisplay: `Free on: ${freeDays}\n`
+                    + `Destination: ${destination.name} in ${destination.address.city}\n`
+                    + `Depart from ${connectionToDestination.legs[0].from}, ${formatDate(connectionToDestination.legs[0].departure)}\n`
+                    + `Arrive at ${connectionToDestination.legs[connectionToDestination.legs.length - 1].to},`
+                    + `${formatDate(connectionToDestination.legs[connectionToDestination.legs.length - 1].arrival)}\n`
+                    + `Price: ${connectionToDestination.price}€ + ${connectionFromDestination.price}€\n\n`
+
+                    + `Return from ${connectionFromDestination.legs[0].from}, ${formatDate(connectionFromDestination.legs[0].departure)}\n`
+                    + `Arrive home at ${connectionFromDestination.legs[connectionFromDestination.legs.length - 1].to},`
+                    + `${formatDate(connectionFromDestination.legs[connectionFromDestination.legs.length - 1].arrival)}\n\n`
+
+                    + `${weatherForecast}`,
+
+    textToRead: `You are free on ${freeDays}. You could travel to ${destination.name} in `
+                + `${destination.address.city}. Your train leaves from ${connectionToDestination.legs[0].from} at `
+                + `${formatDate(connectionToDestination.legs[0].departure)}. You will arrive at `
+                + `${connectionToDestination.legs[connectionToDestination.legs.length - 1].to} at `
+                + `${formatDate(connectionToDestination.legs[connectionToDestination.legs.length - 1].arrival)}. `
+                + `The total price will be ${connectionToDestination.price + connectionFromDestination.price}€. `
+                + `The weather will be ${saturdayWeatherForecast.day.shortPhrase}`,
+
+    displayRouteOnMap: {
+      origin: connectionToDestination.legs[0].from,
+      destination: connectionToDestination.legs[connectionToDestination.legs.length - 1].to,
+    },
+    displayPointOnMap: null,
+    furtherAction: 'Do you want to get information about how to get to your origin train station?',
+    nextLink: '/confirm',
   });
 }));
 
@@ -76,7 +112,34 @@ router.get('/confirm', wrapAsync(async (req, res) => {
     pref,
   });
 
-  res.send({ connection });
+  let textToRead;
+  let textToDisplay;
+  let displayRouteOnMap;
+  if (connection) {
+    textToDisplay = `Leave home: ${formatDate(connection.departure)}\n`
+                    + `First stop: ${connection.legs[0].to}\n`
+                    + `Destination: ${connection.legs[connection.legs.length - 1].to}`;
+    textToRead = `You have to leave at ${formatDate(connection.departure)}. `
+                  + `Your first stop will be ${connection.legs[0].to}. `
+                  + `Your destination is ${connection.legs[connection.legs.length - 1].to}`;
+    displayRouteOnMap = {
+      origin: connection.legs[0].from,
+      destination: connection.legs[connection.legs.length - 1].to,
+    };
+  } else {
+    textToDisplay = 'Can not find route to starting point of your travel!\nSorry!';
+    textToRead = 'I can not find a route to your travel starting point. Sorry!';
+    displayRouteOnMap = null;
+  }
+
+  res.send({
+    textToDisplay,
+    textToRead,
+    displayRouteOnMap,
+    displayPointOnMap: null,
+    furtherAction: null,
+    nextLink: null,
+  });
 }));
 
 module.exports = router;
