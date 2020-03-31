@@ -47,6 +47,14 @@ router.get('/', wrapAsync(async (req, res) => {
 
     textToRead = 'No planned events. '
                   + `The weather is ${weatherForecast.day.shortPhrase} with ${weatherForecast.temperature.maximum.value}°C`;
+  } else {
+    const weatherForecast = await morningRoutine.getWeatherForecast({ pref, datetime: new Date() });
+
+    textToDisplay = 'Can not find a route to your appointment.\n\n'
+                    + `Weather: ${weatherForecast.day.shortPhrase} with ${weatherForecast.temperature.maximum.value}°C`;
+
+    textToRead = 'Sorry. I can not find a route to your appointment. '
+                  + `The weather is ${weatherForecast.day.shortPhrase} with ${weatherForecast.temperature.maximum.value}°C`;
   }
 
   res.send({
