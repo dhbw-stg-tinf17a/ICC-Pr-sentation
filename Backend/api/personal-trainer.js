@@ -31,7 +31,7 @@ router.get('/', wrapAsync(async (req, res) => {
   let textToRead;
   let displayPointOnMap = null;
   if (freeSlot && place) {
-    textToDisplay = 'Found a free slot to train!\n'
+    textToDisplay = 'Found a free slot for training!\n'
                     + `Start: ${formatTime(freeSlot.start)}\n`
                     + `End: ${formatTime(freeSlot.end)}\n\n`
                     + `Todays ${trainingLocation} location: ${place.poi.name}\n`
@@ -40,13 +40,13 @@ router.get('/', wrapAsync(async (req, res) => {
     textToRead = `You have a free slot to train. You are free from ${formatTime(freeSlot.start)} `
                   + `until ${formatTime(freeSlot.end)}. `
                   + `The weather is ${weatherForecast.day.shortPhrase} with ${weatherForecast.temperature.maximum.value}°C. `
-                  + `Today it would be better to train ${trainingLocation} at ${place.poi.name}.`;
+                  + `Today it would be better to train ${trainingLocation}s at ${place.poi.name}.`;
     displayPointOnMap = {
       longitude: place.position.lat,
       latitude: place.position.lon,
     };
   } else if (place) {
-    textToDisplay = 'No free slot to train.\nMaybe Tomorrow!';
+    textToDisplay = 'No free slot for training.\nMaybe Tomorrow!';
     textToRead = 'Unfortunately there is no free slot for training today. '
                   + 'I will get back to you tomorrow!';
   } else {

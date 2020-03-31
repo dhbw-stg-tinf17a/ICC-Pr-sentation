@@ -68,7 +68,7 @@ router.get('/', wrapAsync(async (req, res) => {
                     + `Price: ${connectionToDestination.price}€ + ${connectionFromDestination.price}€\n\n`
 
                     + `Return from ${connectionFromDestination.legs[0].from}, ${formatDate(connectionFromDestination.legs[0].departure)}\n`
-                    + `Arrive home at ${connectionFromDestination.legs[connectionFromDestination.legs.length - 1].to},`
+                    + `Arrive home at ${connectionFromDestination.legs[connectionFromDestination.legs.length - 1].to}, `
                     + `${formatDate(connectionFromDestination.legs[connectionFromDestination.legs.length - 1].arrival)}\n\n`
 
                     + `Saturday: ${saturdayWeatherForecast.day.shortPhrase} with ${saturdayWeatherForecast.temperature.maximum.value}°C\n`
@@ -80,7 +80,7 @@ router.get('/', wrapAsync(async (req, res) => {
                   + `${connectionToDestination.legs[connectionToDestination.legs.length - 1].to} at `
                   + `${formatDate(connectionToDestination.legs[connectionToDestination.legs.length - 1].arrival)}. `
                   + `The total price will be ${connectionToDestination.price + connectionFromDestination.price}€. `
-                  + `The weather will be ${saturdayWeatherForecast.day.shortPhrase} with with ${saturdayWeatherForecast.temperature.maximum.value}°C`;
+                  + `The weather will be ${saturdayWeatherForecast.day.shortPhrase} with ${saturdayWeatherForecast.temperature.maximum.value}°C`;
 
     displayRouteOnMap = {
       origin: connectionToDestination.legs[0].from,

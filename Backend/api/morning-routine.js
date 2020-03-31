@@ -16,7 +16,7 @@ router.get('/', wrapAsync(async (req, res) => {
   let textToDisplay;
   let textToRead;
   let displayRouteOnMap = null;
-  if (event) {
+  if (event && connection) {
     const weatherForecast = await morningRoutine.getWeatherForecast({
       pref, datetime: event.start,
     });
@@ -39,13 +39,21 @@ router.get('/', wrapAsync(async (req, res) => {
       origin: connection.legs[0].from,
       destination: connection.legs[connection.legs.length - 1].to,
     };
-  } else {
+  } else if (connection) {
     const weatherForecast = await morningRoutine.getWeatherForecast({ pref, datetime: new Date() });
 
     textToDisplay = 'No planned events.\n\n'
                     + `Weather: ${weatherForecast.day.shortPhrase} with ${weatherForecast.temperature.maximum.value}°C`;
 
     textToRead = 'No planned events. '
+                  + `The weather is ${weatherForecast.day.shortPhrase} with ${weatherForecast.temperature.maximum.value}°C`;
+  } else {
+    const weatherForecast = await morningRoutine.getWeatherForecast({ pref, datetime: new Date() });
+
+    textToDisplay = 'Can not find a route to your appointment.\n\n'
+                    + `Weather: ${weatherForecast.day.shortPhrase} with ${weatherForecast.temperature.maximum.value}°C`;
+
+    textToRead = 'Sorry. I can not find a route to your appointment. '
                   + `The weather is ${weatherForecast.day.shortPhrase} with ${weatherForecast.temperature.maximum.value}°C`;
   }
 
