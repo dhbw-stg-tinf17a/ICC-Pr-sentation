@@ -40,29 +40,18 @@ const timezone = 'Europe/Berlin';
 async function getWeekend() {
   const today = moment.tz(timezone).startOf('day');
   const saturdayStart = today.clone().day(6);
-  const saturdayEnd = saturdayStart.clone().endOf('day');
   const sundayStart = today.clone().day(7);
   const sundayEnd = sundayStart.clone().endOf('day');
 
-  const [
-    saturdayEvent,
-    sundayEvent,
-  ] = await Promise.all([
-    calendar.getFirstEventStartingBetween({
-      start: saturdayStart,
-      end: saturdayEnd,
-    }),
-    calendar.getFirstEventStartingBetween({
-      start: sundayStart,
-      end: sundayEnd,
-    }),
-  ]);
+  const events = await calendar.getEventsStartingBetween({
+    start: saturdayStart,
+    end: sundayEnd,
+  });
 
   return {
     saturday: saturdayStart,
     sunday: sundayStart,
-    saturdayFree: saturdayEvent === undefined,
-    sundayFree: sundayEvent === undefined,
+    weekendFree: events.length === 0,
   };
 }
 
@@ -123,7 +112,7 @@ async function planRandomTrip({ departure, arrival, pref }) {
 }
 
 async function getWeatherForecast({ destination, saturday, sunday }) {
-  const now = moment().startOf('day');
+  const now = moment.tz(timezone).startOf('day');
   const daysToSaturday = moment(saturday).endOf('day').diff(now, 'days');
   const daysToSunday = moment(sunday).endOf('day').diff(now, 'days');
 
@@ -156,9 +145,9 @@ async function run() {
     const pref = await preferences.get();
 
     const {
-      saturday, sunday, saturdayFree, sundayFree,
+      saturday, sunday, weekendFree,
     } = await getWeekend();
-    if (!saturdayFree || !sundayFree) {
+    if (!weekendFree) {
       return;
     }
 
@@ -184,7 +173,7 @@ async function run() {
         },
       },
     });
-    logger.debug(`Travel planning usecase: Notification with body '${body}'`);
+    logger.debug(`Travel planning usecase: Sent notification with body '${body}'`);
   } catch (error) {
     logger.error(error);
   }
