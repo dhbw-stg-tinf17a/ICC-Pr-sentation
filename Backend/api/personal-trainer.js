@@ -30,7 +30,7 @@ router.get('/', wrapAsync(async (req, res) => {
   let textToDisplay;
   let textToRead;
   let displayPointOnMap = null;
-  if (freeSlot) {
+  if (freeSlot && place) {
     textToDisplay = 'Found a free slot to train!\n'
                     + `Start: ${formatTime(freeSlot.start)}\n`
                     + `End: ${formatTime(freeSlot.end)}\n\n`
@@ -45,10 +45,14 @@ router.get('/', wrapAsync(async (req, res) => {
       longitude: place.position.lat,
       latitude: place.position.lon,
     };
-  } else {
+  } else if (place) {
     textToDisplay = 'No free slot to train.\nMaybe Tomorrow!';
     textToRead = 'Unfortunately there is no free slot for training today. '
                   + 'I will get back to you tomorrow!';
+  } else {
+    textToDisplay = 'No fitting location found.\nTrain at home!';
+    textToRead = 'Unfortunately I could not find a fitting location. '
+                  + 'You have to train at home today!';
   }
 
   res.send({
