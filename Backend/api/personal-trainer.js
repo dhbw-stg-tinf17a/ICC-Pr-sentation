@@ -32,9 +32,11 @@ router.get('/', wrapAsync(async (req, res) => {
                     + `Start: ${formatDate(freeSlot.start)}\n`
                     + `End: ${formatDate(freeSlot.end)}\n\n`
                     + `Todays location: ${place.poi.name}\n`
-                    + `Distance: ${Math.trunc(place.dist)}m`;
+                    + `Distance: ${Math.trunc(place.dist)}m\n\n`
+                    + `Weather: ${weatherForecast.day.shortPhrase} with ${weatherForecast.temperature.maximum.value}°C`;
     textToRead = `You have a free slot to train. You are free from ${formatDate(freeSlot.start)} `
-                  + `until ${formatDate(freeSlot.end)}. `;
+                  + `until ${formatDate(freeSlot.end)}. The training location is ${place.poi.name}. `
+                  + `Today it is ${weatherForecast.day.shortPhrase} with ${weatherForecast.temperature.maximum.value}°C.`;
     displayPointOnMap = {
       longitude: place.position.lat,
       latitude: place.position.lon,
