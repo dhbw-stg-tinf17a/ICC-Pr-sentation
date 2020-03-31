@@ -84,12 +84,12 @@ router.get('/', wrapAsync(async (req, res) => {
 
                     + `${weatherForecast}`,
 
-    textToRead: `You are free on ${freeDays}. You could travel to ${destination.name} in`
-                + `${destination.address.city}. Your train leaves from ${connectionToDestination.legs[0].from} at`
-                + `${formatDate(connectionToDestination.legs[0].departure)}. You will arrive at`
-                + `${connectionToDestination.legs[connectionToDestination.legs.length - 1].to} at`
-                + `${formatDate(connectionToDestination.legs[connectionToDestination.legs.length - 1].arrival)}.`
-                + `The total price will be ${connectionToDestination.price + connectionFromDestination.price}€.`
+    textToRead: `You are free on ${freeDays}. You could travel to ${destination.name} in `
+                + `${destination.address.city}. Your train leaves from ${connectionToDestination.legs[0].from} at `
+                + `${formatDate(connectionToDestination.legs[0].departure)}. You will arrive at `
+                + `${connectionToDestination.legs[connectionToDestination.legs.length - 1].to} at `
+                + `${formatDate(connectionToDestination.legs[connectionToDestination.legs.length - 1].arrival)}. `
+                + `The total price will be ${connectionToDestination.price + connectionFromDestination.price}€. `
                 + `The weather will be ${saturdayWeatherForecast.day.shortPhrase}`,
 
     displayRouteOnMap: {
