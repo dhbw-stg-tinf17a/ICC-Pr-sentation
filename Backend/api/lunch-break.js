@@ -1,6 +1,6 @@
 const express = require('express');
 const wrapAsync = require('../utilities/wrap-async');
-const formatDate = require('../utilities/date-formatter');
+const { formatTime } = require('../utilities/date-formatter');
 const lunchBreak = require('../usecases/lunch-break');
 const preferences = require('../modules/preferences');
 const vvs = require('../modules/vvs');

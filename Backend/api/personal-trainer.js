@@ -1,6 +1,6 @@
 const express = require('express');
 const wrapAsync = require('../utilities/wrap-async');
-const formatDate = require('../utilities/date-formatter');
+const { formatTime } = require('../utilities/date-formatter');
 const personalTrainer = require('../usecases/personal-trainer');
 const preferences = require('../modules/preferences');
 
@@ -29,13 +29,13 @@ router.get('/', wrapAsync(async (req, res) => {
   let displayPointOnMap = null;
   if (freeSlot) {
     textToDisplay = 'Found a free slot to train!\n'
-                    + `Start: ${formatDate(freeSlot.start)}\n`
-                    + `End: ${formatDate(freeSlot.end)}\n\n`
+                    + `Start: ${formatTime(freeSlot.start)}\n`
+                    + `End: ${formatTime(freeSlot.end)}\n\n`
                     + `Todays location: ${place.poi.name}\n`
                     + `Distance: ${Math.trunc(place.dist)}m\n\n`
                     + `Weather: ${weatherForecast.day.shortPhrase} with ${weatherForecast.temperature.maximum.value}°C`;
-    textToRead = `You have a free slot to train. You are free from ${formatDate(freeSlot.start)} `
-                  + `until ${formatDate(freeSlot.end)}. The training location is ${place.poi.name}. `
+    textToRead = `You have a free slot to train. You are free from ${formatTime(freeSlot.start)} `
+                  + `until ${formatTime(freeSlot.end)}. The training location is ${place.poi.name}. `
                   + `Today it is ${weatherForecast.day.shortPhrase} with ${weatherForecast.temperature.maximum.value}°C.`;
     displayPointOnMap = {
       longitude: place.position.lat,
@@ -75,10 +75,10 @@ router.get('/confirm', wrapAsync(async (req, res) => {
   let textToDisplay;
   let displayRouteOnMap;
   if (connection) {
-    textToDisplay = `Leave home: ${formatDate(connection.departure)}\n`
+    textToDisplay = `Leave home: ${formatTime(connection.departure)}\n`
                     + `First stop: ${connection.legs[0].to}\n`
                     + `Destination: ${connection.legs[connection.legs.length - 1].to}`;
-    textToRead = `You have to leave at ${formatDate(connection.departure)}. `
+    textToRead = `You have to leave at ${formatTime(connection.departure)}. `
                   + `Your first stop will be ${connection.legs[0].to}. `
                   + `Your destination is ${connection.legs[connection.legs.length - 1].to}`;
     displayRouteOnMap = {
