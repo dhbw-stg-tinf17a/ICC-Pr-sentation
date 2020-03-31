@@ -112,7 +112,34 @@ router.get('/confirm', wrapAsync(async (req, res) => {
     pref,
   });
 
-  res.send({ connection });
+  let textToRead;
+  let textToDisplay;
+  let displayRouteOnMap;
+  if (connection) {
+    textToDisplay = `Leave home: ${formatDate(connection.departure)}\n`
+                    + `First stop: ${connection.legs[0].to}\n`
+                    + `Destination: ${connection.legs[connection.legs.length - 1].to}`;
+    textToRead = `You have to leave at ${formatDate(connection.departure)}. `
+                  + `Your first stop will be ${connection.legs[0].to}. `
+                  + `Your destination is ${connection.legs[connection.legs.length - 1].to}`;
+    displayRouteOnMap = {
+      origin: connection.legs[0].from,
+      destination: connection.legs[connection.legs.length - 1].to,
+    };
+  } else {
+    textToDisplay = 'Can not find route to starting point of your travel!\nSorry!';
+    textToRead = 'I can not find a route to your travel starting point. Sorry!';
+    displayRouteOnMap = null;
+  }
+
+  res.send({
+    textToDisplay,
+    textToRead,
+    displayRouteOnMap,
+    displayPointOnMap: null,
+    furtherAction: null,
+    nextLink: null,
+  });
 }));
 
 module.exports = router;
