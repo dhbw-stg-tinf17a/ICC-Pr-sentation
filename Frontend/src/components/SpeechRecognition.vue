@@ -58,7 +58,6 @@ export default {
   },
   created() {
     this.initSpeechRecognition();
-    console.log(this.listening);
     if (localStorage.getItem('microphoneEnabled') === 'true') {
       this.startSpeechRecognition();
     } else {
@@ -70,7 +69,6 @@ export default {
       return s.replace(s.substr(0, 1), (m) => m.toUpperCase());
     },
     startSpeechRecognition() {
-      console.trace();
       localStorage.setItem('microphoneEnabled', true);
       this.listening = true;
       this.recognition.lang = 'en-US';
