@@ -1,6 +1,7 @@
 const express = require('express');
 const travelPlanning = require('../usecases/travel-planning');
 const wrapAsync = require('../utilities/wrap-async');
+const formatDate = require('../utilities/date-formatter');
 const db = require('../modules/db');
 const preferences = require('../modules/preferences');
 
@@ -72,21 +73,23 @@ router.get('/', wrapAsync(async (req, res) => {
   res.send({
     textToDisplay: `Free on: ${freeDays}\n`
                     + `Destination: ${destination.name} in ${destination.address.city}\n`
-                    + `Depart from ${connectionToDestination.legs[0].from}, ${connectionToDestination.legs[0].departure}\n`
+                    + `Depart from ${connectionToDestination.legs[0].from}, ${formatDate(connectionToDestination.legs[0].departure)}\n`
                     + `Arrive at ${connectionToDestination.legs[connectionToDestination.legs.length - 1].to},`
-                    + `${connectionToDestination.legs[connectionToDestination.legs.length - 1].arrival}\n\n`
+                    + `${formatDate(connectionToDestination.legs[connectionToDestination.legs.length - 1].arrival)}\n`
+                    + `Price: ${connectionToDestination.price}€ + ${connectionFromDestination.price}€\n\n`
 
-                    + `Return from ${connectionFromDestination.legs[0].from}, ${connectionFromDestination.legs[0].departure}\n`
+                    + `Return from ${connectionFromDestination.legs[0].from}, ${formatDate(connectionFromDestination.legs[0].departure)}\n`
                     + `Arrive home at ${connectionFromDestination.legs[connectionFromDestination.legs.length - 1].to},`
-                    + `${connectionFromDestination.legs[connectionFromDestination.legs.length - 1].arrival}\n\n`
+                    + `${formatDate(connectionFromDestination.legs[connectionFromDestination.legs.length - 1].arrival)}\n\n`
 
                     + `${weatherForecast}`,
 
     textToRead: `You are free on ${freeDays}. You could travel to ${destination.name} in`
                 + `${destination.address.city}. Your train leaves from ${connectionToDestination.legs[0].from} at`
-                + `${connectionToDestination.legs[0].departure}. You will arrive at`
+                + `${formatDate(connectionToDestination.legs[0].departure)}. You will arrive at`
                 + `${connectionToDestination.legs[connectionToDestination.legs.length - 1].to} at`
-                + `${connectionToDestination.legs[connectionToDestination.legs.length - 1].arrival}.`
+                + `${formatDate(connectionToDestination.legs[connectionToDestination.legs.length - 1].arrival)}.`
+                + `The total price will be ${connectionToDestination.price + connectionFromDestination.price}€.`
                 + `The weather will be ${saturdayWeatherForecast.day.shortPhrase}`,
 
     displayRouteOnMap: {
