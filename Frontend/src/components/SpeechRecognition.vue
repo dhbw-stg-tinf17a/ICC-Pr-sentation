@@ -58,7 +58,11 @@ export default {
   },
   created() {
     this.initSpeechRecognition();
-    this.startSpeechRecognition();
+    if (localStorage.getItem('microphoneEnabled') === 'true') {
+      this.startSpeechRecognition();
+    } else {
+      this.listening = false;
+    }
   },
   methods: {
     capitalize(s) {
