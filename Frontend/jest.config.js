@@ -11,5 +11,8 @@ module.exports = {
     '!src/services/SpeechSynthesis.js',
   ],
   coverageReporters: ['html', 'text'],
-  setupFilesAfterEnv: ['<rootDir>/tests/unit/__mocks__/localStorage.js'],
+  setupFilesAfterEnv: [
+    '<rootDir>/tests/unit/__mocks__/localStorage.js',
+    '<rootDir>/tests/unit/__mocks__/speechSynthesis.js',
+  ],
 };

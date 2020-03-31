@@ -58,7 +58,6 @@ describe('SpeechRecognition.vue', () => {
     it('speech recognition is stoped', () => {
       const wrapper = factory();
       const spy = jest.spyOn(wrapper.vm, 'stopSpeechRecognition');
-      wrapper.find('#muteButton').trigger('click');
       wrapper.vm.stopSpeechRecognition();
       wrapper.vm.$nextTick(() => {
         expect(spy).toHaveBeenCalled();
