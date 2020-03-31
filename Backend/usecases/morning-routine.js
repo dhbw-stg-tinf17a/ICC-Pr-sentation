@@ -103,13 +103,20 @@ async function getWakeUpTimeForFirstEventOfToday(pref) {
   };
 }
 
-async function getWeatherForecast(pref) {
+/**
+ * @param pref Preferences as returned by `preferences.get`.
+ * @parm datetime Datetime for which the daily forecast should be returned.
+ */
+async function getWeatherForecast({ pref, datetime }) {
+  const now = moment.tz(timezone).startOf('day');
+  const daysTo = moment(datetime).endOf('day').diff(now, 'days');
+
   const weatherForecast = await weather.getForecast({
     ...pref.location,
-    duration: 1,
+    duration: 5,
   });
 
-  return weatherForecast[0];
+  return weatherForecast[daysTo];
 }
 
 async function run() {
@@ -124,7 +131,7 @@ async function run() {
     const eventStart = moment(event.start).tz(timezone).format('HH:mm');
     let body = `${event.summary} starts at ${eventStart}.`;
     if (connection !== undefined) {
-    const departure = moment(connection.departure).tz(timezone).format('HH:mm');
+      const departure = moment(connection.departure).tz(timezone).format('HH:mm');
       body += ` You have to leave at ${departure}.`;
     }
 
