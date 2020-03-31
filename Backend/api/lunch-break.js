@@ -1,6 +1,6 @@
 const express = require('express');
 const wrapAsync = require('../utilities/wrap-async');
-const formatDate = require('../utilities/date-formatter');
+const { formatTime } = require('../utilities/date-formatter');
 const lunchBreak = require('../usecases/lunch-break');
 const preferences = require('../modules/preferences');
 const vvs = require('../modules/vvs');
@@ -25,12 +25,12 @@ router.get('/', wrapAsync(async (req, res) => {
   ]);
 
   res.send({
-    textToDisplay: `Lunch Break from: ${formatDate(freeSlot.start)}\n`
-                    + `To: ${formatDate(freeSlot.end)}\n\n`
+    textToDisplay: `Lunch Break from: ${formatTime(freeSlot.start)}\n`
+                    + `To: ${formatTime(freeSlot.end)}\n\n`
                     + `Restaurant: ${restaurant.poi.name}\n`
                     + `On: ${restaurant.address.streetName} Street`,
-    textToRead: `Your have time for a Lunch Break from ${formatDate(freeSlot.start)} to `
-                + ` ${formatDate(freeSlot.end)}. I recommend ${restaurant.poi.name} on ${restaurant.address.streetName} Street.`,
+    textToRead: `Your have time for a Lunch Break from ${formatTime(freeSlot.start)} to `
+                + ` ${formatTime(freeSlot.end)}. I recommend ${restaurant.poi.name} on ${restaurant.address.streetName} Street.`,
     displayRouteOnMap: null,
     displayPointOnMap: {
       longitude: restaurant.position.lat,
@@ -64,10 +64,10 @@ router.get('/confirm', wrapAsync(async (req, res) => {
   let textToDisplay;
   let displayRouteOnMap;
   if (connection) {
-    textToDisplay = `Leave home: ${formatDate(connection.departure)}\n`
+    textToDisplay = `Leave for Lunch: ${formatTime(connection.departure)}\n`
                     + `First stop: ${connection.legs[0].to}\n`
                     + `Destination: ${connection.legs[connection.legs.length - 1].to}`;
-    textToRead = `You have to leave at ${formatDate(connection.departure)}. `
+    textToRead = `You have to leave at ${formatTime(connection.departure)}. `
                   + `Your first stop will be ${connection.legs[0].to}. `
                   + `Your destination is ${connection.legs[connection.legs.length - 1].to}`;
     displayRouteOnMap = {
