@@ -23,10 +23,10 @@
           <h2 class="subtitle">
             The Use Cases
           </h2>
-          <p>Commute: Notification when you have to get up</p>
-          <p>Travel: Notification about low travel prices</p>
-          <p>Restaurant: Shows you nice restaurants for your lunch break</p>
-          <p>Trainer: Tells you when you can do sports</p>
+          <p>morning-routine: Notification when you have to get up</p>
+          <p>travel-planning: Notification about low travel prices</p>
+          <p>lunch-break: Shows you nice restaurants for your lunch break</p>
+          <p>personal-trainer: Tells you when you can do sports</p>
         </div>
         <div class="column">
           <h2 class="subtitle">
@@ -41,20 +41,20 @@
             </thead>
             <tbody>
               <tr>
-                <th>Commute</th>
-                <th>Switch to commute use case</th>
+                <th>morning-routine</th>
+                <th>Switch to morning-routine use case</th>
               </tr>
               <tr>
-                <th>Travel</th>
-                <th>Switch to travel use case</th>
+                <th>travel-planning</th>
+                <th>Switch to travel-planning use case</th>
               </tr>
               <tr>
-                <th>Restaurant</th>
-                <th>Switch to restaurant use case</th>
+                <th>lunch-break</th>
+                <th>Switch to lunch-break use case</th>
               </tr>
               <tr>
-                <th>Trainer</th>
-                <th>Switch to trainer use case</th>
+                <th>personal-trainer</th>
+                <th>Switch to personal-trainer use case</th>
               </tr>
               <tr>
                 <th>Calendar</th>
@@ -96,5 +96,10 @@ export default {
 <style scoped>
 .subtitle {
   text-decoration: underline;
+}
+.hero-body {
+  position: relative;
+  margin: 0rem 3rem 3rem 3rem;
+  padding-top: 1rem;
 }
 </style>

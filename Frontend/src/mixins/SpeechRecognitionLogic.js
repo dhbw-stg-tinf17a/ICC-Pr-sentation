@@ -3,7 +3,7 @@ import SpeechService from '@/services/SpeechSynthesis';
 export default {
   data() {
     return {
-      usecase: ['commute', 'trainer', 'restaurant', 'travel'],
+      usecase: ['morning-routine', 'personal-trainer', 'lunch-break', 'travel-planning'],
     };
   },
   watch: {
@@ -19,7 +19,10 @@ export default {
           if (this.$route.query.usecase !== this.usecase[i]) this.$router.push({ name: 'dialog', query: { usecase: this.usecase[i] } });
           else {
             this.$refs.routerView.submitMyMessage(this.usecase[i]);
-            const functionName = `${this.usecase[i]}UseCase`;
+            // transformation to get 'morningRoutineUseCase' out of morning-routine
+            const functionName = `${this.usecase[i].split('-')[0]
+            + this.usecase[i].charAt(this.usecase[i].indexOf('-') + 1).toUpperCase()
+            + this.usecase[i].split('-')[1].substr(1)}UseCase`;
             this.$refs.routerView[functionName]();
           }
           this.userInput = '';

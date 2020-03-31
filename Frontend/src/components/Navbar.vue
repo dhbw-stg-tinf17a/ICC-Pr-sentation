@@ -56,45 +56,45 @@
       <b-navbar-item tag="div">
         <router-link
           class="button is-white is-outlined"
-          :to="{name: 'dialog', query: {usecase: 'commute'}}"
+          :to="{name: 'dialog', query: {usecase: 'morning-routine'}}"
         >
           <span class="icon">
             <i class="fas fa-train" />
           </span>
-          <span>Commute</span>
+          <span>Morning Routine</span>
         </router-link>
       </b-navbar-item>
       <b-navbar-item tag="div">
         <router-link
           class="button is-white is-outlined"
-          :to="{name: 'dialog', query: {usecase: 'travel'}}"
+          :to="{name: 'dialog', query: {usecase: 'travel-planning'}}"
         >
           <span class="icon">
             <i class="fas fa-plane-departure" />
           </span>
-          <span>Travel</span>
+          <span>Travel Planning</span>
         </router-link>
       </b-navbar-item>
       <b-navbar-item tag="div">
         <router-link
           class="button is-white is-outlined"
-          :to="{name: 'dialog', query: {usecase: 'restaurant'}}"
+          :to="{name: 'dialog', query: {usecase: 'lunch-break'}}"
         >
           <span class="icon">
             <i class="fas fa-utensils" />
           </span>
-          <span>Restaurant</span>
+          <span>Lunch Break</span>
         </router-link>
       </b-navbar-item>
       <b-navbar-item tag="div">
         <router-link
           class="button is-white is-outlined"
-          :to="{name: 'dialog', query: {usecase: 'trainer'}}"
+          :to="{name: 'dialog', query: {usecase: 'personal-trainer'}}"
         >
           <span class="icon">
             <i class="fas fa-swimmer" />
           </span>
-          <span>Trainer</span>
+          <span>Personal Trainer</span>
         </router-link>
       </b-navbar-item>
       <b-navbar-item tag="div">

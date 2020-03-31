@@ -128,15 +128,37 @@ export default {
   beforeRouteEnter(to, from, next) {
     next((vm) => {
       vm.submitMyMessage(to.query.usecase);
-      if (to.query.usecase === 'commute') vm.commuteUseCase();
+      const functionName = vm.transformRouteNameToFunctionName(to.query.usecase);
+      vm[functionName]();
     });
   },
   beforeRouteUpdate(to, from, next) {
     this.submitMyMessage(to.query.usecase);
-    if (to.query.usecase === 'commute') this.commuteUseCase();
+    const functionName = this.transformRouteNameToFunctionName(to.query.usecase);
+    this[functionName]();
     next();
   },
   methods: {
+    // transformation to get 'morningRoutineUseCase' out of morning-routine
+    transformRouteNameToFunctionName(routeName) {
+      return `${routeName.split('-')[0]
+            + routeName.charAt(routeName.indexOf('-') + 1).toUpperCase()
+            + routeName.split('-')[1].substr(1)}UseCase`;
+    },
+    handleApiError(error) {
+      this.$buefy.toast.open({
+        message: `Error ${error.response.data.status}: ${error.response.data.error}`,
+        duration: 3000,
+        type: 'is-danger',
+      });
+      if (localStorage.getItem('soundEnabled') === 'true') SpeechService.speak(`${error.response.data.error}. Sorry!`);
+      this.submitMessage({
+        content: `Error ${error.response.data.status}: ${error.response.data.error}`,
+        myself: false,
+        participantId: 1,
+        timestamp: this.getCurrentTimestamp(),
+      });
+    },
     getCurrentTimestamp() {
       const date = new Date();
       return {
@@ -149,69 +171,65 @@ export default {
         millisecond: date.getMilliseconds(),
       };
     },
-    commuteUseCase() {
-      UseCasesService.getCommuteUseCase()
+    morningRoutineUseCase() {
+      UseCasesService.getMorningRoutineUseCase()
         .then((response) => {
-          const messageString = `Next Event: ${response.data.data.firstEvent.summary}\n`
-            + `At: ${response.data.data.firstEvent.location}\n`
-            + `Start: ${response.data.data.firstEvent.start}\n`
-            + `Leave home: ${response.data.data.timeToLeave}\n\n`
-            + `${response.data.data.weather.weather[0].description} `
-            + `${response.data.data.weather.main.temp}°C\n\n`
-            + `Quote of the day: ${response.data.data.quote.quote} -`
-            + `${response.data.data.quote.author}`;
-
           this.submitMessage({
-            content: messageString,
+            content: response.data.textToDisplay,
             myself: false,
             participantId: 1,
             timestamp: this.getCurrentTimestamp(),
           });
           if (localStorage.getItem('soundEnabled') === 'true') {
-            SpeechService.speak(
-              `Next Event: ${response.data.data.firstEvent.summary}`
-                + ` at ${response.data.data.firstEvent.start}.`
-                + ` You have to leave at ${response.data.data.timeToLeave}`,
-            );
+            SpeechService.speak(response.data.textToRead);
           }
-        })
-        .catch((error) => {
-          this.$buefy.toast.open({
-            message: `Error ${error.response.data.status}: ${error.response.data.error}`,
-            duration: 3000,
-            type: 'is-danger',
-          });
-          if (localStorage.getItem('soundEnabled') === 'true') SpeechService.speak(`${error.response.data.error}. Sorry!`);
-          this.submitMessage({
-            content: `Error ${error.response.data.status}: ${error.response.data.error}`,
-            myself: false,
-            participantId: 1,
-            timestamp: this.getCurrentTimestamp(),
-          });
+        }).catch((error) => {
+          this.handleApiError(error);
         });
     },
-    travelUseCase() {
-      this.submitMessage({
-        content: 'Coming soon. I promise...',
-        myself: false,
-        participantId: 1,
-        timestamp: this.getCurrentTimestamp(),
+    travelPlanningUseCase() {
+      UseCasesService.getTravelPlanningUseCase().then((response) => {
+        this.submitMessage({
+          content: response.data.textToDisplay,
+          myself: false,
+          participantId: 1,
+          timestamp: this.getCurrentTimestamp(),
+        });
+        if (localStorage.getItem('soundEnabled') === 'true') {
+          SpeechService.speak(response.data.textToRead);
+        }
+      }).catch((error) => {
+        this.handleApiError(error);
       });
     },
-    restaurantUseCase() {
-      this.submitMessage({
-        content: 'Coming soon. I promise...',
-        myself: false,
-        participantId: 1,
-        timestamp: this.getCurrentTimestamp(),
+    lunchBreakUseCase() {
+      UseCasesService.getLunchBreakUseCase().then((response) => {
+        this.submitMessage({
+          content: response.data.textToDisplay,
+          myself: false,
+          participantId: 1,
+          timestamp: this.getCurrentTimestamp(),
+        });
+        if (localStorage.getItem('soundEnabled') === 'true') {
+          SpeechService.speak(response.data.textToRead);
+        }
+      }).catch((error) => {
+        this.handleApiError(error);
       });
     },
-    trainerUseCase() {
-      this.submitMessage({
-        content: 'Coming soon. I promise...',
-        myself: false,
-        participantId: 1,
-        timestamp: this.getCurrentTimestamp(),
+    personalTrainerUseCase() {
+      UseCasesService.getPersonalTrainerUseCase().then((response) => {
+        this.submitMessage({
+          content: response.data.textToDisplay,
+          myself: false,
+          participantId: 1,
+          timestamp: this.getCurrentTimestamp(),
+        });
+        if (localStorage.getItem('soundEnabled') === 'true') {
+          SpeechService.speak(response.data.textToRead);
+        }
+      }).catch((error) => {
+        this.handleApiError(error);
       });
     },
     onType(event) {

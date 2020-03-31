@@ -27,7 +27,7 @@ const router = new VueRouter({
 
 jest.mock('@/services/SpeechSynthesis');
 jest.mock('axios', () => ({
-  put: jest.fn(() => Promise.reject()),
+  patch: jest.fn(() => Promise.resolve()),
   create: () => mockAxios,
   defaults: {
     adapter: {},
@@ -74,7 +74,7 @@ describe('App.vue', () => {
 
   describe('test SpeechRecognitionLogic.js mixin', () => {
     it('route change, when userInput equals keyword', () => {
-      const keywords = ['trainer', 'commute', 'restaurant', 'travel'];
+      const keywords = ['personal-trainer', 'morning-routine', 'lunch-break', 'travel-planning'];
       const wrapper = factory();
       for (let i = 0; i < keywords.length; i += 1) {
         wrapper.vm.checkForUseCase(keywords[i]);

@@ -76,7 +76,7 @@ async function run() {
       .subtract(pref.lunchBreakMinutesBeforeStart, 'minutes');
 
     const body = `You have some time to spare during your lunch break at ${freeSlotStart}, why not try a restaurant?`;
-    const job = schedule.scheduleJob(notificationTime, async () => {
+    schedule.scheduleJob(notificationTime, async () => {
       await notifications.sendNotifications({
         title: 'Recommended restaurant for your lunch break',
         options: {
@@ -89,9 +89,7 @@ async function run() {
         },
       });
     });
-    if (job !== null) {
-      logger.debug(`Lunch break usecase: Notification at ${job.nextInvocation().toISOString()} with body '${body}'`);
-    }
+    logger.debug(`Lunch break usecase: Scheduled notification at ${notificationTime.toISOString()} with body '${body}'`);
   } catch (error) {
     logger.error(error);
   }
