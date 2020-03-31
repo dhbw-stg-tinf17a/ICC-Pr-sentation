@@ -25,6 +25,10 @@ const quote = require('../modules/quote');
 const logger = pino({ level: process.env.LOG_LEVEL || 'info' });
 const timezone = 'Europe/Berlin';
 
+/**
+ * @param pref Preferences as returned by `preferences.get`.
+ * @return Object containing `quote` and `author`.
+ */
 async function getQuoteOfTheDay(pref) {
   return quote.getQuoteOfTheDay(pref.morningRoutineQuoteCategory);
 }
@@ -33,9 +37,9 @@ async function getQuoteOfTheDay(pref) {
 // no events today
 /**
  * @param pref Preferences as returned by `preferences.get`.
- * @return Returns an object containing `wakeUpTime`, `event` and `connection`. If there is no event
- *         today or tomorrow, all properties are undefined. If the event has no location or no
- *         connection to the event location can be found, `connection` is undefined.
+ * @return Object containing `wakeUpTime`, `event` and `connection`. If there is no event today or
+ *         tomorrow, all properties are undefined. If the event has no location or no connection to
+ *         the event location can be found, `connection` is undefined.
  */
 async function getWakeUpTimeForFirstEventOfToday(pref) {
   const now = moment.tz(timezone);
@@ -45,12 +49,12 @@ async function getWakeUpTimeForFirstEventOfToday(pref) {
   const tomorrowEnd = tomorrowStart.clone().endOf('day');
 
   const events = await calendar.getEventsStartingBetween({
-    todayStart,
-    tomorrowEnd,
+    start: todayStart,
+    end: tomorrowEnd,
   });
 
   let event = events.filter((ev) => ev.end <= todayEnd).find(() => true);
-  if (event === undefined || event < now) {
+  if (event === undefined || event.start < now) {
     // no event today or first event today already started - look for first event tomorrow
     event = events.filter((ev) => ev.start > todayEnd).find(() => true);
   }
