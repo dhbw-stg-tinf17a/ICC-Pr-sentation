@@ -71,7 +71,7 @@ export default {
           longitude: position.coords.longitude,
         },
       }).catch((error) => this.$buefy.toast.open({
-        message: `Error ${error.response.data.status}: ${error.response.data.error}`,
+        message: `Error ${error.response.status}: ${error.response.statusText}`,
         duration: 3000,
         type: 'is-danger',
       }));
