@@ -2,8 +2,9 @@
 function formatDate(date) {
   const newDate = new Date(date);
   return newDate.toLocaleTimeString('en-us', {
+    timeZone: 'Europe/Berlin',
     weekday: 'long',
-    month: 'short',
+    month: 'long',
     day: 'numeric',
     hour: '2-digit',
     minute: '2-digit',
@@ -13,6 +14,7 @@ function formatDate(date) {
 function formatTime(date) {
   const newDate = new Date(date);
   return newDate.toLocaleTimeString('en-us', {
+    timeZone: 'Europe/Berlin',
     hour: '2-digit',
     minute: '2-digit',
   });
