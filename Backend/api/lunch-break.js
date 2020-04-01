@@ -36,8 +36,8 @@ router.get('/', wrapAsync(async (req, res) => {
       longitude: restaurant.position.lat,
       latitude: restaurant.position.lon,
     },
-    furtherAction: null,
-    nextLink: null,
+    furtherAction: 'Do you want to know how to get to the restaurant?',
+    nextLink: 'lunch-break/confirm',
   });
 }));
 

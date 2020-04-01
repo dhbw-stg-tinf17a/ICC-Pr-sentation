@@ -59,6 +59,8 @@ router.get('/', wrapAsync(async (req, res) => {
   let textToDisplay;
   let textToRead;
   let displayRouteOnMap = null;
+  let furtherAction = null;
+  let nextLink = null;
   if (weekendFree) {
     textToDisplay = 'Free next weekend\n'
                     + `Destination: ${destination.name} in ${destination.address.city}\n`
@@ -86,6 +88,8 @@ router.get('/', wrapAsync(async (req, res) => {
       origin: connectionToDestination.legs[0].from,
       destination: connectionToDestination.legs[connectionToDestination.legs.length - 1].to,
     };
+    furtherAction = 'Do you want to get information about how to get to your origin train station?';
+    nextLink = 'travel-planning/confirm';
   } else {
     textToDisplay = 'Not free at the weekend.\nCheck back next week!';
 
@@ -98,8 +102,8 @@ router.get('/', wrapAsync(async (req, res) => {
     textToRead,
     displayRouteOnMap,
     displayPointOnMap: null,
-    furtherAction: 'Do you want to get information about how to get to your origin train station?',
-    nextLink: '/confirm',
+    furtherAction,
+    nextLink,
   });
 }));
 

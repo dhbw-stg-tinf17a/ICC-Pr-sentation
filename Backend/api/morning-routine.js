@@ -63,7 +63,7 @@ router.get('/', wrapAsync(async (req, res) => {
     displayRouteOnMap,
     displayPointOnMap: null,
     furtherAction: 'Do you want to hear your daily quote?',
-    nextLink: '/confirm',
+    nextLink: 'morning-routine/confirm',
   });
 }));
 
