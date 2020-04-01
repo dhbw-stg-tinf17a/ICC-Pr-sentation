@@ -24,20 +24,39 @@ router.get('/', wrapAsync(async (req, res) => {
     }),
   ]);
 
-  res.send({
-    textToDisplay: `Lunch Break from: ${formatTime(freeSlot.start)}\n`
+  let textToDisplay;
+  let textToRead;
+  let displayPointOnMap = null;
+  let furtherAction = null;
+  let nextLink = null;
+  if (freeSlot && restaurant) {
+    textToDisplay = `Lunch Break from: ${formatTime(freeSlot.start)}\n`
                     + `To: ${formatTime(freeSlot.end)}\n\n`
                     + `Restaurant: ${restaurant.poi.name}\n`
-                    + `On: ${restaurant.address.streetName} Street`,
-    textToRead: `Your have time for a Lunch Break from ${formatTime(freeSlot.start)} to `
-                + ` ${formatTime(freeSlot.end)}. I recommend ${restaurant.poi.name} on ${restaurant.address.streetName} Street.`,
-    displayRouteOnMap: null,
-    displayPointOnMap: {
+                    + `On: ${restaurant.address.streetName} Street`;
+    textToRead = `Your have time for a Lunch Break from ${formatTime(freeSlot.start)} to `
+                + ` ${formatTime(freeSlot.end)}. I recommend ${restaurant.poi.name} on ${restaurant.address.streetName} Street.`;
+    displayPointOnMap = {
       longitude: restaurant.position.lat,
       latitude: restaurant.position.lon,
-    },
-    furtherAction: 'Do you want to know how to get to the restaurant?',
-    nextLink: 'lunch-break/confirm',
+    };
+    furtherAction = 'Do you want to know how to get to the restaurant?';
+    nextLink = 'lunch-break/confirm';
+  } else if (restaurant) {
+    textToDisplay = 'No time for lunch break today';
+    textToRead = 'Today you have no free slot in your calendar for a lunch break!';
+  } else {
+    textToDisplay = 'No restaurant found.\nSorry!';
+    textToRead = 'Unfortunately I could not find a restaurant for today. Sorry.';
+  }
+
+  res.send({
+    textToDisplay,
+    textToRead,
+    displayRouteOnMap: null,
+    displayPointOnMap,
+    furtherAction,
+    nextLink,
   });
 }));
 
