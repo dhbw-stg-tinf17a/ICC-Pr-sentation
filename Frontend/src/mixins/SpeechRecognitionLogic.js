@@ -3,31 +3,36 @@ import SpeechService from '@/services/SpeechSynthesis';
 export default {
   data() {
     return {
-      usecase: ['morning-routine', 'personal-trainer', 'lunch-break', 'travel-planning'],
+      usecasesTrigger: [
+        ['morning-routine', 'morningRoutineUseCase', 'Morning Routine', 'commute', 'morning', 'routine'],
+        ['personal-trainer', 'personalTrainerUseCase', 'Personal Trainer', 'training', 'train', 'trainer'],
+        ['lunch-break', 'lunchBreakUseCase', 'Lunch Break', 'lunch', 'lunchbreak'],
+        ['travel-planning', 'travelPlanningUseCase', 'Travel Planner', 'travel', 'weekend', 'travelplanner'],
+      ],
     };
   },
   watch: {
     userInput() {
-      this.checkForUseCase(this.userInput);
+      this.checkForTriggerWord(this.userInput);
     },
   },
   methods: {
     // checks, if userInput contains any trigger word
-    checkForUseCase(userInput) {
-      for (let i = 0; i < this.usecase.length; i += 1) {
-        if (userInput.toLowerCase().includes(this.usecase[i])) {
-          if (this.$route.query.usecase !== this.usecase[i]) this.$router.push({ name: 'dialog', query: { usecase: this.usecase[i] } });
-          else {
-            this.$refs.routerView.submitMyMessage(this.usecase[i]);
-            // transformation to get 'morningRoutineUseCase' out of morning-routine
-            const functionName = `${this.usecase[i].split('-')[0]
-            + this.usecase[i].charAt(this.usecase[i].indexOf('-') + 1).toUpperCase()
-            + this.usecase[i].split('-')[1].substr(1)}UseCase`;
-            this.$refs.routerView[functionName]();
+    checkForTriggerWord(userInput) {
+      for (let i = 0; i < this.usecasesTrigger.length; i += 1) {
+        if (this.usecasesTrigger[i].some((v) => userInput.toLowerCase().includes(v))) {
+          if (this.$route.query.usecase !== this.usecasesTrigger[i][0]) {
+            this.$router.push({
+              name: 'dialog', query: { usecase: this.usecasesTrigger[i][0] },
+            });
+          } else {
+            this.$refs.routerView.submitMyMessage(this.usecasesTrigger[i][2]);
+            this.$refs.routerView[this.usecasesTrigger[i][1]]();
           }
           this.userInput = '';
         }
       }
+
       if (userInput.toLowerCase().includes('help')) {
         if (this.$router.currentRoute.name !== 'help') this.$router.push({ name: 'help' });
         this.userInput = '';
