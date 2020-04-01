@@ -17,6 +17,9 @@ const functions = {
   getLunchBreakUseCase() {
     return api.get('lunch-break');
   },
+  getFurtherInformation(route) {
+    return api.get(route);
+  },
 };
 
 export default functions;

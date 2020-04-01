@@ -61,6 +61,7 @@ export default {
   },
   data() {
     return {
+      nextLink: null,
       participants: [
         {
           name: 'Gunter',
@@ -123,6 +124,15 @@ export default {
           'message-input',
         )[0].innerText = this.userInput;
       }
+
+      if (this.userInput.toLowerCase().includes('yes') && this.nextLink) {
+        UseCasesService.getFurtherInformation(this.nextLink)
+          .then((response) => {
+            this.handleApiResponse(response);
+          }).catch((error) => {
+            this.handleApiError(error);
+          });
+      }
     },
   },
   beforeRouteEnter(to, from, next) {
@@ -159,6 +169,21 @@ export default {
         timestamp: this.getCurrentTimestamp(),
       });
     },
+    handleApiResponse(response) {
+      this.submitMessage({
+        content: response.data.textToDisplay,
+        myself: false,
+        participantId: 1,
+        timestamp: this.getCurrentTimestamp(),
+      });
+      if (localStorage.getItem('soundEnabled') === 'true') {
+        SpeechService.speak(response.data.textToRead);
+      }
+
+      if (response.data.furtherAction) {
+        this.nextLink = response.data.nextLink;
+      }
+    },
     getCurrentTimestamp() {
       const date = new Date();
       return {
@@ -174,60 +199,28 @@ export default {
     morningRoutineUseCase() {
       UseCasesService.getMorningRoutineUseCase()
         .then((response) => {
-          this.submitMessage({
-            content: response.data.textToDisplay,
-            myself: false,
-            participantId: 1,
-            timestamp: this.getCurrentTimestamp(),
-          });
-          if (localStorage.getItem('soundEnabled') === 'true') {
-            SpeechService.speak(response.data.textToRead);
-          }
+          this.handleApiResponse(response);
         }).catch((error) => {
           this.handleApiError(error);
         });
     },
     travelPlanningUseCase() {
       UseCasesService.getTravelPlanningUseCase().then((response) => {
-        this.submitMessage({
-          content: response.data.textToDisplay,
-          myself: false,
-          participantId: 1,
-          timestamp: this.getCurrentTimestamp(),
-        });
-        if (localStorage.getItem('soundEnabled') === 'true') {
-          SpeechService.speak(response.data.textToRead);
-        }
+        this.handleApiResponse(response);
       }).catch((error) => {
         this.handleApiError(error);
       });
     },
     lunchBreakUseCase() {
       UseCasesService.getLunchBreakUseCase().then((response) => {
-        this.submitMessage({
-          content: response.data.textToDisplay,
-          myself: false,
-          participantId: 1,
-          timestamp: this.getCurrentTimestamp(),
-        });
-        if (localStorage.getItem('soundEnabled') === 'true') {
-          SpeechService.speak(response.data.textToRead);
-        }
+        this.handleApiResponse(response);
       }).catch((error) => {
         this.handleApiError(error);
       });
     },
     personalTrainerUseCase() {
       UseCasesService.getPersonalTrainerUseCase().then((response) => {
-        this.submitMessage({
-          content: response.data.textToDisplay,
-          myself: false,
-          participantId: 1,
-          timestamp: this.getCurrentTimestamp(),
-        });
-        if (localStorage.getItem('soundEnabled') === 'true') {
-          SpeechService.speak(response.data.textToRead);
-        }
+        this.handleApiResponse(response);
       }).catch((error) => {
         this.handleApiError(error);
       });
