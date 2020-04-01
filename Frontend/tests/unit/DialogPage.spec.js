@@ -31,4 +31,12 @@ describe('DialogPage.vue', () => {
       expect(wrapper).toMatchSnapshot();
     });
   });
+
+  // it('geolocation error message is shown', () => {
+  //   const wrapper = factory();
+  //   wrapper.vm.error('ERROR');
+  //   wrapper.vm.$nextTick(() => {
+  //     expect(wrapper).toMatchSnapshot();
+  //   });
+  // });
 });

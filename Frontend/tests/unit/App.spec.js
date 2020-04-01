@@ -56,41 +56,25 @@ describe('App.vue', () => {
     });
   });
 
-  it('position is put successfully', () => {
-    const wrapper = factory();
-    wrapper.vm.showPosition({ coords: { latitude: '21.343234', longitude: '12.345344' } });
-    wrapper.vm.$nextTick(() => {
-      expect(wrapper).toMatchSnapshot();
-    });
-  });
-
-  it('error message is shown', () => {
-    const wrapper = factory();
-    wrapper.vm.error('ERROR');
-    wrapper.vm.$nextTick(() => {
-      expect(wrapper).toMatchSnapshot();
-    });
-  });
-
   describe('test SpeechRecognitionLogic.js mixin', () => {
     it('route change, when userInput equals keyword', () => {
       const keywords = ['personal-trainer', 'morning-routine', 'lunch-break', 'travel-planning'];
       const wrapper = factory();
       for (let i = 0; i < keywords.length; i += 1) {
-        wrapper.vm.checkForUseCase(keywords[i]);
+        wrapper.vm.checkForTriggerWord(keywords[i]);
         expect(router.currentRoute.name).toBe('dialog');
       }
     });
 
     it('time is read, when user inputs time keyword', () => {
       const wrapper = factory();
-      wrapper.vm.checkForUseCase('time');
+      wrapper.vm.checkForTriggerWord('time');
       expect(SpeechService.speak).toHaveBeenCalled();
     });
 
     it('userInput watcher calls function', () => {
       const wrapper = factory();
-      const spy = jest.spyOn(wrapper.vm, 'checkForUseCase');
+      const spy = jest.spyOn(wrapper.vm, 'checkForTriggerWord');
       wrapper.vm.userInput = 'Test';
       wrapper.vm.$nextTick(() => {
         expect(spy).toHaveBeenCalled();
