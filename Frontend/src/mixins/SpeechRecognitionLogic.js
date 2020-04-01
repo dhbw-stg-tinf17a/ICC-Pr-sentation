@@ -7,7 +7,7 @@ export default {
         ['morning-routine', 'morningRoutineUseCase', 'Morning Routine', 'commute', 'morning', 'routine'],
         ['personal-trainer', 'personalTrainerUseCase', 'Personal Trainer', 'training', 'train', 'trainer'],
         ['lunch-break', 'lunchBreakUseCase', 'Lunch Break', 'lunch', 'lunchbreak'],
-        ['travel-planning', 'travelPlanningUseCase', 'Travel Planner', 'travel', 'weekend', 'travelplanner'],
+        ['travel-planning', 'travelPlanningUseCase', 'Travel Planning', 'travel', 'weekend', 'travelplanner'],
       ],
     };
   },

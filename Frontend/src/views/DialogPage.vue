@@ -128,13 +128,13 @@ export default {
   },
   beforeRouteEnter(to, from, next) {
     next((vm) => {
-      vm.submitMyMessage(to.query.usecase);
+      vm.submitMyMessage(vm.transformRouteNameToReadableName(to.query.usecase));
       const functionName = vm.transformRouteNameToFunctionName(to.query.usecase);
       vm[functionName]();
     });
   },
   beforeRouteUpdate(to, from, next) {
-    this.submitMyMessage(to.query.usecase);
+    this.submitMyMessage(this.transformRouteNameToReadableName(to.query.usecase));
     const functionName = this.transformRouteNameToFunctionName(to.query.usecase);
     this[functionName]();
     next();
@@ -145,6 +145,12 @@ export default {
       return `${routeName.split('-')[0]
             + routeName.charAt(routeName.indexOf('-') + 1).toUpperCase()
             + routeName.split('-')[1].substr(1)}UseCase`;
+    },
+    // transformation to get 'Morning Routine' out of morning-routine
+    transformRouteNameToReadableName(routeName) {
+      return `${routeName.charAt(0).toUpperCase() + routeName.split('-')[0].substr(1)} `
+            + `${routeName.charAt(routeName.indexOf('-') + 1).toUpperCase()
+            + routeName.split('-')[1].substr(1)}`;
     },
     userConfirmed(userInput) {
       if (this.nextLink) {
