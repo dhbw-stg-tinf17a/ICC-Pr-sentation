@@ -230,18 +230,43 @@ export default {
         this.handleApiError(error);
       });
     },
-    lunchBreakUseCase() {
-      UseCasesService.getLunchBreakUseCase().then((response) => {
-        this.handleApiResponse(response);
-      }).catch((error) => {
-        this.handleApiError(error);
-      });
+    lunchBreakUseCase(position) {
+      if (!position) {
+        this.getCoordinates();
+      } else {
+        UseCasesService.getLunchBreakUseCase(
+          position.coords.latitude,
+          position.coords.longitude,
+        ).then((response) => {
+          this.handleApiResponse(response);
+        }).catch((error) => {
+          this.handleApiError(error);
+        });
+      }
     },
     personalTrainerUseCase() {
       UseCasesService.getPersonalTrainerUseCase().then((response) => {
         this.handleApiResponse(response);
       }).catch((error) => {
         this.handleApiError(error);
+      });
+    },
+    getCoordinates() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(this.lunchBreakUseCase, this.geolocationError);
+      } else {
+        this.$buefy.toast.open({
+          message: 'Geolocation is not supported by this browser.',
+          duration: 3000,
+          type: 'is-danger',
+        });
+      }
+    },
+    geolocationError(err) {
+      this.$buefy.toast.open({
+        message: `ERROR(${err.code}): ${err.message}`,
+        duration: 3000,
+        type: 'is-danger',
       });
     },
     onType(event) {

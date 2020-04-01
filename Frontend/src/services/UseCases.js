@@ -14,8 +14,8 @@ const functions = {
   getPersonalTrainerUseCase() {
     return api.get('personal-trainer');
   },
-  getLunchBreakUseCase() {
-    return api.get('lunch-break');
+  getLunchBreakUseCase(latitude, longitude) {
+    return api.get(`lunch-break?latitude=${latitude}&longitude=${longitude}`);
   },
   getFurtherInformation(route) {
     return api.get(route);
