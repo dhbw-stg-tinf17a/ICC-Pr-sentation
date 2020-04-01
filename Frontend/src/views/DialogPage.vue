@@ -18,7 +18,7 @@
             :border-style="borderStyle"
             :hide-close-button="true"
             close-button-icon-size="20px"
-            :submit-icon-size="30"
+            submit-icon-size="30px"
             :load-more-messages="toLoad.length > 0 ? loadMoreMessages : null"
             :async-mode="false"
             :scroll-bottom="scrollBottom"
