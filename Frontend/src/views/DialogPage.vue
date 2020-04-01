@@ -124,15 +124,6 @@ export default {
           'message-input',
         )[0].innerText = this.userInput;
       }
-
-      if (this.userInput.toLowerCase().includes('yes') && this.nextLink) {
-        UseCasesService.getFurtherInformation(this.nextLink)
-          .then((response) => {
-            this.handleApiResponse(response);
-          }).catch((error) => {
-            this.handleApiError(error);
-          });
-      }
     },
   },
   beforeRouteEnter(to, from, next) {
@@ -154,6 +145,18 @@ export default {
       return `${routeName.split('-')[0]
             + routeName.charAt(routeName.indexOf('-') + 1).toUpperCase()
             + routeName.split('-')[1].substr(1)}UseCase`;
+    },
+    userConfirmed(userInput) {
+      if (this.nextLink) {
+        this.submitMyMessage(userInput);
+        UseCasesService.getFurtherInformation(this.nextLink)
+          .then((response) => {
+            this.handleApiResponse(response);
+          }).catch((error) => {
+            this.handleApiError(error);
+          });
+        this.nextLink = null;
+      }
     },
     handleApiError(error) {
       this.$buefy.toast.open({
@@ -180,9 +183,7 @@ export default {
         SpeechService.speak(response.data.textToRead);
       }
 
-      if (response.data.furtherAction) {
-        this.nextLink = response.data.nextLink;
-      }
+      this.nextLink = response.data.nextLink;
     },
     getCurrentTimestamp() {
       const date = new Date();

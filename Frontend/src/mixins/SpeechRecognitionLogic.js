@@ -43,6 +43,9 @@ export default {
 
         if (localStorage.getItem('soundEnabled') === 'true') SpeechService.speak(`Currently it is: ${time}`);
         this.userInput = '';
+      } else if (userInput.toLowerCase().includes('yes')) {
+        this.$refs.routerView.userConfirmed(userInput);
+        this.userInput = '';
       }
     },
   },
