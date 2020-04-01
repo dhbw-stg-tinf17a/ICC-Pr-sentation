@@ -33,7 +33,8 @@ router.get('/', wrapAsync(async (req, res) => {
     textToDisplay = `Lunch Break from: ${formatTime(freeSlot.start)}\n`
                     + `To: ${formatTime(freeSlot.end)}\n\n`
                     + `Restaurant: ${restaurant.poi.name}\n`
-                    + `On: ${restaurant.address.streetName} Street`;
+                    + `On: ${restaurant.address.streetName} Street\n`
+                    + `Distance: ${Math.trunc(restaurant.dist)}m`;
     textToRead = `Your have time for a Lunch Break from ${formatTime(freeSlot.start)} to `
                 + ` ${formatTime(freeSlot.end)}. I recommend ${restaurant.poi.name} on ${restaurant.address.streetName} Street.`;
     displayPointOnMap = {
