@@ -179,8 +179,20 @@ export default {
         participantId: 1,
         timestamp: this.getCurrentTimestamp(),
       });
+      if (response.data.furtherAction) {
+        this.submitMessage({
+          content: response.data.furtherAction,
+          myself: false,
+          participantId: 1,
+          timestamp: this.getCurrentTimestamp(),
+        });
+      }
+
       if (localStorage.getItem('soundEnabled') === 'true') {
         SpeechService.speak(response.data.textToRead);
+        if (response.data.furtherAction) {
+          SpeechService.speak(response.data.furtherAction);
+        }
       }
 
       this.nextLink = response.data.nextLink;
