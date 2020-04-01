@@ -39,9 +39,13 @@ export default {
         this.userInput = '';
       } else if (userInput.toLowerCase().includes('time')) {
         const today = new Date();
-        const time = `${today.getHours()}:${today.getMinutes()}:${today.getSeconds()}`;
-
-        if (localStorage.getItem('soundEnabled') === 'true') SpeechService.speak(`Currently it is: ${time}`);
+        const time = today.toLocaleTimeString('en-us', {
+          hour: '2-digit',
+          minute: '2-digit',
+        });
+        if (localStorage.getItem('soundEnabled') === 'true' && !speechSynthesis.speaking) {
+          SpeechService.speak(`Currently it is: ${time}`);
+        }
         this.userInput = '';
       } else if (userInput.toLowerCase().includes('yes')) {
         this.$refs.routerView.userConfirmed(userInput);
