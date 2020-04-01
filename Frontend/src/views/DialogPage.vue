@@ -18,7 +18,7 @@
             :border-style="borderStyle"
             :hide-close-button="true"
             close-button-icon-size="20px"
-            :submit-icon-size="30"
+            submit-icon-size="30px"
             :load-more-messages="toLoad.length > 0 ? loadMoreMessages : null"
             :async-mode="false"
             :scroll-bottom="scrollBottom"
@@ -61,6 +61,7 @@ export default {
   },
   data() {
     return {
+      nextLink: null,
       participants: [
         {
           name: 'Gunter',
@@ -127,13 +128,13 @@ export default {
   },
   beforeRouteEnter(to, from, next) {
     next((vm) => {
-      vm.submitMyMessage(to.query.usecase);
+      vm.submitMyMessage(vm.transformRouteNameToReadableName(to.query.usecase));
       const functionName = vm.transformRouteNameToFunctionName(to.query.usecase);
       vm[functionName]();
     });
   },
   beforeRouteUpdate(to, from, next) {
-    this.submitMyMessage(to.query.usecase);
+    this.submitMyMessage(this.transformRouteNameToReadableName(to.query.usecase));
     const functionName = this.transformRouteNameToFunctionName(to.query.usecase);
     this[functionName]();
     next();
@@ -144,6 +145,24 @@ export default {
       return `${routeName.split('-')[0]
             + routeName.charAt(routeName.indexOf('-') + 1).toUpperCase()
             + routeName.split('-')[1].substr(1)}UseCase`;
+    },
+    // transformation to get 'Morning Routine' out of morning-routine
+    transformRouteNameToReadableName(routeName) {
+      return `${routeName.charAt(0).toUpperCase() + routeName.split('-')[0].substr(1)} `
+            + `${routeName.charAt(routeName.indexOf('-') + 1).toUpperCase()
+            + routeName.split('-')[1].substr(1)}`;
+    },
+    userConfirmed(userInput) {
+      if (this.nextLink) {
+        this.submitMyMessage(userInput);
+        UseCasesService.getFurtherInformation(this.nextLink)
+          .then((response) => {
+            this.handleApiResponse(response);
+          }).catch((error) => {
+            this.handleApiError(error);
+          });
+        this.nextLink = null;
+      }
     },
     handleApiError(error) {
       this.$buefy.toast.open({
@@ -158,6 +177,31 @@ export default {
         participantId: 1,
         timestamp: this.getCurrentTimestamp(),
       });
+    },
+    handleApiResponse(response) {
+      this.submitMessage({
+        content: response.data.textToDisplay,
+        myself: false,
+        participantId: 1,
+        timestamp: this.getCurrentTimestamp(),
+      });
+      if (response.data.furtherAction) {
+        this.submitMessage({
+          content: response.data.furtherAction,
+          myself: false,
+          participantId: 1,
+          timestamp: this.getCurrentTimestamp(),
+        });
+      }
+
+      if (localStorage.getItem('soundEnabled') === 'true') {
+        SpeechService.speak(response.data.textToRead);
+        if (response.data.furtherAction) {
+          SpeechService.speak(response.data.furtherAction);
+        }
+      }
+
+      this.nextLink = response.data.nextLink;
     },
     getCurrentTimestamp() {
       const date = new Date();
@@ -174,62 +218,55 @@ export default {
     morningRoutineUseCase() {
       UseCasesService.getMorningRoutineUseCase()
         .then((response) => {
-          this.submitMessage({
-            content: response.data.textToDisplay,
-            myself: false,
-            participantId: 1,
-            timestamp: this.getCurrentTimestamp(),
-          });
-          if (localStorage.getItem('soundEnabled') === 'true') {
-            SpeechService.speak(response.data.textToRead);
-          }
+          this.handleApiResponse(response);
         }).catch((error) => {
           this.handleApiError(error);
         });
     },
     travelPlanningUseCase() {
       UseCasesService.getTravelPlanningUseCase().then((response) => {
-        this.submitMessage({
-          content: response.data.textToDisplay,
-          myself: false,
-          participantId: 1,
-          timestamp: this.getCurrentTimestamp(),
-        });
-        if (localStorage.getItem('soundEnabled') === 'true') {
-          SpeechService.speak(response.data.textToRead);
-        }
+        this.handleApiResponse(response);
       }).catch((error) => {
         this.handleApiError(error);
       });
     },
-    lunchBreakUseCase() {
-      UseCasesService.getLunchBreakUseCase().then((response) => {
-        this.submitMessage({
-          content: response.data.textToDisplay,
-          myself: false,
-          participantId: 1,
-          timestamp: this.getCurrentTimestamp(),
+    lunchBreakUseCase(position) {
+      if (!position) {
+        this.getCoordinates();
+      } else {
+        UseCasesService.getLunchBreakUseCase(
+          position.coords.latitude,
+          position.coords.longitude,
+        ).then((response) => {
+          this.handleApiResponse(response);
+        }).catch((error) => {
+          this.handleApiError(error);
         });
-        if (localStorage.getItem('soundEnabled') === 'true') {
-          SpeechService.speak(response.data.textToRead);
-        }
-      }).catch((error) => {
-        this.handleApiError(error);
-      });
+      }
     },
     personalTrainerUseCase() {
       UseCasesService.getPersonalTrainerUseCase().then((response) => {
-        this.submitMessage({
-          content: response.data.textToDisplay,
-          myself: false,
-          participantId: 1,
-          timestamp: this.getCurrentTimestamp(),
-        });
-        if (localStorage.getItem('soundEnabled') === 'true') {
-          SpeechService.speak(response.data.textToRead);
-        }
+        this.handleApiResponse(response);
       }).catch((error) => {
         this.handleApiError(error);
+      });
+    },
+    getCoordinates() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(this.lunchBreakUseCase, this.geolocationError);
+      } else {
+        this.$buefy.toast.open({
+          message: 'Geolocation is not supported by this browser.',
+          duration: 3000,
+          type: 'is-danger',
+        });
+      }
+    },
+    geolocationError(err) {
+      this.$buefy.toast.open({
+        message: `ERROR(${err.code}): ${err.message}`,
+        duration: 3000,
+        type: 'is-danger',
       });
     },
     onType(event) {

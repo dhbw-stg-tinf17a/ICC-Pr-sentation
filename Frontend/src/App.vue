@@ -23,7 +23,6 @@ import SpeechService from '@/services/SpeechSynthesis';
 import Navbar from './components/Navbar.vue';
 import SpeechRecognition from './components/SpeechRecognition.vue';
 import SpeechRecognitionLogic from './mixins/SpeechRecognitionLogic';
-import PreferencesService from './services/Preferences';
 
 export default {
   components: {
@@ -51,38 +50,6 @@ export default {
         if (localStorage.getItem('soundEnabled') === 'true') SpeechService.speak('Hello my name is Gunter!');
       },
     });
-  },
-  beforeUpdate() {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(this.showPosition, this.error);
-    } else {
-      this.$buefy.toast.open({
-        message: 'Geolocation is not supported by this browser.',
-        duration: 3000,
-        type: 'is-danger',
-      });
-    }
-  },
-  methods: {
-    showPosition(position) {
-      PreferencesService.updatePreferences({
-        location: {
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude,
-        },
-      }).catch((error) => this.$buefy.toast.open({
-        message: `Error ${error.response.data.status}: ${error.response.data.error}`,
-        duration: 3000,
-        type: 'is-danger',
-      }));
-    },
-    error(err) {
-      this.$buefy.toast.open({
-        message: `ERROR(${err.code}): ${err.message}`,
-        duration: 3000,
-        type: 'is-danger',
-      });
-    },
   },
 };
 </script>
