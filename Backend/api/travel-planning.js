@@ -59,7 +59,9 @@ router.get('/', wrapAsync(async (req, res) => {
   let textToDisplay;
   let textToRead;
   let displayRouteOnMap = null;
-  if (weekendFree) {
+  let furtherAction = null;
+  let nextLink = null;
+  if (weekendFree && destination) {
     textToDisplay = 'Free next weekend\n'
                     + `Destination: ${destination.name} in ${destination.address.city}\n`
                     + `Depart from ${connectionToDestination.legs[0].from}, ${formatDate(connectionToDestination.legs[0].departure)}\n`
@@ -86,10 +88,17 @@ router.get('/', wrapAsync(async (req, res) => {
       origin: connectionToDestination.legs[0].from,
       destination: connectionToDestination.legs[connectionToDestination.legs.length - 1].to,
     };
-  } else {
+    furtherAction = 'Do you want to get information about how to get to your origin train station?';
+    nextLink = 'travel-planning/confirm';
+  } else if (destination) {
     textToDisplay = 'Not free at the weekend.\nCheck back next week!';
 
     textToRead = 'Unfortunately you are not free at the weekend. '
+                  + 'Next week you will get your updated travel plan.';
+  } else {
+    textToDisplay = 'Could not find travel destination.\nCheck back next week!';
+
+    textToRead = 'Unfortunately I could not find any travel destination for the weekend. '
                   + 'Next week you will get your updated travel plan.';
   }
 
@@ -98,8 +107,8 @@ router.get('/', wrapAsync(async (req, res) => {
     textToRead,
     displayRouteOnMap,
     displayPointOnMap: null,
-    furtherAction: 'Do you want to get information about how to get to your origin train station?',
-    nextLink: '/confirm',
+    furtherAction,
+    nextLink,
   });
 }));
 
