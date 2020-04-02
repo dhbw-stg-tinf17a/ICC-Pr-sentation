@@ -19,7 +19,6 @@
             :hide-close-button="true"
             close-button-icon-size="20px"
             submit-icon-size="30px"
-            :load-more-messages="toLoad.length > 0 ? loadMoreMessages : null"
             :async-mode="false"
             :scroll-bottom="scrollBottom"
             :display-header="true"
@@ -271,13 +270,6 @@ export default {
     },
     onType(event) {
       this.$emit('update:user-input', event.target.innerText);
-    },
-    loadMoreMessages(resolve) {
-      setTimeout(() => {
-        resolve(this.toLoad);
-        this.messages.unshift(...this.toLoad);
-        this.toLoad = [];
-      }, 1000);
     },
     submitMessage(message) {
       this.messages.push(message);
