@@ -63,6 +63,13 @@ describe('SpeechRecognition.vue', () => {
         expect(spy).toHaveBeenCalled();
       });
     });
+
+    it('userInput is emitted if not empty', () => {
+      const wrapper = factory();
+      wrapper.setProps({ userInput: 'Hello Gunter' });
+      wrapper.vm.startSpeechRecognition();
+      expect(wrapper.emitted('update:user-input')[0]).toEqual(['Hello Gunter ']);
+    });
   });
 
   describe('speech recognition action listeners working', () => {

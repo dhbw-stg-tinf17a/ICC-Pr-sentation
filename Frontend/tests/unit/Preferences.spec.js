@@ -95,8 +95,8 @@ describe('Preferences.vue', () => {
       const wrapper = factory();
       await wrapper.vm.getPreferences();
       wrapper.vm.$nextTick(() => {
-        wrapper.find('input[type=checkbox]').trigger('click');
-        expect(wrapper.vm.notificationsEnabled).toBe(false); // TODO: should be true?
+        wrapper.vm.toggleNotifications();
+        expect(wrapper.vm.notificationsEnabled).toBe(true);
       });
     });
 
@@ -104,10 +104,19 @@ describe('Preferences.vue', () => {
       const wrapper = factory();
       await wrapper.vm.getPreferences();
       wrapper.vm.$nextTick(() => {
-        wrapper.find('input[type=checkbox]').trigger('click');
-        wrapper.find('input[type=checkbox]').trigger('click');
-        expect(wrapper.vm.notificationsEnabled).toBe(true); // TODO: should be false??
+        wrapper.vm.toggleNotifications();
+        wrapper.vm.toggleNotifications();
+        expect(wrapper.vm.notificationsEnabled).toBe(true);
       });
+    });
+  });
+
+  describe('methods work', () => {
+    it('quote category is changed', async () => {
+      const wrapper = factory();
+      await wrapper.vm.getPreferences();
+      wrapper.vm.changeSelectedQuoteCategory('TestCategory');
+      expect(wrapper.vm.preferences.morningRoutineQuoteCategory).toEqual('TestCategory');
     });
   });
 });

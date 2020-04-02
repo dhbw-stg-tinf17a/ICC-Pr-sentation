@@ -31,4 +31,10 @@ describe('Help.vue', () => {
     factory();
     expect(SpeechService.speak).toHaveBeenCalled();
   });
+
+  it('SpeecheService is not called, if disabled', () => {
+    localStorage.setItem('soundEnabled', 'false');
+    factory();
+    expect(SpeechService.speak).toHaveBeenCalledTimes(3);
+  });
 });

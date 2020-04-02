@@ -23,10 +23,10 @@
           <h2 class="subtitle">
             The Use Cases
           </h2>
-          <p>morning-routine: Notification when you have to get up</p>
-          <p>travel-planning: Notification about low travel prices</p>
-          <p>lunch-break: Shows you nice restaurants for your lunch break</p>
-          <p>personal-trainer: Tells you when you can do sports</p>
+          <p>Morning routine: Notification when you have to get up</p>
+          <p>Travel planning: Notification about low travel prices</p>
+          <p>Lunch break: Shows you nice restaurants for your lunch break</p>
+          <p>Personal trainer: Tells you when you can do sports</p>
         </div>
         <div class="column">
           <h2 class="subtitle">
@@ -41,20 +41,20 @@
             </thead>
             <tbody>
               <tr>
-                <th>morning-routine</th>
-                <th>Switch to morning-routine use case</th>
+                <th>Morning</th>
+                <th>Switch to morning routine use case</th>
               </tr>
               <tr>
-                <th>travel-planning</th>
-                <th>Switch to travel-planning use case</th>
+                <th>Travel</th>
+                <th>Switch to travel planning use case</th>
               </tr>
               <tr>
-                <th>lunch-break</th>
-                <th>Switch to lunch-break use case</th>
+                <th>Lunch</th>
+                <th>Switch to lunch break use case</th>
               </tr>
               <tr>
-                <th>personal-trainer</th>
-                <th>Switch to personal-trainer use case</th>
+                <th>Training</th>
+                <th>Switch to personal trainer use case</th>
               </tr>
               <tr>
                 <th>Calendar</th>
