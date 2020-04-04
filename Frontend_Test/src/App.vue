@@ -7,8 +7,8 @@
 
 <script>
 import { ref, onMounted } from "vue";
-import Map from "./Map.vue";
-import Chat from "./Chat.vue";
+import Map from "./components/Map.vue";
+import Chat from "./components/Chat.vue";
 
 export default {
   components: { Map, Chat }
