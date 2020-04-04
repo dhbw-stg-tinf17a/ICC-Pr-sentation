@@ -1,13 +1,22 @@
 <template>
-  <h1>Hello Vue 3!</h1>
-  <button @click="inc">I was clicked {{ count }} times</button>
+  <div id="map"></div>
 </template>
 
 <script>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
+import mapboxgl from "mapbox-gl";
 
 export default {
   setup() {
+    onMounted(() => {
+      mapboxgl.accessToken =
+        "pk.eyJ1IjoiZnNjaHVldHowNCIsImEiOiJjam12cnNxd2swOHI0M3ZvMThmbG1qMjdlIn0.AQOATykYs-7IwFRYxoNVGQ";
+      const map = new mapboxgl.Map({
+        container: "map",
+        style: "mapbox://styles/mapbox/streets-v9"
+      });
+    });
+
     const count = ref(0);
     const inc = () => {
       count.value++;
@@ -22,4 +31,10 @@ export default {
 </script>
 
 <style>
+@import "~mapbox-gl/src/css/mapbox-gl.css";
+
+#map {
+  width: 100vw;
+  height: 100vh;
+}
 </style>
