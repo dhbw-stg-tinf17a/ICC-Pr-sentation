@@ -125,6 +125,7 @@ async function run() {
 
     const { event, connection, wakeUpTime } = await getWakeUpTimeForFirstEventOfToday(pref);
     if (event === undefined) {
+      logger.debug('Morning routine usecase: No event found');
       return;
     }
 

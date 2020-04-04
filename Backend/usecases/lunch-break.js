@@ -68,6 +68,7 @@ async function run() {
 
     const freeSlot = await getFreeSlotForLunchbreak(pref);
     if (freeSlot === undefined) {
+      logger.debug('Lunch break usecase: No free slot found');
       return;
     }
 
