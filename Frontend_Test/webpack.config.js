@@ -1,6 +1,9 @@
-const path = require('path')
-const { VueLoaderPlugin } = require('vue-loader')
-const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+const path = require('path');
+const { VueLoaderPlugin } = require('vue-loader');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const purgecss = require('@fullhuman/postcss-purgecss');
+const tailwindcss = require('tailwindcss');
+const autoprefixer = require('autoprefixer');
 
 module.exports = (env = {}) => ({
   mode: env.prod ? 'production' : 'development',
@@ -35,7 +38,20 @@ module.exports = (env = {}) => ({
             loader: MiniCssExtractPlugin.loader,
             options: { hmr: !env.prod }
           },
-          'css-loader'
+          'css-loader',
+          {
+            loader: 'postcss-loader',
+            options: {
+              plugins: [
+                tailwindcss,
+                autoprefixer,
+                purgecss({
+                  content: ['./public/index.html', './src/**/*.vue'],
+                  defaultExtractor: content => content.match(/[\w-/:]+(?<!:)/g) || []
+                }),
+              ],
+            },
+          },
         ]
       }
     ]
@@ -57,4 +73,4 @@ module.exports = (env = {}) => ({
       },
     },
   }
-})
+});

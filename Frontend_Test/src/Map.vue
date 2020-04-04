@@ -20,8 +20,8 @@ export default {
 };
 </script>
 
-<style>
-@import "~mapbox-gl/src/css/mapbox-gl.css";
+<style scoped>
+@import "~mapbox-gl/dist/mapbox-gl.css";
 
 #map {
   width: 100vw;
