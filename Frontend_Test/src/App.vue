@@ -1,6 +1,6 @@
 <template>
   <div class="flex">
-    <Chat class="flex-1 h-screen" />
+    <Chat class="h-screen" />
     <Map class="flex-1 h-screen" />
   </div>
 </template>
