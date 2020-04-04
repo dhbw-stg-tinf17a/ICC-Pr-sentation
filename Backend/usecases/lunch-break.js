@@ -64,6 +64,8 @@ async function getRandomRestaurantNear({ latitude, longitude, pref }) {
 
 async function run() {
   try {
+    logger.debug(`Lunch break usecase: Running at ${new Date().toISOString()}`);
+
     const pref = await preferences.get();
 
     const freeSlot = await getFreeSlotForLunchbreak(pref);

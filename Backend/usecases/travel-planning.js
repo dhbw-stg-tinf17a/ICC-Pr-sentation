@@ -142,6 +142,8 @@ async function getConnectionToMainStation({ arrival, pref }) {
 
 async function run() {
   try {
+    logger.debug(`Travel planning usecase: Running at ${new Date().toISOString()}`);
+
     const pref = await preferences.get();
 
     const {
