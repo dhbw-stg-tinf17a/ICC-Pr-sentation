@@ -121,6 +121,8 @@ async function getWeatherForecast({ pref, datetime }) {
 
 async function run() {
   try {
+    logger.debug(`Morning routine usecase: Running at ${new Date().toISOString()}`);
+
     const pref = await preferences.get();
 
     const { event, connection, wakeUpTime } = await getWakeUpTimeForFirstEventOfToday(pref);

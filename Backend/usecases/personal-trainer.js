@@ -107,6 +107,8 @@ async function getWeatherForecast(pref) {
 
 async function run() {
   try {
+    logger.debug(`Personal trainer usecase: Running at ${new Date().toISOString()}`);
+
     const pref = await preferences.get();
 
     const freeSlot = await getFreeSlotForActivity(pref);
