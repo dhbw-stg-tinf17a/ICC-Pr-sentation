@@ -148,6 +148,7 @@ async function run() {
       saturday, sunday, weekendFree,
     } = await getWeekend();
     if (!weekendFree) {
+      logger.debug('Trvael planning usecase: Weekend not free');
       return;
     }
 

@@ -111,6 +111,7 @@ async function run() {
 
     const freeSlot = await getFreeSlotForActivity(pref);
     if (freeSlot === undefined) {
+      logger.debug('Personal trainer usecase: No free slot found');
       return;
     }
 
@@ -123,6 +124,7 @@ async function run() {
       place = await getRandomParkRecreationArea(pref);
     }
     if (place === undefined) {
+      logger.debug('Personal trainer usecase: No place found');
       return;
     }
 
