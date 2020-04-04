@@ -62,11 +62,6 @@ export default {
 };
 </script>
 
-<style scoped>
+<style>
 @import "~mapbox-gl/dist/mapbox-gl.css";
-
-#map {
-  width: 100vw;
-  height: 100vh;
-}
 </style>
