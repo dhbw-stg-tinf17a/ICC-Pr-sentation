@@ -45,10 +45,10 @@ module.exports = (env = {}) => ({
               plugins: [
                 tailwindcss,
                 autoprefixer,
-                purgecss({
+                ...env.prod ? [purgecss({
                   content: ['./public/index.html', './src/**/*.vue'],
                   defaultExtractor: content => content.match(/[\w-/:]+(?<!:)/g) || []
-                }),
+                })] : [],
               ],
             },
           },
