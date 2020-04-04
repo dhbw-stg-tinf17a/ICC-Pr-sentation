@@ -1,10 +1,12 @@
 <template>
   <div>
-    <div v-for="(message, i) of messages" :key="i">{{message.text}}</div>
+    <Bubble v-for="(message, i) of messages" :key="i" :text="message.text" />
   </div>
 </template>
 
 <script>
+import Bubble from "./Bubble.vue";
+
 export default {
   setup() {
     return {
@@ -14,6 +16,7 @@ export default {
         { gunter: true, text: "'Build a flux capacitor' starts at 9:00 am" }
       ]
     };
-  }
+  },
+  components: { Bubble }
 };
 </script>
