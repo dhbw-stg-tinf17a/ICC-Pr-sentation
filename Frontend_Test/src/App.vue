@@ -1,7 +1,7 @@
 <template>
-  <div class="flex">
-    <Chat class="h-screen" />
-    <Map class="flex-1 h-screen" />
+  <div class="flex main">
+    <Chat class="chat h-screen z-50 bg-gray-100" />
+    <!-- <Map class="flex-1 h-screen" /> -->
   </div>
 </template>
 
@@ -19,4 +19,13 @@ export default {
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.main {
+  background: center/cover url("/background.jpg");
+}
+
+.chat {
+  width: 30rem;
+  box-shadow: 0 0 1rem rgba(0, 0, 0, 0.25);
+}
 </style>

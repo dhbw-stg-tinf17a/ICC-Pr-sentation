@@ -1,5 +1,5 @@
 <template>
-  <div class="chat flex flex-col p-10">
+  <div class="flex flex-col p-10">
     <div
       v-for="(message, i) of messages"
       :key="i"
@@ -29,10 +29,6 @@ export default {
 </script>
 
 <style>
-.chat {
-  min-width: 30rem;
-}
-
 .bubble {
   max-width: 15rem;
   margin-bottom: 0.1rem;
