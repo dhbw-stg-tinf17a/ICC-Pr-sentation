@@ -138,7 +138,7 @@ async function run() {
       body += ` You have to leave at ${departure}.`;
     }
 
-    schedule.scheduleJob(wakeUpTime, async () => {
+    schedule.scheduleJob(new Date(wakeUpTime), async () => {
       await notifications.sendNotifications({
         title: 'Wake up!',
         options: {
@@ -150,6 +150,7 @@ async function run() {
           },
         },
       });
+      logger.debug(`Morning routine usecase: Sent notification with body '${body}'`);
     });
     logger.debug(`Morning routine usecase: Scheduled notification at ${wakeUpTime.toISOString()} with body '${body}'`);
   } catch (error) {

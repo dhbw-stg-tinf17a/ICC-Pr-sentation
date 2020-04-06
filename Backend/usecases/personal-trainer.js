@@ -135,7 +135,7 @@ async function run() {
       .subtract(pref.personalTrainerMinutesBeforeStart, 'minutes');
 
     const body = `You have got a little time at ${freeSlotStart}. Since it ${precipitation ? 'rains' : 'does not rain'} today, why don't you do some sports at ${place.poi.name}?`;
-    schedule.scheduleJob(notificationTime, async () => {
+    schedule.scheduleJob(new Date(notificationTime), async () => {
       await notifications.sendNotifications({
         title: 'Recommended sports activity',
         options: {
@@ -147,6 +147,7 @@ async function run() {
           },
         },
       });
+      logger.debug(`Personal trainer usecase: Sent notification with body '${body}'`);
     });
     logger.debug(`Personal trainer usecase: Scheduled notification at ${notificationTime.toISOString()} with body '${body}'`);
   } catch (err) {
