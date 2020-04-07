@@ -3,15 +3,15 @@
 ![](https://github.com/dhbw-stg-tinf17a/ICC-Pr-sentation/workflows/Continuous%20integration/badge.svg)
 
 ## What can Gunter do?
-Gunter is a personal digital assistant. He offers four use cases which provide a wide variety of funktionality. You can simply access Gunter via any web browser and talk to him. Gunter will answer.
+Gunter is a personal digital assistant. He offers four use cases which provide a wide variety of functionality. You can access Gunter via any web browser and talk to him. Gunter will answer.
 
 ## How is Gunter build?
 Gunter consists of a Node.js backend which can be found in the *Backend* folder and a Vue.js frontend which can be found in the *Frontend* folder.
 
 **TODO:** Add image of architectural overview
 
-Gunters dialog is implemented as simple keyword recognition so he is only able to recognize certain commands. You can see all available commands in Gunter's help section.  
-Gunter is also proaktiv. This means that he will send you push notifications on your device (if enabled in the settings). Push notifications notify you about an updated use case and will also work when the browser is closed.
+Gunter's dialogue is implemented as simple keyword recognition, so he is only able to recognize specific commands. You can see all available commands in Gunter's help section.  
+Gunter is also proactive. This means that he will send you push notifications on your device (if enabled in the settings). Push notifications notify you about an updated use case and will also work when the browser is closed.
 
 # Use Cases
 
@@ -54,5 +54,3 @@ Extension 1: If the user wants to go to a different restaurant, the assistant pr
 **Dialog:** If the user wants to go to that restaurant during the lunch break, the assistant presents the route taken to the destination (<ins>VVS</ins>).
 
 **Services:** preferences, calendar, VVS, maps
-
-
