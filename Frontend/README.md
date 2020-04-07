@@ -8,3 +8,6 @@ Run unit tests with ```npm run test```. This will run an extensive test suite co
 Run ```npm run lint``` to check all of the code for proper formatting.
 
 With ```npm run build``` you can build the frontend for production. The compiled files will be in the *dist* folder and can be hosted by any static web server.
+
+## Remarks
+Additionally, to the dialog, most use cases show you a route or a location on an embedded map. The frontend in this repository contains only a static map that always displays the same route as a demo. To display the real route according to the use case, an API key would be needed. 
