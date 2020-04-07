@@ -10,7 +10,7 @@ Gunter consists of a Node.js backend which can be found in the *Backend* folder 
 
 **TODO:** Add image of architectural overview
 
-Gunter's dialogue is implemented as simple keyword recognition, so he is only able to recognize specific commands. You can see all available commands in Gunter's help section.  
+Gunter's dialog is implemented as simple keyword recognition, so he is only able to recognize specific commands. You can see all available commands in Gunter's help section.  
 Gunter is also proactive. This means that he will send you push notifications on your device (if enabled in the settings). Push notifications notify you about an updated use case and will also work when the browser is closed.
 
 # Use Cases
