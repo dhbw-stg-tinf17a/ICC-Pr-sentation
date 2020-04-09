@@ -9,16 +9,14 @@
       >{{message.text}}</div>
     </div>
 
-    <div class="p-10">
-      <textarea
-        class="w-full bg-gray-400 p-3 rounded-md focus:outline-none focus:shadow-outline text-gray-900 resize-none"
-        ref="input"
-        rows="1"
-        @input="resizeInput"
-        @keydown.enter="send"
-        placeholder="Ask Gunter"
-      />
-    </div>
+    <textarea
+      class="w-full bg-gray-500 p-5 focus:outline-none text-gray-900 resize-none placeholder-gray-700"
+      ref="input"
+      rows="1"
+      @input="resizeInput"
+      @keydown.enter="send"
+      placeholder="Ask Gunter ..."
+    />
   </div>
 </template>
 
@@ -54,11 +52,18 @@ export default {
 <style>
 .bubble {
   max-width: 15rem;
-  margin-bottom: 0.1rem;
 }
 
 .bubble.self-start + .bubble.self-end,
 .bubble.self-end + .bubble.self-start {
   @apply mt-2;
+}
+
+textarea {
+  max-height: 10rem;
+}
+
+textarea:focus {
+  box-shadow: inset 0 0 0 3px rgba(66, 153, 225, 0.5);
 }
 </style>
