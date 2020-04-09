@@ -1,11 +1,24 @@
 <template>
-  <div class="flex flex-col p-10">
-    <div
-      v-for="(message, i) of messages"
-      :key="i"
-      class="bubble bg-gray-900 text-gray-100 p-2 rounded-lg mb-1"
-      :class="message.left ? 'self-start' : 'self-end'"
-    >{{message.text}}</div>
+  <div class="flex flex-col justify-between">
+    <div class="flex flex-col p-10">
+      <div
+        v-for="(message, i) of messages"
+        :key="i"
+        class="bubble bg-gray-900 text-gray-100 p-2 rounded-lg mb-1"
+        :class="message.left ? 'self-start' : 'self-end'"
+      >{{message.text}}</div>
+    </div>
+
+    <div class="p-10">
+      <textarea
+        class="w-full bg-gray-400 p-3 rounded-md focus:outline-none focus:shadow-outline text-gray-900 resize-none"
+        ref="input"
+        rows="1"
+        @input="resizeInput"
+        @keydown.enter="send"
+        placeholder="Ask Gunter"
+      />
+    </div>
   </div>
 </template>
 
@@ -24,6 +37,16 @@ export default {
         }
       ]
     };
+  },
+  methods: {
+    resizeInput(event) {
+      event.target.style.height = `auto`;
+      event.target.style.height = `${event.target.scrollHeight}px`;
+    },
+    send(event) {
+      event.preventDefault();
+      // TODO send to Gunter
+    }
   }
 };
 </script>
