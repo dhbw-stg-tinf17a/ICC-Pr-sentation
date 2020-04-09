@@ -51,9 +51,9 @@ const icons = {
 };
 
 export default {
-  props: ["code"],
   setup(props) {
     return { path: icons[props.code] };
-  }
+  },
+  props: ["code"]
 };
 </script>
