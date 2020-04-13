@@ -10,6 +10,7 @@ jest.mock('../utilities/init-database', () => async (name, defaults) => {
   return mockDatabase;
 });
 
+const joi = require('@hapi/joi');
 const preferences = require('../modules/preferences');
 
 describe('preferences module', () => {
@@ -52,6 +53,20 @@ describe('preferences module', () => {
       expect(preferences.update({ location: { latitude: 0, longitude: 0 } })).resolves
         .toBeUndefined();
       expect(preferences.update({ calendarURL: 'https://example.com' })).resolves.toBeUndefined();
+    });
+  });
+
+  describe('defaults', () => {
+    it('should be valid', async () => {
+      expect(() => joi.assert(preferences.defaults, preferences.schema)).not.toThrow();
+    });
+
+    it('should define all keys except location and calendarURL', async () => {
+      const schemaKeys = new Set(Object.keys(preferences.rawSchema));
+      schemaKeys.delete('calendarURL');
+      schemaKeys.delete('location');
+      const defaultsKeys = new Set(Object.keys(preferences.defaults));
+      expect(defaultsKeys).toStrictEqual(schemaKeys);
     });
   });
 });

@@ -10,6 +10,7 @@ router.get('/', wrapAsync(async (req, res) => {
 
 router.patch('/', wrapAsync(async (req, res) => {
   await preferences.update(req.body);
+
   res.send({});
 }));
 
