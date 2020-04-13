@@ -50,4 +50,18 @@ describe('Navbar.vue', () => {
       expect(wrapper.vm.currentRoute).toBe(routes[0].name);
     });
   });
+
+  describe('methods work', () => {
+    it('sound can be muted', () => {
+      const wrapper = factory();
+      wrapper.vm.muteSound();
+      expect(localStorage.getItem('soundEnabled')).toBe('false');
+    });
+
+    it('sound can be unmuted', () => {
+      const wrapper = factory();
+      wrapper.vm.unmuteSound();
+      expect(localStorage.getItem('soundEnabled')).toBe('true');
+    });
+  });
 });

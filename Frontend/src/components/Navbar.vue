@@ -20,7 +20,7 @@
       </b-navbar-item>
       <b-navbar-item tag="div">
         <b-tooltip
-          label="Sound Off"
+          label="Turn Off"
           position="is-bottom"
           type="is-light"
         >
@@ -35,7 +35,7 @@
           </button>
         </b-tooltip>
         <b-tooltip
-          label="Sound On"
+          label="Turn On"
           position="is-bottom"
           type="is-light"
         >
@@ -100,38 +100,56 @@
       <b-navbar-item tag="div">
         <div class="field has-addons">
           <p class="control">
-            <router-link
-              class="button is-white"
-              :class="{'is-outlined': currentRoute !== 'calendar'}"
-              to="calendar"
+            <b-tooltip
+              label="Calendar"
+              position="is-bottom"
+              type="is-light"
             >
-              <span class="icon">
-                <i class="far fa-calendar-alt fa-2x" />
-              </span>
-            </router-link>
+              <router-link
+                class="button is-white"
+                :class="{'is-outlined': currentRoute !== 'calendar'}"
+                to="calendar"
+              >
+                <span class="icon">
+                  <i class="far fa-calendar-alt fa-2x" />
+                </span>
+              </router-link>
+            </b-tooltip>
           </p>
           <p class="control">
-            <router-link
-              class="button is-white"
-              :class="{'is-outlined': currentRoute !== 'preferences'}"
-              to="preferences"
+            <b-tooltip
+              label="Preferences"
+              position="is-bottom"
+              type="is-light"
             >
-              <span class="icon">
-                <i class="fas fa-cog fa-2x" />
-              </span>
-            </router-link>
+              <router-link
+                class="button is-white"
+                :class="{'is-outlined': currentRoute !== 'preferences'}"
+                to="preferences"
+              >
+                <span class="icon">
+                  <i class="fas fa-cog fa-2x" />
+                </span>
+              </router-link>
+            </b-tooltip>
           </p>
-          <div class="control">
-            <router-link
-              class="button is-white"
-              :class="{'is-outlined': currentRoute !== 'help'}"
-              to="help"
+          <p class="control">
+            <b-tooltip
+              label="Help"
+              position="is-bottom"
+              type="is-light"
             >
-              <span class="icon">
-                <i class="fas fa-question-circle fa-2x" />
-              </span>
-            </router-link>
-          </div>
+              <router-link
+                class="button is-white"
+                :class="{'is-outlined': currentRoute !== 'help'}"
+                to="help"
+              >
+                <span class="icon">
+                  <i class="fas fa-question-circle fa-2x" />
+                </span>
+              </router-link>
+            </b-tooltip>
+          </p>
         </div>
       </b-navbar-item>
     </template>

@@ -8,18 +8,9 @@ exports[`Preferences.vue Elements are rendered correctly Component renders 1`] =
   </div>
   <!---->
   <div class="container">
-    <div class="columns">
-      <div class="column">
-        <h1 class="title">
-          Preferences for Gunter
-        </h1>
-      </div>
-      <div class="column">
-        <div class="field is-pulled-right"><label class="switch is-rounded"><input type="checkbox" true-value="true" value="false"> <span class="check is-success"></span> <span class="control-label">
-            Send notifications to this device
-          </span></label></div>
-      </div>
-    </div>
+    <h1 class="title">
+      Preferences for Gunter
+    </h1>
     <div class="field"><label class="label has-text-white">Calendar URL</label>
       <div class="control"><input type="text" placeholder="Calendar URL" class="input"></div>
     </div>
@@ -61,6 +52,12 @@ exports[`Preferences.vue Elements are rendered correctly Component renders 1`] =
               </select></div>
           </div>
         </div>
+        <h2 class="subtitle">
+          Travel Planning
+        </h2>
+        <div class="field"><label class="label has-text-white">Min. Distance (km)</label>
+          <div class="control"><input type="number" placeholder="Minimum Distance" class="input"></div>
+        </div>
       </div>
       <div class="column">
         <h2 class="subtitle">
@@ -92,11 +89,17 @@ exports[`Preferences.vue Elements are rendered correctly Component renders 1`] =
       </div>
       <div class="column">
         <h2 class="subtitle">
-          Travel Planning
+          General
         </h2>
-        <div class="field"><label class="label has-text-white">Min. Distance (km)</label>
-          <div class="control"><input type="number" placeholder="Minimum Distance" class="input"></div>
+        <div class="field"><label class="label has-text-white">Home location latitude</label>
+          <div class="control"><input type="number" placeholder="Latitude" class="input"></div>
         </div>
+        <div class="field"><label class="label has-text-white">Home location longitude</label>
+          <div class="control"><input type="number" placeholder="Longitude" class="input"></div>
+        </div>
+        <div class="field"><label class="switch is-rounded"><input type="checkbox" true-value="true" value="false"> <span class="check is-success"></span> <span class="control-label">
+            Send notifications to this device
+          </span></label></div>
         <div class="field is-grouped is-grouped-right">
           <p class="control"><a href="#/" class="button is-light router-link-exact-active router-link-active">
               Cancel

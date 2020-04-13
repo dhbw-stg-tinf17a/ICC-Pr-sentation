@@ -1,7 +1,9 @@
 const webpush = require('web-push');
+const pino = require('pino');
 const initDatabase = require('../utilities/init-database');
 
 const database = initDatabase('notifications', { subscriptions: [] });
+const logger = pino({ level: process.env.LOG_LEVEL || 'info' });
 
 async function addSubscription(subscription) {
   const subscriptions = (await database).get('subscriptions');
@@ -21,17 +23,22 @@ async function removeSubscription(endpoint) {
 }
 
 async function sendNotification(payload, subscription) {
-  await webpush.sendNotification(
-    subscription,
-    JSON.stringify(payload),
-    {
-      vapidDetails: {
-        subject: process.env.PUSH_SUBJECT,
-        privateKey: process.env.PUSH_KEY_PRIVATE,
-        publicKey: process.env.PUSH_KEY_PUBLIC,
+  try {
+    const result = await webpush.sendNotification(
+      subscription,
+      JSON.stringify(payload),
+      {
+        vapidDetails: {
+          subject: process.env.PUSH_SUBJECT,
+          privateKey: process.env.PUSH_KEY_PRIVATE,
+          publicKey: process.env.PUSH_KEY_PUBLIC,
+        },
       },
-    },
-  );
+    );
+    logger.debug(`Successfully sent notification: ${result.statusCode} ${result.body}`);
+  } catch (err) {
+    logger.debug(`Failed to send notification: ${err.statusCode} ${err.body}`);
+  }
 }
 
 async function sendNotifications(payload) {

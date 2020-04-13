@@ -64,10 +64,13 @@ async function getRandomRestaurantNear({ latitude, longitude, pref }) {
 
 async function run() {
   try {
+    logger.debug(`Lunch break usecase: Running at ${new Date().toISOString()}`);
+
     const pref = await preferences.get();
 
     const freeSlot = await getFreeSlotForLunchbreak(pref);
     if (freeSlot === undefined) {
+      logger.debug('Lunch break usecase: No free slot found');
       return;
     }
 
@@ -76,7 +79,7 @@ async function run() {
       .subtract(pref.lunchBreakMinutesBeforeStart, 'minutes');
 
     const body = `You have some time to spare during your lunch break at ${freeSlotStart}, why not try a restaurant?`;
-    schedule.scheduleJob(notificationTime, async () => {
+    schedule.scheduleJob(new Date(notificationTime), async () => {
       await notifications.sendNotifications({
         title: 'Recommended restaurant for your lunch break',
         options: {
@@ -88,6 +91,7 @@ async function run() {
           },
         },
       });
+      logger.debug(`Lunch break usecase: Sent notification with body '${body}'`);
     });
     logger.debug(`Lunch break usecase: Scheduled notification at ${notificationTime.toISOString()} with body '${body}'`);
   } catch (error) {

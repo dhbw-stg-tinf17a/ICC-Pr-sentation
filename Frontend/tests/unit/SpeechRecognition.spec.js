@@ -58,11 +58,17 @@ describe('SpeechRecognition.vue', () => {
     it('speech recognition is stoped', () => {
       const wrapper = factory();
       const spy = jest.spyOn(wrapper.vm, 'stopSpeechRecognition');
-      wrapper.find('#muteButton').trigger('click');
       wrapper.vm.stopSpeechRecognition();
       wrapper.vm.$nextTick(() => {
         expect(spy).toHaveBeenCalled();
       });
+    });
+
+    it('userInput is emitted if not empty', () => {
+      const wrapper = factory();
+      wrapper.setProps({ userInput: 'Hello Gunter' });
+      wrapper.vm.startSpeechRecognition();
+      expect(wrapper.emitted('update:user-input')[0]).toEqual(['Hello Gunter ']);
     });
   });
 

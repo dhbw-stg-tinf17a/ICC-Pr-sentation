@@ -21,23 +21,21 @@ const router = new VueRouter({
 
 const mockPreferences = {
   data: {
-    data: {
-      name: 'Gunter',
-      age: 107,
-      favouriteFood: 'Jelly Beans',
-      loyal: true,
-      preferences: {
-        calendarUrl: 'https://calendar.google.com/calendar/ical/rroff00labrg6qt5gu3ol87ejo%40group.calendar.google.com/private-97ee3f8105c50679da64c381b7890270/basic.ics',
-        preparationTimeInMinutes: '45',
-        quoteCategory: 'funny',
-        weatherCity: 'Stuttgart',
-        currentLocationCoordinates: '48.6616037,9.3501336',
-        currentLocationAddress: 'Stuttgart, Schmidenerstraße 21',
-        eventLocationCoordinates: '48.773563,9.171063',
-        eventLocationAddress: 'Stuttgart, Rotebühlplatz 41',
-      },
-      events: [{ title: 'Party hard', date: '2020-03-05 14:10.00' }],
-    },
+    calendarURL: 'https://calendar.google.com/calendar/ical/wetzelmanuel0%40gmail.com/private-96d8601189d09d1ff0b902d950a20545/basic.ics',
+    location: { latitude: '48.5133487999999', longitude: '9.0589357' },
+    lunchBreakStart: { hour: 11, minute: 0 },
+    lunchBreakEnd: { hour: 14, minute: 0 },
+    lunchBreakRequiredMinutes: '5',
+    lunchBreakMaxDistance: '66',
+    lunchBreakMinutesBeforeStart: '7',
+    morningRoutineMinutesForPreparation: '1',
+    morningRoutineQuoteCategory: 'students',
+    personalTrainerStart: { hour: 15, minute: 0 },
+    personalTrainerEnd: { hour: 22, minute: 0 },
+    personalTrainerRequiredMinutes: '2',
+    personalTrainerMaxDistance: '3',
+    personalTrainerMinutesBeforeStart: '4',
+    travelPlanningMinDistance: '8',
   },
 };
 
@@ -97,8 +95,8 @@ describe('Preferences.vue', () => {
       const wrapper = factory();
       await wrapper.vm.getPreferences();
       wrapper.vm.$nextTick(() => {
-        wrapper.find('input[type=checkbox]').trigger('click');
-        expect(wrapper.vm.notificationsEnabled).toBe(false); // TODO: should be true?
+        wrapper.vm.toggleNotifications();
+        expect(wrapper.vm.notificationsEnabled).toBe(true);
       });
     });
 
@@ -106,10 +104,19 @@ describe('Preferences.vue', () => {
       const wrapper = factory();
       await wrapper.vm.getPreferences();
       wrapper.vm.$nextTick(() => {
-        wrapper.find('input[type=checkbox]').trigger('click');
-        wrapper.find('input[type=checkbox]').trigger('click');
-        expect(wrapper.vm.notificationsEnabled).toBe(true); // TODO: should be false??
+        wrapper.vm.toggleNotifications();
+        wrapper.vm.toggleNotifications();
+        expect(wrapper.vm.notificationsEnabled).toBe(true);
       });
+    });
+  });
+
+  describe('methods work', () => {
+    it('quote category is changed', async () => {
+      const wrapper = factory();
+      await wrapper.vm.getPreferences();
+      wrapper.vm.changeSelectedQuoteCategory('TestCategory');
+      expect(wrapper.vm.preferences.morningRoutineQuoteCategory).toEqual('TestCategory');
     });
   });
 });

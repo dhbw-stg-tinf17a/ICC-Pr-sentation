@@ -12,26 +12,11 @@
       v-if="!loading"
       class="container"
     >
-      <div class="columns">
-        <div class="column">
-          <h1
-            class="title"
-          >
-            Preferences for Gunter
-          </h1>
-        </div>
-        <div class="column">
-          <div class="field is-pulled-right">
-            <b-switch
-              v-model="notificationsEnabled"
-              type="is-success"
-              @input="toggleNotifications"
-            >
-              Send notifications to this device
-            </b-switch>
-          </div>
-        </div>
-      </div>
+      <h1
+        class="title"
+      >
+        Preferences for Gunter
+      </h1>
       <div class="field">
         <label class="label has-text-white">Calendar URL</label>
         <div class="control">
@@ -73,6 +58,20 @@
                   </option>
                 </select>
               </div>
+            </div>
+          </div>
+          <h2 class="subtitle">
+            Travel Planning
+          </h2>
+          <div class="field">
+            <label class="label has-text-white">Min. Distance (km)</label>
+            <div class="control">
+              <input
+                v-model="preferences.travelPlanningMinDistance"
+                class="input"
+                type="number"
+                placeholder="Minimum Distance"
+              >
             </div>
           </div>
         </div>
@@ -154,18 +153,38 @@
         </div>
         <div class="column">
           <h2 class="subtitle">
-            Travel Planning
+            General
           </h2>
           <div class="field">
-            <label class="label has-text-white">Min. Distance (km)</label>
+            <label class="label has-text-white">Home location latitude</label>
             <div class="control">
               <input
-                v-model="preferences.travelPlanningMinDistance"
+                v-model="preferences.location.latitude"
                 class="input"
                 type="number"
-                placeholder="Minimum Distance"
+                placeholder="Latitude"
               >
             </div>
+          </div>
+          <div class="field">
+            <label class="label has-text-white">Home location longitude</label>
+            <div class="control">
+              <input
+                v-model="preferences.location.longitude"
+                class="input"
+                type="number"
+                placeholder="Longitude"
+              >
+            </div>
+          </div>
+          <div class="field">
+            <b-switch
+              v-model="notificationsEnabled"
+              type="is-success"
+              @input="toggleNotifications"
+            >
+              Send notifications to this device
+            </b-switch>
           </div>
           <div class="field is-grouped is-grouped-right">
             <p class="control">
@@ -232,7 +251,7 @@ export default {
         }),
       ).catch((error) => {
         this.$buefy.toast.open({
-          message: `Error ${error.response.data.status}: ${error.response.data.error}`,
+          message: `Error ${error.response.status}: ${error.response.statusText}`,
           duration: 3000,
           type: 'is-danger',
         });
