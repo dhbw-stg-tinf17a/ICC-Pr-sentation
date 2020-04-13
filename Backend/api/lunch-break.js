@@ -42,7 +42,9 @@ router.get('/', wrapAsync(async (req, res) => {
       latitude: restaurant.position.lon,
     };
     furtherAction = 'Do you want to know how to get to the restaurant?';
-    nextLink = 'lunch-break/confirm';
+    nextLink = `lunch-break/confirm?originLatitude=${latitude}&originLongitude=${longitude}`
+                + `&destinationLatitude=${restaurant.position.lat}&destinationLongitude=${restaurant.position.lon}`
+                + `&departure=${freeSlot.start.toISOString()}`;
   } else if (restaurant) {
     textToDisplay = 'No time for lunch break today';
     textToRead = 'Today you have no free slot in your calendar for a lunch break!';
