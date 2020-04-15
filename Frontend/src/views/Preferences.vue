@@ -340,7 +340,7 @@ export default {
 <style scoped>
 .hero-body {
   position: relative;
-  margin: 0rem 3rem 3rem 3rem;
+  margin: 0rem 3rem 0rem 3rem;
   padding-top: 1rem;
 }
 .subtitle {
