@@ -156,7 +156,6 @@ export default {
         if (finalTranscript === '') {
           this.$emit('update:user-input', this.fixedUserInput + this.interimResult);
         } else {
-          this.$emit('update:user-input', this.fixedUserInput + finalTranscript);
           this.isFinal = true;
           finalTranscript = '';
         }
