@@ -47,7 +47,7 @@ export default {
       message: 'This Page talks to you!',
       type: 'is-success',
       onConfirm: () => {
-        if (this.$route.name === 'landingPage' && localStorage.getItem('soundEnabled') === 'true') {
+        if (this.$route.name === 'landingPage') {
           SpeechService.speak('Hello my name is Gunter!');
         }
       },
