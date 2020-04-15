@@ -188,6 +188,7 @@ export default {
     userConfirmed(userInput) {
       if (this.nextLink) {
         this.submitMyMessage(userInput);
+        this.postLoadingMessage();
         UseCasesService.getFurtherInformation(this.nextLink)
           .then((response) => {
             this.handleApiResponse(response);
@@ -204,27 +205,12 @@ export default {
         type: 'is-danger',
       });
       if (localStorage.getItem('soundEnabled') === 'true') SpeechService.speak(`${error.response.statusText}. Sorry!`);
-      this.submitMessage({
-        content: `Error ${error.response.status}: ${error.response.statusText}`,
-        myself: false,
-        participantId: 1,
-        timestamp: this.getCurrentTimestamp(),
-      });
+      this.submitGuntersMessage(`Error ${error.response.status}: ${error.response.statusText}`);
     },
     handleApiResponse(response) {
-      this.submitMessage({
-        content: response.data.textToDisplay,
-        myself: false,
-        participantId: 1,
-        timestamp: this.getCurrentTimestamp(),
-      });
+      this.submitGuntersMessage(response.data.textToDisplay);
       if (response.data.furtherAction) {
-        this.submitMessage({
-          content: response.data.furtherAction,
-          myself: false,
-          participantId: 1,
-          timestamp: this.getCurrentTimestamp(),
-        });
+        this.submitGuntersMessage(response.data.furtherAction);
       }
 
       if (localStorage.getItem('soundEnabled') === 'true') {
@@ -249,6 +235,7 @@ export default {
       };
     },
     morningRoutineUseCase() {
+      this.postLoadingMessage();
       UseCasesService.getMorningRoutineUseCase()
         .then((response) => {
           this.handleApiResponse(response);
@@ -257,6 +244,7 @@ export default {
         });
     },
     travelPlanningUseCase() {
+      this.postLoadingMessage();
       UseCasesService.getTravelPlanningUseCase().then((response) => {
         this.handleApiResponse(response);
       }).catch((error) => {
@@ -265,6 +253,7 @@ export default {
     },
     lunchBreakUseCase(position) {
       if (!position) {
+        this.postLoadingMessage();
         this.getCoordinates();
       } else {
         UseCasesService.getLunchBreakUseCase(
@@ -278,6 +267,7 @@ export default {
       }
     },
     personalTrainerUseCase() {
+      this.postLoadingMessage();
       UseCasesService.getPersonalTrainerUseCase().then((response) => {
         this.handleApiResponse(response);
       }).catch((error) => {
@@ -303,6 +293,11 @@ export default {
       });
     },
     onType(event) {
+      if (event.data === null) {
+        setTimeout(() => {
+          this.submitGuntersMessage('Sorry. I do not understand. Try "commute", "training", "lunch" or "travel"');
+        }, 500);
+      }
       this.$emit('update:user-input', event.target.innerText);
     },
     submitMessage(message) {
@@ -315,6 +310,17 @@ export default {
         participantId: 2,
         timestamp: this.getCurrentTimestamp(),
       });
+    },
+    submitGuntersMessage(messageContent) {
+      this.submitMessage({
+        content: messageContent,
+        myself: false,
+        participantId: 1,
+        timestamp: this.getCurrentTimestamp(),
+      });
+    },
+    postLoadingMessage() {
+      this.submitGuntersMessage('I am thinking...');
     },
   },
 };
