@@ -13,6 +13,9 @@ exports[`LandingPage.vue Elements are rendered correctly Component renders 1`] =
       <div class="box">
         <p class="control is-expanded"><input type="text" placeholder="Start speaking or typing" class="input"></p>
       </div>
+      <p style="display: none;">
+        Tip: Try entering "commute", "training", "lunch" or "travel".
+      </p>
     </div>
   </div>
 </div>
