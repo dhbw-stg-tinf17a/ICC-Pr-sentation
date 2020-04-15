@@ -295,9 +295,11 @@ export default {
         setTimeout(() => {
           this.submitGuntersMessage('Sorry. I do not understand. Try "commute", "training", "lunch" or "travel"');
           SpeechService.speak('Sorry. I do not understand. Try saying commute or training.');
+          this.$emit('update:user-input', '');
         }, 500);
+      } else {
+        this.$emit('update:user-input', event.target.innerText);
       }
-      this.$emit('update:user-input', event.target.innerText);
     },
     submitMessage(message) {
       this.messages.push(message);
