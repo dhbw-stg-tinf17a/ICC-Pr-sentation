@@ -204,7 +204,7 @@ export default {
         duration: 3000,
         type: 'is-danger',
       });
-      if (localStorage.getItem('soundEnabled') === 'true') SpeechService.speak(`${error.response.statusText}. Sorry!`);
+      SpeechService.speak(`${error.response.statusText}. Sorry!`);
       this.submitGuntersMessage(`Error ${error.response.status}: ${error.response.statusText}`);
     },
     handleApiResponse(response) {
@@ -213,11 +213,9 @@ export default {
         this.submitGuntersMessage(response.data.furtherAction);
       }
 
-      if (localStorage.getItem('soundEnabled') === 'true') {
-        SpeechService.speak(response.data.textToRead);
-        if (response.data.furtherAction) {
-          SpeechService.speak(response.data.furtherAction);
-        }
+      SpeechService.speak(response.data.textToRead);
+      if (response.data.furtherAction) {
+        SpeechService.speak(response.data.furtherAction);
       }
 
       this.nextLink = response.data.nextLink;
