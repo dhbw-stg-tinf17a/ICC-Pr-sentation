@@ -10,8 +10,6 @@
  * to hear the daily quote, a daily quote is also presented to the user.
  */
 
-// TODO look at tomorrow if there is no event today or the first event today already started?
-
 const schedule = require('node-schedule');
 const moment = require('moment-timezone');
 const pino = require('pino');
@@ -41,7 +39,7 @@ async function getQuoteOfTheDay(pref) {
  *         tomorrow, all properties are undefined. If the event has no location or no connection to
  *         the event location can be found, `connection` is undefined.
  */
-async function getWakeUpTimeForFirstEventOfToday(pref) {
+async function getWakeUpTime(pref) {
   const now = moment.tz(timezone);
   const todayStart = now.clone().startOf('day');
   const todayEnd = todayStart.clone().endOf('day');
@@ -125,7 +123,7 @@ async function run() {
 
     const pref = await preferences.get();
 
-    const { event, connection, wakeUpTime } = await getWakeUpTimeForFirstEventOfToday(pref);
+    const { event, connection, wakeUpTime } = await getWakeUpTime(pref);
     if (event === undefined) {
       logger.debug('Morning routine usecase: No event found');
       return;
@@ -174,7 +172,7 @@ function init() {
 
 module.exports = {
   init,
-  getWakeUpTimeForFirstEventOfToday,
+  getWakeUpTime,
   getWeatherForecast,
   getQuoteOfTheDay,
 };
