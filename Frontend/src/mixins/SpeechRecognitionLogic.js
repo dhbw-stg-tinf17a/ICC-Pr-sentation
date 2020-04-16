@@ -48,7 +48,7 @@ export default {
           hour: '2-digit',
           minute: '2-digit',
         });
-        if (localStorage.getItem('soundEnabled') === 'true' && !speechSynthesis.speaking) {
+        if (!speechSynthesis.speaking) {
           SpeechService.speak(`Currently it is: ${time}`);
         }
         this.userInput = '';

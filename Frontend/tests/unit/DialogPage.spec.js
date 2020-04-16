@@ -79,7 +79,7 @@ describe('DialogPage.vue', () => {
       const wrapper = factory();
       wrapper.vm.nextLink = 'morning-routine/confirm';
       wrapper.vm.userConfirmed('New Message');
-      expect(wrapper.vm.messages[wrapper.vm.messages.length - 1].content).toEqual('New Message');
+      expect(wrapper.vm.messages[wrapper.vm.messages.length - 2].content).toEqual('New Message');
     });
 
     it('morning routine use case function handles api response', async () => {

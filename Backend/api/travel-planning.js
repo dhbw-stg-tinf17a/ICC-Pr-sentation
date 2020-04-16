@@ -89,7 +89,7 @@ router.get('/', wrapAsync(async (req, res) => {
       destination: connectionToDestination.legs[connectionToDestination.legs.length - 1].to,
     };
     furtherAction = 'Do you want to get information about how to get to your origin train station?';
-    nextLink = 'travel-planning/confirm';
+    nextLink = `travel-planning/confirm?arrival=${connectionToDestination.legs[0].departure.toISOString()}`;
   } else if (destination) {
     textToDisplay = 'Not free at the weekend.\nCheck back next week!';
 

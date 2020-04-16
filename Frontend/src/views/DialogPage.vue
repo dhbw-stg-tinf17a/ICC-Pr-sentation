@@ -26,12 +26,46 @@
         </div>
         <div class="column">
           <iframe
-            src="https://www.google.com/maps/embed?pb=!1m28!1m12!1m3!1d84212.13668810249!2d9.012055799646186!3d48.73167512651731!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!4m13!3e3!4m5!1s0x4799db3229863a35%3A0xdf0e3bbda30a81!2sHauptbahnhof%2C%20Stuttgart!3m2!1d48.784171!2d9.178921299999999!4m5!1s0x4799e06fba35c9c5%3A0x6937d91123557292!2sHulb%2C%20B%C3%B6blingen%2C%20Stuttgart!3m2!1d48.6792677!2d8.9823237!5e0!3m2!1sen!2sde!4v1584003581058!5m2!1sen!2sde"
-            width="500"
+            v-if="$route.query.usecase === 'travel-planning'"
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d345381.66563874023!2d10.888241136786803!3d47.44520309878122!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x479d02ee5107876d%3A0x34e257ebca223d97!2sZugspitze!5e0!3m2!1sen!2sde!4v1586291009392!5m2!1sen!2sde"
+            width="800"
             height="600"
             frameborder="0"
             style="border:0;"
-            allowfullscreen
+            allowfullscreen=""
+            aria-hidden="false"
+            tabindex="0"
+          />
+          <iframe
+            v-if="$route.query.usecase === 'morning-routine'"
+            src="https://www.google.com/maps/embed?pb=!1m28!1m12!1m3!1d42064.071434944395!2d9.183972170768989!3d48.78180501712007!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!4m13!3e3!4m5!1s0x4799c4ef08b86541%3A0x7fd29cebc1be3dd!2sSchl%C3%BCsselwiesen%2021%2C%2070186%20Stuttgart!3m2!1d48.7818051!2d9.2189911!4m5!1s0x0%3A0xcac3f85c1ddfaef4!2sBaden-W%C3%BCrttemberg%20Cooperative%20State%20University!3m2!1d48.7823!2d9.176219999999999!5e0!3m2!1sen!2sde!4v1586291400541!5m2!1sen!2sde"
+            width="800"
+            height="600"
+            frameborder="0"
+            style="border:0;"
+            allowfullscreen=""
+            aria-hidden="false"
+            tabindex="0"
+          />
+          <iframe
+            v-if="$route.query.usecase === 'personal-trainer'"
+            src="https://www.google.com/maps/embed?pb=!1m28!1m12!1m3!1d10516.556965759963!2d9.225725933574962!3d48.77923191847479!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!4m13!3e3!4m5!1s0x4799c4ef08b86541%3A0x7fd29cebc1be3dd!2sSchl%C3%BCsselwiesen%2021%2C%2070186%20Stuttgart!3m2!1d48.7818051!2d9.2189911!4m5!1s0x4799c45a56d6a2a1%3A0xa867e2002a4edf26!2sInselbad%20Untert%C3%BCrkheim!3m2!1d48.7792853!2d9.2446866!5e0!3m2!1sen!2sde!4v1586291982256!5m2!1sen!2sde"
+            width="800"
+            height="600"
+            frameborder="0"
+            style="border:0;"
+            allowfullscreen=""
+            aria-hidden="false"
+            tabindex="0"
+          />
+          <iframe
+            v-if="$route.query.usecase === 'lunch-break'"
+            src="https://www.google.com/maps/embed?pb=!1m28!1m12!1m3!1d5258.734450453219!2d9.15597100061059!3d48.77487912164868!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!4m13!3e3!4m5!1s0x4799db48e7f64b7b%3A0xee6d7efd9e4b577f!2sDHBW%20Stuttgart%20Roteb%C3%BChlplatz%2C%20Roteb%C3%BChlplatz%2C%20Stuttgart!3m2!1d48.773559399999996!2d9.171002!4m5!1s0x4799db6a083862a3%3A0xdc0cc29b04f20857!2sDie%20Metzgerei!3m2!1d48.774244599999996!2d9.1559019!5e0!3m2!1sen!2sde!4v1586291828906!5m2!1sen!2sde"
+            width="800"
+            height="600"
+            frameborder="0"
+            style="border:0;"
+            allowfullscreen=""
             aria-hidden="false"
             tabindex="0"
           />
@@ -154,6 +188,7 @@ export default {
     userConfirmed(userInput) {
       if (this.nextLink) {
         this.submitMyMessage(userInput);
+        this.postLoadingMessage();
         UseCasesService.getFurtherInformation(this.nextLink)
           .then((response) => {
             this.handleApiResponse(response);
@@ -169,35 +204,18 @@ export default {
         duration: 3000,
         type: 'is-danger',
       });
-      if (localStorage.getItem('soundEnabled') === 'true') SpeechService.speak(`${error.response.statusText}. Sorry!`);
-      this.submitMessage({
-        content: `Error ${error.response.status}: ${error.response.statusText}`,
-        myself: false,
-        participantId: 1,
-        timestamp: this.getCurrentTimestamp(),
-      });
+      SpeechService.speak(`${error.response.statusText}. Sorry!`);
+      this.submitGuntersMessage(`Error ${error.response.status}: ${error.response.statusText}`);
     },
     handleApiResponse(response) {
-      this.submitMessage({
-        content: response.data.textToDisplay,
-        myself: false,
-        participantId: 1,
-        timestamp: this.getCurrentTimestamp(),
-      });
+      this.submitGuntersMessage(response.data.textToDisplay);
       if (response.data.furtherAction) {
-        this.submitMessage({
-          content: response.data.furtherAction,
-          myself: false,
-          participantId: 1,
-          timestamp: this.getCurrentTimestamp(),
-        });
+        this.submitGuntersMessage(response.data.furtherAction);
       }
 
-      if (localStorage.getItem('soundEnabled') === 'true') {
-        SpeechService.speak(response.data.textToRead);
-        if (response.data.furtherAction) {
-          SpeechService.speak(response.data.furtherAction);
-        }
+      SpeechService.speak(response.data.textToRead);
+      if (response.data.furtherAction) {
+        SpeechService.speak(response.data.furtherAction);
       }
 
       this.nextLink = response.data.nextLink;
@@ -215,6 +233,7 @@ export default {
       };
     },
     morningRoutineUseCase() {
+      this.postLoadingMessage();
       UseCasesService.getMorningRoutineUseCase()
         .then((response) => {
           this.handleApiResponse(response);
@@ -223,6 +242,7 @@ export default {
         });
     },
     travelPlanningUseCase() {
+      this.postLoadingMessage();
       UseCasesService.getTravelPlanningUseCase().then((response) => {
         this.handleApiResponse(response);
       }).catch((error) => {
@@ -231,6 +251,7 @@ export default {
     },
     lunchBreakUseCase(position) {
       if (!position) {
+        this.postLoadingMessage();
         this.getCoordinates();
       } else {
         UseCasesService.getLunchBreakUseCase(
@@ -244,6 +265,7 @@ export default {
       }
     },
     personalTrainerUseCase() {
+      this.postLoadingMessage();
       UseCasesService.getPersonalTrainerUseCase().then((response) => {
         this.handleApiResponse(response);
       }).catch((error) => {
@@ -269,7 +291,15 @@ export default {
       });
     },
     onType(event) {
-      this.$emit('update:user-input', event.target.innerText);
+      if (event.data === null) {
+        setTimeout(() => {
+          this.submitGuntersMessage('Sorry. I do not understand. Try "commute", "training", "lunch" or "travel"');
+          SpeechService.speak('Sorry. I do not understand. Try saying commute or training.');
+          this.$emit('update:user-input', '');
+        }, 500);
+      } else {
+        this.$emit('update:user-input', event.target.innerText);
+      }
     },
     submitMessage(message) {
       this.messages.push(message);
@@ -281,6 +311,17 @@ export default {
         participantId: 2,
         timestamp: this.getCurrentTimestamp(),
       });
+    },
+    submitGuntersMessage(messageContent) {
+      this.submitMessage({
+        content: messageContent,
+        myself: false,
+        participantId: 1,
+        timestamp: this.getCurrentTimestamp(),
+      });
+    },
+    postLoadingMessage() {
+      this.submitGuntersMessage('I am thinking...');
     },
   },
 };

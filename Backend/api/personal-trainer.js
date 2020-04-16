@@ -48,7 +48,8 @@ router.get('/', wrapAsync(async (req, res) => {
       latitude: place.position.lon,
     };
     furtherAction = 'Do you want to know how to get to your training location?';
-    nextLink = 'personal-trainer/confirm';
+    nextLink = `personal-trainer/confirm?latitude=${place.position.lat}&longitude=${place.position.lon}`
+                + `&departure=${freeSlot.start.toISOString()}`;
   } else if (place) {
     textToDisplay = 'No free slot for training.\nMaybe Tomorrow!';
     textToRead = 'Unfortunately there is no free slot for training today. '
