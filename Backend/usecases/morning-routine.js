@@ -31,8 +31,6 @@ async function getQuoteOfTheDay(pref) {
   return quote.getQuoteOfTheDay(pref.morningRoutineQuoteCategory);
 }
 
-// TODO should be renamed, also looks at tomorrow if todays first event already started / there are
-// no events today
 /**
  * @param pref Preferences as returned by `preferences.get`.
  * @return Object containing `wakeUpTime`, `event` and `connection`. If there is no event today or
