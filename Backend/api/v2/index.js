@@ -31,6 +31,5 @@ router.use('/morning-routine', require('./morning-routine'));
 router.use('/personal-trainer', require('./personal-trainer'));
 router.use('/travel-planning', require('./travel-planning'));
 router.use('/lunch-break', require('./lunch-break'));
-router.use('/v2', require('./v2'));
 
 module.exports = router;
