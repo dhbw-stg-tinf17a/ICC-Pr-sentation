@@ -19,9 +19,13 @@
               type="text"
               placeholder="Start speaking or typing"
               @input="$emit('update:user-input', $event.target.value)"
+              @keyup.enter="showHint = true"
             >
           </p>
         </div>
+        <p v-show="showHint">
+          Tip: Try entering "commute", "training", "lunch" or "travel".
+        </p>
       </div>
     </div>
   </div>
@@ -38,6 +42,7 @@ export default {
   },
   data() {
     return {
+      showHint: false,
     };
   },
 };
@@ -46,5 +51,9 @@ export default {
 <style scoped>
 #container {
   margin-top: 12rem;
+}
+.hero-body {
+  margin-bottom: 0rem;
+  padding-bottom: 1rem;
 }
 </style>

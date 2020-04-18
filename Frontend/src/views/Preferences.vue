@@ -229,7 +229,7 @@ export default {
     },
   },
   created() {
-    if (localStorage.getItem('soundEnabled') === 'true') SpeechService.speak('Edit your Preferences');
+    SpeechService.speak('Edit your Preferences');
     this.getPreferences();
   },
   methods: {
@@ -257,7 +257,7 @@ export default {
         });
       });
 
-      if (localStorage.getItem('soundEnabled') === 'true') SpeechService.speak('Saved successfully.');
+      SpeechService.speak('Saved successfully.');
     },
 
     async toggleNotifications() {
@@ -340,7 +340,7 @@ export default {
 <style scoped>
 .hero-body {
   position: relative;
-  margin: 0rem 3rem 3rem 3rem;
+  margin: 0rem 3rem 0rem 3rem;
   padding-top: 1rem;
 }
 .subtitle {

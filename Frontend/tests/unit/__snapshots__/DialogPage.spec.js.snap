@@ -9,7 +9,12 @@ exports[`DialogPage.vue Elements are rendered correctly Component renders 1`] = 
         return false;
       }" scrollbottom="[object Object]" displayheader="true"></chat-stub>
       </div>
-      <div class="column"><iframe src="https://www.google.com/maps/embed?pb=!1m28!1m12!1m3!1d84212.13668810249!2d9.012055799646186!3d48.73167512651731!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!4m13!3e3!4m5!1s0x4799db3229863a35%3A0xdf0e3bbda30a81!2sHauptbahnhof%2C%20Stuttgart!3m2!1d48.784171!2d9.178921299999999!4m5!1s0x4799e06fba35c9c5%3A0x6937d91123557292!2sHulb%2C%20B%C3%B6blingen%2C%20Stuttgart!3m2!1d48.6792677!2d8.9823237!5e0!3m2!1sen!2sde!4v1584003581058!5m2!1sen!2sde" width="500" height="600" frameborder="0" allowfullscreen="allowfullscreen" aria-hidden="false" tabindex="0" style="border: 0px;"></iframe></div>
+      <div class="column">
+        <!---->
+        <!---->
+        <!---->
+        <!---->
+      </div>
     </div>
   </div>
 </div>
@@ -24,7 +29,12 @@ exports[`DialogPage.vue methods work api error is displayed properly 1`] = `
         return false;
       }" scrollbottom="[object Object]" displayheader="true"></chat-stub>
       </div>
-      <div class="column"><iframe src="https://www.google.com/maps/embed?pb=!1m28!1m12!1m3!1d84212.13668810249!2d9.012055799646186!3d48.73167512651731!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!4m13!3e3!4m5!1s0x4799db3229863a35%3A0xdf0e3bbda30a81!2sHauptbahnhof%2C%20Stuttgart!3m2!1d48.784171!2d9.178921299999999!4m5!1s0x4799e06fba35c9c5%3A0x6937d91123557292!2sHulb%2C%20B%C3%B6blingen%2C%20Stuttgart!3m2!1d48.6792677!2d8.9823237!5e0!3m2!1sen!2sde!4v1584003581058!5m2!1sen!2sde" width="500" height="600" frameborder="0" allowfullscreen="allowfullscreen" aria-hidden="false" tabindex="0" style="border: 0px;"></iframe></div>
+      <div class="column">
+        <!---->
+        <!---->
+        <!---->
+        <!---->
+      </div>
     </div>
   </div>
 </div>
@@ -39,7 +49,12 @@ exports[`DialogPage.vue methods work geolocation error message is shown if locat
         return false;
       }" scrollbottom="[object Object]" displayheader="true"></chat-stub>
       </div>
-      <div class="column"><iframe src="https://www.google.com/maps/embed?pb=!1m28!1m12!1m3!1d84212.13668810249!2d9.012055799646186!3d48.73167512651731!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!4m13!3e3!4m5!1s0x4799db3229863a35%3A0xdf0e3bbda30a81!2sHauptbahnhof%2C%20Stuttgart!3m2!1d48.784171!2d9.178921299999999!4m5!1s0x4799e06fba35c9c5%3A0x6937d91123557292!2sHulb%2C%20B%C3%B6blingen%2C%20Stuttgart!3m2!1d48.6792677!2d8.9823237!5e0!3m2!1sen!2sde!4v1584003581058!5m2!1sen!2sde" width="500" height="600" frameborder="0" allowfullscreen="allowfullscreen" aria-hidden="false" tabindex="0" style="border: 0px;"></iframe></div>
+      <div class="column">
+        <!---->
+        <!---->
+        <!---->
+        <!---->
+      </div>
     </div>
   </div>
 </div>

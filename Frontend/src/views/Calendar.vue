@@ -46,7 +46,7 @@ iframe {
 }
 .hero-body {
   position: relative;
-  margin: 0rem 3rem 3rem 3rem;
+  margin: 0rem 3rem 1rem 3rem;
   padding: 1rem 0 0 0;
 }
 </style>
