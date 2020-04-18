@@ -8,7 +8,7 @@ Gunter is a personal digital assistant. He offers four use cases which provide a
 ## How is Gunter build?
 Gunter consists of a Node.js backend which can be found in the [Backend folder](https://github.com/dhbw-stg-tinf17a/ICC-Pr-sentation/tree/master/Backend) and a Vue.js frontend which can be found in the [Frontend folder](https://github.com/dhbw-stg-tinf17a/ICC-Pr-sentation/tree/master/Frontend).
 
-**TODO:** Add image of architectural overview
+![alt text](https://github.com/dhbw-stg-tinf17a/ICC-Pr-sentation/blob/master/Presentation/Diagrams/Gunter_Overview.png "Architectural Overview")
 
 Gunter's dialog is implemented as simple keyword recognition, so he is only able to recognize specific commands. You can see all available commands in Gunter's help section.  
 Gunter is also proactive. This means that he will send you push notifications on your device (if enabled in the settings). Push notifications notify you about an updated use case and will also work when the browser is closed.
@@ -19,7 +19,7 @@ In this repository a continous integration pipeline is set up with GitHub Action
 Continous Deployment is also set up. You can merge any changes on the master branch and they will be automatically deployed to [gunter.felixsz.de](https://gunter.felixsz.de/)
 
 # Use Cases
-You can find use case diagrams [here](https://github.com/dhbw-stg-tinf17a/ICC-Pr-sentation/tree/master/Concept/Diagrams/Use%20Cases).
+You can find use case diagrams [here](https://github.com/dhbw-stg-tinf17a/ICC-Pr-sentation/tree/master/Presentation/Diagrams).
 
 ## Morning Routine
 In the morning, most people always repeat the same set of tasks. For this use case, the assistant sends a notification to the user depending on the start of the first event in the <ins>calendar</ins>, the travel time to the first event (<ins>VVS</ins>), and the time they need to get ready (<ins>preferences</ins>). When the user clicks on the notification, the morning routine use case is opened in the web app. The user can also open the use case at any other time using the web app. After opening the use case, the assistant presents the route to the first event in the <ins>calendar</ins> (<ins>VVS</ins>) and the <ins>weather</ins> forecast for the day.  
