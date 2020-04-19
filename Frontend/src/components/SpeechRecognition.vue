@@ -143,6 +143,7 @@ export default {
           this.fixedUserInput = this.userInput;
           this.isFinal = false;
         }
+        this.$emit('update:user-input', `${this.fixedUserInput} **Listening**`);
         for (let i = event.resultIndex; i < event.results.length; i += 1) {
           if (event.results[i].isFinal) {
             finalTranscript += event.results[i][0].transcript;
@@ -153,9 +154,8 @@ export default {
 
         finalTranscript = this.capitalize(finalTranscript);
         this.interimResult = interimTranscript;
-        if (finalTranscript === '') {
-          this.$emit('update:user-input', this.fixedUserInput + this.interimResult);
-        } else {
+        if (finalTranscript !== '') {
+          this.$emit('update:user-input', this.fixedUserInput + finalTranscript);
           this.isFinal = true;
           finalTranscript = '';
         }

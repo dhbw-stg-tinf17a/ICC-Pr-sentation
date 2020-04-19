@@ -26,7 +26,7 @@ export default {
               name: 'dialog', query: { usecase: this.usecasesTrigger[i][0] },
             });
           } else {
-            this.$refs.routerView.submitMyMessage(this.usecasesTrigger[i][2]);
+            this.$refs.routerView.submitMyMessage(this.userInput);
             this.$refs.routerView[this.usecasesTrigger[i][1]]();
           }
           this.userInput = '';
