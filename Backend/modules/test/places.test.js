@@ -1,5 +1,5 @@
 const axios = require('axios').default;
-const places = require('../modules/places');
+const places = require('../places');
 
 jest.mock('axios');
 

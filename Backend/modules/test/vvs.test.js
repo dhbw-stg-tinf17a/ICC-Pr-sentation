@@ -1,6 +1,6 @@
 const axios = require('axios').default;
 const xml2js = require('xml2js');
-const vvs = require('../modules/vvs');
+const vvs = require('../vvs');
 
 jest.mock('axios');
 

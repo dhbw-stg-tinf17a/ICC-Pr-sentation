@@ -1,5 +1,5 @@
 const axios = require('axios').default;
-const weather = require('../modules/weather');
+const weather = require('../weather');
 
 jest.mock('axios');
 

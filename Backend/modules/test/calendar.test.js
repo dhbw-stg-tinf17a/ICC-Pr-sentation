@@ -1,9 +1,9 @@
 const ical = require('node-ical');
-const calendar = require('../modules/calendar');
-const preferences = require('../modules/preferences');
+const calendar = require('../calendar');
+const preferences = require('../preferences');
 
 jest.mock('node-ical');
-jest.mock('../modules/preferences');
+jest.mock('../preferences');
 
 describe('calendar module', () => {
   describe('getEventsStartingBetween', () => {
