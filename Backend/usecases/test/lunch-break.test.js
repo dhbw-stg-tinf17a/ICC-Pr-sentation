@@ -13,13 +13,7 @@ jest.mock('../../modules/notifications');
 jest.mock('../../modules/preferences');
 jest.mock('../../utilities/logger');
 
-const pref = {
-  lunchBreakStart: { hour: 11, minute: 0 },
-  lunchBreakEnd: { hour: 14, minute: 0 },
-  lunchBreakRequiredMinutes: 60,
-  lunchBreakMaxDistance: 1,
-  lunchBreakMinutesBeforeStart: 30,
-};
+const pref = preferences.defaults;
 preferences.get.mockResolvedValue(pref);
 
 const scheduleJobSpy = jest.spyOn(schedule, 'scheduleJob');
@@ -113,6 +107,34 @@ describe('lunch break use case', () => {
 
       expect(logger.error).toHaveBeenCalledTimes(1);
       expect(logger.error).toHaveBeenLastCalledWith(error);
+    });
+  });
+
+  describe('getRandomRestaurantNear', () => {
+    it('should return a random restaurant', async () => {
+      const restaurant = {
+        poi: { name: 'Gaststätte zum Hirsch' },
+        dist: 500,
+        address: { streetName: 'Halligalli-Straße' },
+        position: { lat: 0, lon: 0 },
+      };
+      places.getPOIsAround.mockResolvedValueOnce([restaurant]);
+
+      await expect(lunchBreak.getRandomRestaurantNear({
+        latitude: 0,
+        longitude: 0,
+        pref,
+      })).resolves.toStrictEqual(restaurant);
+    });
+
+    it('should return undefined if no restaurant is found', async () => {
+      places.getPOIsAround.mockResolvedValueOnce([]);
+
+      await expect(lunchBreak.getRandomRestaurantNear({
+        latitude: 0,
+        longitude: 0,
+        pref,
+      })).resolves.toBeUndefined();
     });
   });
 });
