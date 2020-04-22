@@ -177,4 +177,5 @@ module.exports = {
   getWakeUpTime,
   getWeatherForecast,
   getQuoteOfTheDay,
+  run,
 };
