@@ -137,4 +137,20 @@ describe('lunch break use case', () => {
       })).resolves.toBeUndefined();
     });
   });
+
+  describe('getFreeSlotForLunchbreak', () => {
+    it('should return the longest free slot', async () => {
+      const shorterSlot = {
+        start: new Date('2020-01-15T11:00:00Z'),
+        end: new Date('2020-01-15T12:00:00Z'),
+      };
+      const longerSlot = {
+        start: new Date('2020-01-15T12:30:00Z'),
+        end: new Date('2020-01-15T14:00:00Z'),
+      };
+      calendar.getFreeSlotsBetween.mockResolvedValueOnce([shorterSlot, longerSlot]);
+
+      await expect(lunchBreak.getFreeSlotForLunchbreak(pref)).resolves.toStrictEqual(longerSlot);
+    });
+  });
 });
