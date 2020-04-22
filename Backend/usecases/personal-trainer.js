@@ -21,7 +21,7 @@ const preferences = require('../modules/preferences');
 const weather = require('../modules/weather');
 const vvs = require('../modules/vvs');
 
-const logger = pino({ level: process.env.LOG_LEVEL || 'info' });
+const logger = pino({ level: process.env.LOG_LEVEL || 'error' });
 const timezone = 'Europe/Berlin';
 
 async function getConnectionToPlace({

@@ -21,7 +21,7 @@ const places = require('../modules/places');
 const notifications = require('../modules/notifications');
 const preferences = require('../modules/preferences');
 
-const logger = pino({ level: process.env.LOG_LEVEL || 'info' });
+const logger = pino({ level: process.env.LOG_LEVEL || 'error' });
 const timezone = 'Europe/Berlin';
 
 async function getFreeSlotForLunchbreak(pref) {

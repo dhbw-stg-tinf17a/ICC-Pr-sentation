@@ -25,7 +25,7 @@ const notifications = require('../modules/notifications');
 const vvs = require('../modules/vvs');
 const preferences = require('../modules/preferences');
 
-const logger = pino({ level: process.env.LOG_LEVEL || 'info' });
+const logger = pino({ level: process.env.LOG_LEVEL || 'error' });
 const mainStation = {
   dbID: '8098096',
   location: {

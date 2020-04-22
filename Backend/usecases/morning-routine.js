@@ -22,7 +22,7 @@ const preferences = require('../modules/preferences');
 const notifications = require('../modules/notifications');
 const quote = require('../modules/quote');
 
-const logger = pino({ level: process.env.LOG_LEVEL || 'info' });
+const logger = pino({ level: process.env.LOG_LEVEL || 'error' });
 const timezone = 'Europe/Berlin';
 
 /**
