@@ -40,7 +40,7 @@ async function getFreeSlotForLunchbreak(pref) {
   // find the longest slot and check if it sufficiently long
   const freeSlot = freeSlots.sort((a, b) => (b.end - b.start) - (a.end - a.start))[0];
   if (moment.duration(moment(freeSlot.end).diff(freeSlot.start)).asMinutes()
-      < pref.lunchBreakRequiredMinutes) {
+    < pref.lunchBreakRequiredMinutes) {
     return undefined;
   }
 
@@ -115,6 +115,7 @@ function init() {
 
 module.exports = {
   init,
+  run,
   getFreeSlotForLunchbreak,
   getRandomRestaurantNear,
 };

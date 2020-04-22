@@ -28,10 +28,6 @@ const subscriptions = [
   },
 ];
 
-process.env.PUSH_KEY_PRIVATE = 'PUSH_KEY_PRIVATE';
-process.env.PUSH_KEY_PUBLIC = 'PUSH_KEY_PUBLIC';
-process.env.PUSH_SUBJECT = 'PUSH_SUBJECT';
-
 describe('notifications module', () => {
   beforeEach(async () => {
     await mockDatabase.setState({ subscriptions: [] });

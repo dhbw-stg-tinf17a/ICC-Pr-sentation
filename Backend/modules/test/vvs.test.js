@@ -4,10 +4,8 @@ const vvs = require('../vvs');
 
 jest.mock('axios');
 
-process.env.VVS_KEY = 'VVS_KEY';
-
 describe('vvs module', () => {
-  beforeEach(() => {
+  afterEach(() => {
     jest.clearAllMocks();
   });
 
