@@ -37,7 +37,7 @@ describe('lunch break use case', () => {
   });
 
   describe('init', () => {
-    it('should call schedule.scheduleJob with run', async () => {
+    it('should call schedule run', async () => {
       lunchBreak.init();
       expect(scheduleJobSpy).toHaveBeenCalledWith(
         {
