@@ -5,27 +5,28 @@ const places = require('../../modules/places');
 const notifications = require('../../modules/notifications');
 const preferences = require('../../modules/preferences');
 const lunchBreak = require('../lunch-break');
+const logger = require('../../utilities/logger');
 
 jest.mock('../../modules/calendar');
 jest.mock('../../modules/places');
 jest.mock('../../modules/notifications');
 jest.mock('../../modules/preferences');
+jest.mock('../../utilities/logger');
 
-preferences.get.mockResolvedValue({
+const pref = {
+  lunchBreakStart: { hour: 11, minute: 0 },
+  lunchBreakEnd: { hour: 14, minute: 0 },
   lunchBreakRequiredMinutes: 60,
-  lunchBreakStart: {
-    hour: 11,
-    minute: 0,
-  },
-  lunchBreakEnd: {
-    hour: 13,
-    minute: 0,
-  },
-});
+  lunchBreakMaxDistance: 1,
+  lunchBreakMinutesBeforeStart: 30,
+};
+preferences.get.mockResolvedValue(pref);
 
 const scheduleJobSpy = jest.spyOn(schedule, 'scheduleJob');
 
 notifications.sendNotification.mockResolvedValue();
+
+logger.error.mockReturnValue();
 
 const now = new Date('2020-01-15T08:00:00Z');
 const clock = fakeTimers.install({ now });
@@ -54,19 +55,29 @@ describe('lunch break use case', () => {
   });
 
   describe('run', () => {
-    it('should not send a notification if no free slot is available', async () => {
+    it('should not schedule a notification if no free slot is available', async () => {
+      calendar.getFreeSlotsBetween.mockResolvedValueOnce([]);
+
+      await lunchBreak.run();
+
+      expect(scheduleJobSpy).not.toHaveBeenCalled();
+      expect(notifications.sendNotifications).not.toHaveBeenCalled();
+    });
+
+    it('should not schedule a notification if no free slot is long enough', async () => {
       const slot = {
         start: new Date('2020-01-15T11:00:00Z'),
         end: new Date('2020-01-15T11:30:00Z'),
       };
       calendar.getFreeSlotsBetween.mockResolvedValueOnce([slot]);
+
       await lunchBreak.run();
-      clock.tick(slot.start - now + 1);
+
       expect(scheduleJobSpy).not.toHaveBeenCalled();
       expect(notifications.sendNotifications).not.toHaveBeenCalled();
     });
 
-    it('should send a notification is a free slot is available', async () => {
+    it('should schedule a notification notification is a free slot is available', async () => {
       const slot = {
         start: new Date('2020-01-15T11:00:00Z'),
         end: new Date('2020-01-15T12:00:00Z'),
@@ -75,9 +86,11 @@ describe('lunch break use case', () => {
 
       await lunchBreak.run();
 
-      clock.tick(slot.start - now + 1);
-
       expect(scheduleJobSpy).toHaveBeenCalledTimes(1);
+      expect(notifications.sendNotifications).not.toHaveBeenCalled();
+
+      clock.tick(slot.start - now - pref.lunchBreakMinutesBeforeStart * 60 * 1000);
+
       expect(notifications.sendNotifications).toHaveBeenCalledTimes(1);
       expect(notifications.sendNotifications).toHaveBeenLastCalledWith({
         title: 'Recommended restaurant for your lunch break',
@@ -90,6 +103,16 @@ describe('lunch break use case', () => {
           },
         },
       });
+    });
+
+    it('should log, but not throw errors', async () => {
+      const error = new Error('Sorry!');
+      calendar.getFreeSlotsBetween.mockRejectedValueOnce(error);
+
+      await lunchBreak.run();
+
+      expect(logger.error).toHaveBeenCalledTimes(1);
+      expect(logger.error).toHaveBeenLastCalledWith(error);
     });
   });
 });
