@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-const logger = require('pino')({ level: process.env.LOG_LEVEL || 'error' });
 const http = require('http');
+const logger = require('../utilities/logger');
 const app = require('../app');
 
 const server = http.createServer(app);

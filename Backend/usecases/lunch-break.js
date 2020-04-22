@@ -14,14 +14,13 @@
 // TODO store visited restaurants
 
 const schedule = require('node-schedule');
-const pino = require('pino');
 const moment = require('moment-timezone');
+const logger = require('../utilities/logger');
 const calendar = require('../modules/calendar');
 const places = require('../modules/places');
 const notifications = require('../modules/notifications');
 const preferences = require('../modules/preferences');
 
-const logger = pino({ level: process.env.LOG_LEVEL || 'error' });
 const timezone = 'Europe/Berlin';
 
 async function getFreeSlotForLunchbreak(pref) {

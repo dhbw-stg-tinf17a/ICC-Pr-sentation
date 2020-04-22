@@ -17,7 +17,7 @@
 const schedule = require('node-schedule');
 const moment = require('moment-timezone');
 const geolib = require('geolib');
-const pino = require('pino');
+const logger = require('../utilities/logger');
 const calendar = require('../modules/calendar');
 const db = require('../modules/db');
 const weather = require('../modules/weather');
@@ -25,7 +25,6 @@ const notifications = require('../modules/notifications');
 const vvs = require('../modules/vvs');
 const preferences = require('../modules/preferences');
 
-const logger = pino({ level: process.env.LOG_LEVEL || 'error' });
 const mainStation = {
   dbID: '8098096',
   location: {

@@ -13,7 +13,7 @@
 
 const schedule = require('node-schedule');
 const moment = require('moment-timezone');
-const pino = require('pino');
+const logger = require('../utilities/logger');
 const calendar = require('../modules/calendar');
 const notifications = require('../modules/notifications');
 const places = require('../modules/places');
@@ -21,7 +21,6 @@ const preferences = require('../modules/preferences');
 const weather = require('../modules/weather');
 const vvs = require('../modules/vvs');
 
-const logger = pino({ level: process.env.LOG_LEVEL || 'error' });
 const timezone = 'Europe/Berlin';
 
 async function getConnectionToPlace({

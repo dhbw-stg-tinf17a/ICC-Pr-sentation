@@ -1,9 +1,8 @@
 const webpush = require('web-push');
-const pino = require('pino');
+const logger = require('../utilities/logger');
 const initDatabase = require('../utilities/init-database');
 
 const database = initDatabase('notifications', { subscriptions: [] });
-const logger = pino({ level: process.env.LOG_LEVEL || 'error' });
 
 async function addSubscription(subscription) {
   const subscriptions = (await database).get('subscriptions');
