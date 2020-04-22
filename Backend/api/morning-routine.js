@@ -10,7 +10,7 @@ router.get('/', wrapAsync(async (req, res) => {
   const pref = await preferences.get();
 
   const { event, connection, wakeUpTime } = await Promise.resolve(
-    morningRoutine.getWakeUpTimeForFirstEventOfToday(pref),
+    morningRoutine.getWakeUpTime(pref),
   );
 
   let textToDisplay;

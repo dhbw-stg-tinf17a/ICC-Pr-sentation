@@ -10,8 +10,6 @@
  * to hear the daily quote, a daily quote is also presented to the user.
  */
 
-// TODO look at tomorrow if there is no event today or the first event today already started?
-
 const schedule = require('node-schedule');
 const moment = require('moment-timezone');
 const logger = require('../utilities/logger');
@@ -32,15 +30,7 @@ async function getQuoteOfTheDay(pref) {
   return quote.getQuoteOfTheDay(pref.morningRoutineQuoteCategory);
 }
 
-// TODO should be renamed, also looks at tomorrow if todays first event already started / there are
-// no events today
-/**
- * @param pref Preferences as returned by `preferences.get`.
- * @return Object containing `wakeUpTime`, `event` and `connection`. If there is no event today or
- *         tomorrow, all properties are undefined. If the event has no location or no connection to
- *         the event location can be found, `connection` is undefined.
- */
-async function getWakeUpTimeForFirstEventOfToday(pref) {
+async function getFirstEvent() {
   const now = moment.tz(timezone);
   const todayStart = now.clone().startOf('day');
   const todayEnd = todayStart.clone().endOf('day');
@@ -58,6 +48,17 @@ async function getWakeUpTimeForFirstEventOfToday(pref) {
     event = events.filter((ev) => ev.start > todayEnd).find(() => true);
   }
 
+  return event;
+}
+
+/**
+ * @param pref Preferences as returned by `preferences.get`.
+ * @return Object containing `wakeUpTime`, `event` and `connection`. If there is no event today or
+ *         tomorrow, all properties are undefined. If the event has no location or no connection to
+ *         the event location can be found, `connection` is undefined.
+ */
+async function getWakeUpTime(pref) {
+  const event = await getFirstEvent();
   if (event === undefined) {
     // no event today, first event today already started, or no event tomorrow
     return {};
@@ -124,7 +125,7 @@ async function run() {
 
     const pref = await preferences.get();
 
-    const { event, connection, wakeUpTime } = await getWakeUpTimeForFirstEventOfToday(pref);
+    const { event, connection, wakeUpTime } = await getWakeUpTime(pref);
     if (event === undefined) {
       logger.debug('Morning routine usecase: No event found');
       return;
@@ -173,7 +174,7 @@ function init() {
 
 module.exports = {
   init,
-  getWakeUpTimeForFirstEventOfToday,
+  getWakeUpTime,
   getWeatherForecast,
   getQuoteOfTheDay,
 };
