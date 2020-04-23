@@ -6,16 +6,14 @@ jest.mock('node-ical');
 jest.mock('../preferences');
 
 describe('calendar module', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   describe('getEventsStartingBetween', () => {
-    it('should throw an error if no calendar URL is set', async () => {
-      preferences.get.mockResolvedValueOnce({});
-
-      await expect(calendar.getEventsStartingBetween({ start: '2020-03-28T00:00:00Z', end: '2020-03-29T00:00:00Z' })).rejects.toThrow('Calendar URL is not set');
-    });
-
-    it('should return the first event of today if it did not start yet', async () => {
+    it('should return all events starting during the given time', async () => {
       const calendarURL = 'https://example.com';
-      preferences.get.mockResolvedValueOnce({ calendarURL });
+      preferences.getChecked.mockResolvedValueOnce({ calendarURL });
 
       const events = {
         1: { type: 'VEVENT', start: new Date('2020-03-28T08:00:00Z') },
@@ -25,17 +23,13 @@ describe('calendar module', () => {
       ical.async.fromURL.mockResolvedValueOnce(events);
 
       await expect(calendar.getEventsStartingBetween({ start: '2020-03-28T00:00:00Z', end: '2020-03-29T00:00:00Z' })).resolves.toStrictEqual([events[3], events[1]]);
-
-      // check conversion to API request (only in this test case)
-      expect(ical.async.fromURL).toHaveBeenCalledTimes(1);
-      expect(ical.async.fromURL).toHaveBeenCalledWith(calendarURL);
     });
   });
 
   describe('getFreeSlotsBetween', () => {
     it('should return all free slots during the given time', async () => {
       const calendarURL = 'https://example.com';
-      preferences.get.mockResolvedValueOnce({ calendarURL });
+      preferences.getChecked.mockResolvedValueOnce({ calendarURL });
 
       ical.async.fromURL.mockResolvedValueOnce({
         1: { type: 'VEVENT', start: new Date('2020-03-27T00:00Z'), end: new Date('2020-03-27T07:00Z') },
@@ -43,9 +37,15 @@ describe('calendar module', () => {
         3: { type: 'VEVENT', start: new Date('2020-03-28T07:00Z'), end: new Date('2020-03-28T09:00Z') },
       });
 
-      await expect(calendar.getFreeSlotsBetween({ start: '2020-03-27T00:00Z', end: '2020-03-27T15:00Z' })).resolves.toStrictEqual([
+      await expect(calendar.getFreeSlotsBetween({
+        start: '2020-03-27T00:00Z',
+        end: '2020-03-27T15:00Z',
+      })).resolves.toStrictEqual([
         { start: new Date('2020-03-27T07:00Z'), end: new Date('2020-03-27T12:00Z') },
       ]);
+
+      expect(ical.async.fromURL).toHaveBeenCalledTimes(1);
+      expect(ical.async.fromURL).toHaveBeenCalledWith(calendarURL);
     });
   });
 });

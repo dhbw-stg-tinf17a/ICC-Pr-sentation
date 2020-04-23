@@ -1,18 +1,9 @@
 const ical = require('node-ical');
 const preferences = require('./preferences');
 
-async function getCalendarURL() {
-  // TODO pass preferences to the calendar module
-  const { calendarURL } = await preferences.get();
-  if (calendarURL === undefined) {
-    throw new Error('Calendar URL is not set');
-  }
-
-  return calendarURL;
-}
-
 async function fetchCalendarEvents() {
-  return ical.async.fromURL(await getCalendarURL());
+  const { calendarURL } = await preferences.getChecked();
+  return ical.async.fromURL(calendarURL);
 }
 
 async function getEventsStartingBetween({ start, end }) {
