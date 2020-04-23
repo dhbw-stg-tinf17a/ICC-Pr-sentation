@@ -37,7 +37,8 @@ describe('lunch break use case', () => {
   });
 
   describe('init', () => {
-    it('should call schedule run', async () => {
+    it('should schedule a run', async () => {
+      // TODO check execution by ticking the clock?
       lunchBreak.init();
       expect(scheduleJobSpy).toHaveBeenCalledWith(
         {

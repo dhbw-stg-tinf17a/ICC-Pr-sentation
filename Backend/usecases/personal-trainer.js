@@ -173,4 +173,5 @@ module.exports = {
   getRandomSportsCenter,
   getRandomParkRecreationArea,
   getConnectionToPlace,
+  run,
 };

@@ -47,7 +47,8 @@ describe('morning routine use case', () => {
   });
 
   describe('init', () => {
-    it('should call schedule run', async () => {
+    it('should schedule a run', async () => {
+      // TODO check execution by ticking the clock?
       morningRoutine.init();
       expect(scheduleJobSpy).toHaveBeenCalledWith(
         {
