@@ -7,6 +7,7 @@ const logger = require('../../utilities/logger');
 const calendar = require('../../modules/calendar');
 const db = require('../../modules/db');
 const weather = require('../../modules/weather');
+const vvs = require('../../modules/vvs');
 
 jest.mock('../../modules/preferences');
 jest.mock('../../modules/notifications');
@@ -14,6 +15,7 @@ jest.mock('../../utilities/logger');
 jest.mock('../../modules/calendar');
 jest.mock('../../modules/db');
 jest.mock('../../modules/weather');
+jest.mock('../../modules/vvs');
 
 const pref = {
   ...preferences.defaults,
@@ -167,8 +169,39 @@ describe('travel planning use case', () => {
   });
 
   describe('getConnectionToMainStation', () => {
-    it('should ...', async () => {
+    it('should throw an error if no home location is set', async () => {
+      await expect(travelPlanning.getConnectionToMainStation({
+        arrival: '2020-01-18T08:00:00Z',
+        pref: preferences.defaults,
+      })).rejects.toThrow('Home location is not set');
+    });
 
+    it('should return a connection to the main station', async () => {
+      const connection = {
+        departure: '2020-01-15T10:00:00Z',
+        arrival: '2020-01-15T11:00:00Z',
+        duration: {
+          hours: 1,
+          minutes: 0,
+        },
+        legs: [
+          {
+            mode: 'transport',
+            from: 'Talstraße',
+            to: 'Bergstraße',
+            departure: '2020-01-15T10:00:00Z',
+            arrival: '2020-01-15T11:00:00Z',
+            lineName: 'Zahnradbahn',
+            lineDestination: 'Gipfelstraße',
+          },
+        ],
+      };
+      vvs.getConnection.mockResolvedValueOnce(connection);
+
+      await expect(travelPlanning.getConnectionToMainStation({
+        arrival: '2020-01-18T08:00:00Z',
+        pref,
+      })).resolves.toStrictEqual(connection);
     });
   });
 });
