@@ -6,12 +6,14 @@ const notifications = require('../../modules/notifications');
 const logger = require('../../utilities/logger');
 const calendar = require('../../modules/calendar');
 const db = require('../../modules/db');
+const weather = require('../../modules/weather');
 
 jest.mock('../../modules/preferences');
 jest.mock('../../modules/notifications');
 jest.mock('../../utilities/logger');
 jest.mock('../../modules/calendar');
 jest.mock('../../modules/db');
+jest.mock('../../modules/weather');
 
 const pref = {
   ...preferences.defaults,
@@ -28,14 +30,15 @@ notifications.sendNotification.mockResolvedValue();
 
 logger.error.mockReturnValue();
 
-db.getFilteredStations.mockImplementation((predicate) => Promise.resolve([
-  {
-    id: '8000105',
-    name: 'Frankfurt (Main) Hbf',
-    address: { city: 'Frankfurt (Main)' },
-    location: { latitude: 50.110924, longitude: 8.682127 },
-  },
-].filter(predicate)));
+const frankfurt = {
+  id: '8000105',
+  name: 'Frankfurt (Main) Hbf',
+  address: { city: 'Frankfurt (Main)' },
+  location: { latitude: 50.110924, longitude: 8.682127 },
+};
+db.getFilteredStations.mockImplementation(
+  (predicate) => Promise.resolve([frankfurt].filter(predicate)),
+);
 
 db.getConnections.mockResolvedValue([
   {
@@ -125,8 +128,41 @@ describe('travel planning use case', () => {
   });
 
   describe('getWeatherForecast', () => {
-    it('should ...', async () => {
+    it('should return the weather forecast', async () => {
+      const weatherForecast = [
+        {
+          day: { shortPhrase: 'nice wednesday' },
+          temperature: { maximum: { value: 16 } },
+        },
+        {
+          day: { shortPhrase: 'mediocre thursday' },
+          temperature: { maximum: { value: 20 } },
+        },
+        {
+          day: { shortPhrase: 'flamboyant friday' },
+          temperature: { maximum: { value: 22 } },
+        },
+        {
+          day: { shortPhrase: 'sassy saturday' },
+          temperature: { maximum: { value: 23 } },
+        },
+        {
+          day: { shortPhrase: 'sunny sunday' },
+          temperature: { maximum: { value: 25 } },
+        },
+      ];
+      weather.getForecast.mockResolvedValueOnce(weatherForecast);
 
+      const saturday = new Date('2020-01-18T12:00:00Z');
+      const sunday = new Date('2020-01-19T12:00:00Z');
+      await expect(travelPlanning.getWeatherForecast({
+        destination: frankfurt,
+        saturday,
+        sunday,
+      })).resolves.toStrictEqual({
+        saturdayWeatherForecast: weatherForecast[3],
+        sundayWeatherForecast: weatherForecast[4],
+      });
     });
   });
 
