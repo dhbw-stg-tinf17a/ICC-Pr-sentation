@@ -7,6 +7,7 @@ const preferences = require('../../modules/preferences');
 const calendar = require('../../modules/calendar');
 const logger = require('../../utilities/logger');
 const vvs = require('../../modules/vvs');
+const weather = require('../../modules/weather');
 
 jest.mock('../../modules/notifications');
 jest.mock('../../modules/quote');
@@ -14,6 +15,7 @@ jest.mock('../../modules/preferences');
 jest.mock('../../modules/calendar');
 jest.mock('../../utilities/logger');
 jest.mock('../../modules/vvs');
+jest.mock('../../modules/weather');
 
 const now = new Date('2020-01-15T08:00:00Z');
 const clock = fakeTimers.install({ now });
@@ -230,6 +232,25 @@ describe('morning routine use case', () => {
       quote.getQuoteOfTheDay.mockResolvedValueOnce(qod);
 
       await expect(morningRoutine.getQuoteOfTheDay(pref)).resolves.toStrictEqual(qod);
+    });
+  });
+
+  describe('getWeatherForecast', () => {
+    it('should return the weather forecast', async () => {
+      const weatherForecast = [
+        {
+          day: { shortPhrase: 'only rain' }, temperature: { maximum: { value: 16 } },
+        },
+        {
+          day: { shortPhrase: 'only sunshine' }, temperature: { maximum: { value: 20 } },
+        },
+      ];
+      weather.getForecast.mockResolvedValueOnce(weatherForecast);
+
+      await expect(morningRoutine.getWeatherForecast({
+        pref,
+        datetime: new Date('2020-01-16T11:00:00Z'),
+      })).resolves.toStrictEqual(weatherForecast[1]);
     });
   });
 });
