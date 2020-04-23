@@ -1,21 +1,21 @@
 const schedule = require('node-schedule');
 const fakeTimers = require('@sinonjs/fake-timers');
-const morningRoutine = require('../morning-routine');
-const notifications = require('../../modules/notifications');
-const quote = require('../../modules/quote');
-const preferences = require('../../modules/preferences');
-const calendar = require('../../modules/calendar');
-const logger = require('../../utilities/logger');
-const vvs = require('../../modules/vvs');
-const weather = require('../../modules/weather');
+const morningRoutine = require('./morning-routine');
+const notifications = require('../modules/notifications');
+const quote = require('../modules/quote');
+const preferences = require('../modules/preferences');
+const calendar = require('../modules/calendar');
+const logger = require('../utilities/logger');
+const vvs = require('../modules/vvs');
+const weather = require('../modules/weather');
 
-jest.mock('../../modules/notifications');
-jest.mock('../../modules/quote');
-jest.mock('../../modules/preferences');
-jest.mock('../../modules/calendar');
-jest.mock('../../utilities/logger');
-jest.mock('../../modules/vvs');
-jest.mock('../../modules/weather');
+jest.mock('../modules/notifications');
+jest.mock('../modules/quote');
+jest.mock('../modules/preferences');
+jest.mock('../modules/calendar');
+jest.mock('../utilities/logger');
+jest.mock('../modules/vvs');
+jest.mock('../modules/weather');
 
 const now = new Date('2020-01-15T08:00:00Z');
 const clock = fakeTimers.install({ now });

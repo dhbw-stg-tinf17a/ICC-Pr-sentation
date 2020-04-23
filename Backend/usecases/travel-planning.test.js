@@ -1,21 +1,21 @@
 const schedule = require('node-schedule');
 const fakeTimers = require('@sinonjs/fake-timers');
-const travelPlanning = require('../travel-planning');
-const preferences = require('../../modules/preferences');
-const notifications = require('../../modules/notifications');
-const logger = require('../../utilities/logger');
-const calendar = require('../../modules/calendar');
-const db = require('../../modules/db');
-const weather = require('../../modules/weather');
-const vvs = require('../../modules/vvs');
+const travelPlanning = require('./travel-planning');
+const preferences = require('../modules/preferences');
+const notifications = require('../modules/notifications');
+const logger = require('../utilities/logger');
+const calendar = require('../modules/calendar');
+const db = require('../modules/db');
+const weather = require('../modules/weather');
+const vvs = require('../modules/vvs');
 
-jest.mock('../../modules/preferences');
-jest.mock('../../modules/notifications');
-jest.mock('../../utilities/logger');
-jest.mock('../../modules/calendar');
-jest.mock('../../modules/db');
-jest.mock('../../modules/weather');
-jest.mock('../../modules/vvs');
+jest.mock('../modules/preferences');
+jest.mock('../modules/notifications');
+jest.mock('../utilities/logger');
+jest.mock('../modules/calendar');
+jest.mock('../modules/db');
+jest.mock('../modules/weather');
+jest.mock('../modules/vvs');
 
 const pref = {
   ...preferences.defaults,

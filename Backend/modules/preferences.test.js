@@ -1,7 +1,7 @@
 /* eslint-disable global-require */
 
 let mockDatabase;
-jest.mock('../../utilities/init-database', () => async (name, defaults) => {
+jest.mock('../utilities/init-database', () => async (name, defaults) => {
   const low = require('lowdb');
   const Memory = require('lowdb/adapters/Memory');
   const adapter = new Memory();
@@ -11,7 +11,7 @@ jest.mock('../../utilities/init-database', () => async (name, defaults) => {
 });
 
 const joi = require('@hapi/joi');
-const preferences = require('../preferences');
+const preferences = require('./preferences');
 
 describe('preferences module', () => {
   beforeEach(async () => {

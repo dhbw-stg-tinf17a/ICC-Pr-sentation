@@ -1,17 +1,17 @@
 const schedule = require('node-schedule');
 const fakeTimers = require('@sinonjs/fake-timers');
-const calendar = require('../../modules/calendar');
-const places = require('../../modules/places');
-const notifications = require('../../modules/notifications');
-const preferences = require('../../modules/preferences');
-const lunchBreak = require('../lunch-break');
-const logger = require('../../utilities/logger');
+const calendar = require('../modules/calendar');
+const places = require('../modules/places');
+const notifications = require('../modules/notifications');
+const preferences = require('../modules/preferences');
+const lunchBreak = require('./lunch-break');
+const logger = require('../utilities/logger');
 
-jest.mock('../../modules/calendar');
-jest.mock('../../modules/places');
-jest.mock('../../modules/notifications');
-jest.mock('../../modules/preferences');
-jest.mock('../../utilities/logger');
+jest.mock('../modules/calendar');
+jest.mock('../modules/places');
+jest.mock('../modules/notifications');
+jest.mock('../modules/preferences');
+jest.mock('../utilities/logger');
 
 const pref = {
   ...preferences.defaults,

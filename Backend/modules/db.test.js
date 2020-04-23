@@ -1,5 +1,5 @@
 const axios = require('axios').default;
-const db = require('../db');
+const db = require('./db');
 
 jest.mock('axios');
 

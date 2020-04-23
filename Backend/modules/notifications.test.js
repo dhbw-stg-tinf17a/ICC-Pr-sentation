@@ -1,7 +1,7 @@
 /* eslint-disable global-require */
 
 let mockDatabase;
-jest.mock('../../utilities/init-database', () => async (name, defaults) => {
+jest.mock('../utilities/init-database', () => async (name, defaults) => {
   const low = require('lowdb');
   const Memory = require('lowdb/adapters/Memory');
   const adapter = new Memory();
@@ -11,7 +11,7 @@ jest.mock('../../utilities/init-database', () => async (name, defaults) => {
 });
 
 const webpush = require('web-push');
-const notifications = require('../notifications');
+const notifications = require('./notifications');
 
 jest.mock('web-push');
 

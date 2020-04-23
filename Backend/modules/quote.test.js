@@ -1,5 +1,5 @@
 const axios = require('axios').default;
-const quote = require('../quote');
+const quote = require('./quote');
 
 jest.mock('axios');
 
