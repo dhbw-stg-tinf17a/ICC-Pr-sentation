@@ -196,4 +196,5 @@ module.exports = {
   planRandomTrip,
   getWeatherForecast,
   getConnectionToMainStation,
+  run,
 };
