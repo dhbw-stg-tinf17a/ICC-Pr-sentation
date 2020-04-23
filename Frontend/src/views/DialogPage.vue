@@ -255,8 +255,8 @@ export default {
         this.getCoordinates();
       } else {
         UseCasesService.getLunchBreakUseCase(
-          48.7735594,
-          9.1688133,
+          position.coords.latitude,
+          position.coords.longitude,
         ).then((response) => {
           this.handleApiResponse(response);
         }).catch((error) => {

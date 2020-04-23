@@ -3,9 +3,9 @@ module.exports = {
   collectCoverage: true,
   collectCoverageFrom: ['**/*.{js,vue}', '!**/node_modules/**', '!**.config.js',
     '!coverage/**', '!dist/**',
-    '!src/main.js', // ignored because test makes no sense and nothing to test
+    '!src/main.js', // ignored because test makes no sense; just framework setup
     '!src/router/index.js', // not directly testable; tested indirectly in other tests
-    '!public/service-worker.js', // not testable with unit tests; tested manually
+    '!public/service-worker.js', // not testable with unit tests; everything would have to be mocked -> tested manually
     // SpeechSynthesisUtterance is not defined in test run.
     // Mocking not useful. HTML speech api is already tested from creators, no need to test again.
     '!src/services/SpeechSynthesis.js',
