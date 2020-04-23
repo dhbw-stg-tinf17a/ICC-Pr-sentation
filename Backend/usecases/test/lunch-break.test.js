@@ -72,44 +72,6 @@ describe('lunch break use case', () => {
       expect(notifications.sendNotifications).not.toHaveBeenCalled();
     });
 
-    it('should schedule a notification notification is a free slot is available', async () => {
-      const slot = {
-        start: new Date('2020-01-15T11:00:00Z'),
-        end: new Date('2020-01-15T12:00:00Z'),
-      };
-      calendar.getFreeSlotsBetween.mockResolvedValueOnce([slot]);
-
-      await lunchBreak.run();
-
-      expect(scheduleJobSpy).toHaveBeenCalledTimes(1);
-      expect(notifications.sendNotifications).not.toHaveBeenCalled();
-
-      clock.tick(slot.start - now - pref.lunchBreakMinutesBeforeStart * 60 * 1000);
-
-      expect(notifications.sendNotifications).toHaveBeenCalledTimes(1);
-      expect(notifications.sendNotifications).toHaveBeenLastCalledWith({
-        title: 'Recommended restaurant for your lunch break',
-        options: {
-          body: 'You have some time to spare during your lunch break at 12:00, why not try a restaurant?',
-          icon: '/favicon.jpg',
-          badge: '/badge.png',
-          data: {
-            usecase: 'lunch-break',
-          },
-        },
-      });
-    });
-
-    it('should log, but not throw errors', async () => {
-      const error = new Error('Sorry!');
-      calendar.getFreeSlotsBetween.mockRejectedValueOnce(error);
-
-      await lunchBreak.run();
-
-      expect(logger.error).toHaveBeenCalledTimes(1);
-      expect(logger.error).toHaveBeenLastCalledWith(error);
-    });
-
     it('should schedule a notification for the longest free slot', async () => {
       const shorterSlot = {
         start: new Date('2020-01-15T11:00:00Z'),
@@ -140,6 +102,16 @@ describe('lunch break use case', () => {
           },
         },
       });
+    });
+
+    it('should log, but not throw errors', async () => {
+      const error = new Error('Sorry!');
+      calendar.getFreeSlotsBetween.mockRejectedValueOnce(error);
+
+      await lunchBreak.run();
+
+      expect(logger.error).toHaveBeenCalledTimes(1);
+      expect(logger.error).toHaveBeenLastCalledWith(error);
     });
   });
 

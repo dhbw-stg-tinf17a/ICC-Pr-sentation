@@ -10,7 +10,6 @@
  */
 
 // TODO store recommended restaurant for day
-// TODO look at tomorrow if todays slot is over
 // TODO store visited restaurants
 
 const schedule = require('node-schedule');

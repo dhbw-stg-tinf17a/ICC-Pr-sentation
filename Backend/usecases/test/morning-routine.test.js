@@ -240,10 +240,12 @@ describe('morning routine use case', () => {
     it('should return the weather forecast', async () => {
       const weatherForecast = [
         {
-          day: { shortPhrase: 'only rain' }, temperature: { maximum: { value: 16 } },
+          day: { shortPhrase: 'only rain' },
+          temperature: { maximum: { value: 16 } },
         },
         {
-          day: { shortPhrase: 'only sunshine' }, temperature: { maximum: { value: 20 } },
+          day: { shortPhrase: 'only sunshine' },
+          temperature: { maximum: { value: 20 } },
         },
       ];
       weather.getForecast.mockResolvedValueOnce(weatherForecast);
