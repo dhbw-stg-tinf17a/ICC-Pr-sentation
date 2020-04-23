@@ -121,8 +121,8 @@ async function planRandomTrip({ departure, arrival }) {
 
 async function getWeatherForecast({ destination, saturday, sunday }) {
   const now = moment.tz(timezone).startOf('day');
-  const daysToSaturday = moment(saturday).endOf('day').diff(now, 'days');
-  const daysToSunday = moment(sunday).endOf('day').diff(now, 'days');
+  const daysToSaturday = moment.tz(saturday, timezone).endOf('day').diff(now, 'days');
+  const daysToSunday = moment.tz(sunday, saturday).endOf('day').diff(now, 'days');
 
   const forecast = await weather.getForecast({
     latitude: destination.location.latitude,
