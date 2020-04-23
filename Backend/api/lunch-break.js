@@ -2,25 +2,24 @@ const express = require('express');
 const wrapAsync = require('../utilities/wrap-async');
 const { formatTime } = require('../utilities/date-formatter');
 const lunchBreak = require('../usecases/lunch-break');
-const preferences = require('../modules/preferences');
 const vvs = require('../modules/vvs');
 
 const router = express.Router();
 
 router.get('/', wrapAsync(async (req, res) => {
-  const { latitude, longitude } = req.query;
-
-  const pref = await preferences.get();
+  const {
+    latitude,
+    longitude,
+  } = req.query;
 
   const [
     freeSlot,
     restaurant,
   ] = await Promise.all([
-    lunchBreak.getFreeSlotForLunchbreak(pref),
+    lunchBreak.getFreeSlotForLunchbreak(),
     lunchBreak.getRandomRestaurantNear({
       latitude,
       longitude,
-      pref,
     }),
   ]);
 
@@ -67,7 +66,11 @@ router.get('/', wrapAsync(async (req, res) => {
 // TODO store POI ID and don't recommend it again
 router.get('/confirm', wrapAsync(async (req, res) => {
   const {
-    originLatitude, originLongitude, destinationLatitude, destinationLongitude, departure,
+    originLatitude,
+    originLongitude,
+    destinationLatitude,
+    destinationLongitude,
+    departure,
   } = req.query;
 
   const connection = await vvs.getConnection({

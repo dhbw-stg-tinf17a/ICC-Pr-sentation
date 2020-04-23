@@ -20,7 +20,7 @@ const pref = {
     longitude: 9.17702,
   },
 };
-preferences.get.mockResolvedValue(pref);
+preferences.getChecked.mockResolvedValue(pref);
 
 const scheduleJobSpy = jest.spyOn(schedule, 'scheduleJob');
 
@@ -134,7 +134,6 @@ describe('lunch break use case', () => {
       await expect(lunchBreak.getRandomRestaurantNear({
         latitude: 0,
         longitude: 0,
-        pref,
       })).resolves.toStrictEqual(restaurant);
     });
 
@@ -144,7 +143,6 @@ describe('lunch break use case', () => {
       await expect(lunchBreak.getRandomRestaurantNear({
         latitude: 0,
         longitude: 0,
-        pref,
       })).resolves.toBeUndefined();
     });
   });

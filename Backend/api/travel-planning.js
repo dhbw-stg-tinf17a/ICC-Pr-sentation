@@ -3,17 +3,16 @@ const travelPlanning = require('../usecases/travel-planning');
 const wrapAsync = require('../utilities/wrap-async');
 const { formatDate } = require('../utilities/date-formatter');
 const db = require('../modules/db');
-const preferences = require('../modules/preferences');
 
 const router = express.Router();
 
 router.get('/', wrapAsync(async (req, res) => {
   const { destinationID } = req.query;
 
-  const pref = await preferences.get();
-
   const {
-    saturday, sunday, weekendFree,
+    saturday,
+    sunday,
+    weekendFree,
   } = await travelPlanning.getWeekend();
 
   let destination;
@@ -25,7 +24,10 @@ router.get('/', wrapAsync(async (req, res) => {
   if (destinationID !== undefined) {
     [
       destination,
-      { connectionToDestination, connectionFromDestination },
+      {
+        connectionToDestination,
+        connectionFromDestination,
+      },
     ] = await Promise.all([
       db.getStationByID(destinationID),
       travelPlanning.planTrip({
@@ -35,21 +37,28 @@ router.get('/', wrapAsync(async (req, res) => {
       }),
     ]);
 
-    ({ saturdayWeatherForecast, sundayWeatherForecast } = await travelPlanning.getWeatherForecast({
+    ({
+      saturdayWeatherForecast,
+      sundayWeatherForecast,
+    } = await travelPlanning.getWeatherForecast({
       saturday,
       sunday,
       destination,
     }));
   } else {
     ({
-      destination, connectionToDestination, connectionFromDestination,
+      destination,
+      connectionToDestination,
+      connectionFromDestination,
     } = await travelPlanning.planRandomTrip({
       departure: saturday,
       arrival: sunday,
-      pref,
     }));
 
-    ({ saturdayWeatherForecast, sundayWeatherForecast } = await travelPlanning.getWeatherForecast({
+    ({
+      saturdayWeatherForecast,
+      sundayWeatherForecast,
+    } = await travelPlanning.getWeatherForecast({
       saturday,
       sunday,
       destination,
@@ -115,12 +124,7 @@ router.get('/', wrapAsync(async (req, res) => {
 // TODO remeber last request to /
 // TODO store destination and don't recommend it again
 router.get('/confirm', wrapAsync(async (req, res) => {
-  const pref = await preferences.get();
-
-  const connection = await travelPlanning.getConnectionToMainStation({
-    arrival: req.query.arrival,
-    pref,
-  });
+  const connection = await travelPlanning.getConnectionToMainStation(req.query.arrival);
 
   let textToRead;
   let textToDisplay;

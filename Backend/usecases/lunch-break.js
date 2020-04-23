@@ -22,10 +22,18 @@ const preferences = require('../modules/preferences');
 
 const timezone = 'Europe/Berlin';
 
-async function getFreeSlotForLunchbreak(pref) {
-  const start = moment.tz(timezone).hour(pref.lunchBreakStart.hour)
-    .minute(pref.lunchBreakStart.minute).startOf('minute');
-  const end = start.clone().hour(pref.lunchBreakEnd.hour).minute(pref.lunchBreakEnd.minute);
+async function getFreeSlotForLunchbreak() {
+  const pref = await preferences.getChecked();
+
+  const start = moment
+    .tz(timezone)
+    .hour(pref.lunchBreakStart.hour)
+    .minute(pref.lunchBreakStart.minute)
+    .startOf('minute');
+  const end = start
+    .clone()
+    .hour(pref.lunchBreakEnd.hour)
+    .minute(pref.lunchBreakEnd.minute);
 
   const freeSlots = await calendar.getFreeSlotsBetween({
     start,
@@ -36,16 +44,19 @@ async function getFreeSlotForLunchbreak(pref) {
   }
 
   // find the longest slot and check if it sufficiently long
-  const freeSlot = freeSlots.sort((a, b) => (b.end - b.start) - (a.end - a.start))[0];
-  if (moment.duration(moment(freeSlot.end).diff(freeSlot.start)).asMinutes()
-    < pref.lunchBreakRequiredMinutes) {
+  const sortedFreeSlots = freeSlots.sort((a, b) => (b.end - b.start) - (a.end - a.start));
+  const freeSlot = sortedFreeSlots[0];
+  const freeSlotMinutes = moment.duration(moment(freeSlot.end).diff(freeSlot.start)).asMinutes();
+  if (freeSlotMinutes < pref.lunchBreakRequiredMinutes) {
     return undefined;
   }
 
   return freeSlot;
 }
 
-async function getRandomRestaurantNear({ latitude, longitude, pref }) {
+async function getRandomRestaurantNear({ latitude, longitude }) {
+  const pref = await preferences.getChecked();
+
   const restaurants = await places.getPOIsAround({
     latitude,
     longitude,
@@ -64,9 +75,9 @@ async function run() {
   try {
     logger.debug(`Lunch break usecase: Running at ${new Date().toISOString()}`);
 
-    const pref = await preferences.get();
+    const pref = await preferences.getChecked();
 
-    const freeSlot = await getFreeSlotForLunchbreak(pref);
+    const freeSlot = await getFreeSlotForLunchbreak();
     if (freeSlot === undefined) {
       logger.debug('Lunch break usecase: No free slot found');
       return;
@@ -75,8 +86,8 @@ async function run() {
     const freeSlotStart = moment(freeSlot.start).tz(timezone).format('HH:mm');
     const notificationTime = moment(freeSlot.start)
       .subtract(pref.lunchBreakMinutesBeforeStart, 'minutes');
-
     const body = `You have some time to spare during your lunch break at ${freeSlotStart}, why not try a restaurant?`;
+
     schedule.scheduleJob(new Date(notificationTime), async () => {
       await notifications.sendNotifications({
         title: 'Recommended restaurant for your lunch break',
@@ -91,6 +102,7 @@ async function run() {
       });
       logger.debug(`Lunch break usecase: Sent notification with body '${body}'`);
     });
+
     logger.debug(`Lunch break usecase: Scheduled notification at ${notificationTime.toISOString()} with body '${body}'`);
   } catch (error) {
     logger.error(error);
@@ -108,6 +120,7 @@ function init() {
     },
     run,
   );
+
   logger.info(`Lunch break usecase: First invocation at ${job.nextInvocation().toISOString()}`);
 }
 

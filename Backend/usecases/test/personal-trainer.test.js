@@ -24,7 +24,7 @@ const pref = {
     longitude: 9.17702,
   },
 };
-preferences.get.mockResolvedValue(pref);
+preferences.getChecked.mockResolvedValue(pref);
 
 const scheduleJobSpy = jest.spyOn(schedule, 'scheduleJob');
 
@@ -182,19 +182,14 @@ describe('personal trainer use case', () => {
       });
     });
 
-    it('should log, but not throw an error if no home location is set', async () => {
-      preferences.get.mockResolvedValueOnce(preferences.defaults);
-
-      const slot = {
-        start: new Date('2020-01-15T16:00:00Z'),
-        end: new Date('2020-01-15T17:00:00Z'),
-      };
-      calendar.getFreeSlotsBetween.mockResolvedValueOnce([slot]);
+    it('should log, but not throw errors', async () => {
+      const error = new Error('Sorry!');
+      calendar.getFreeSlotsBetween.mockRejectedValueOnce(error);
 
       await personalTrainer.run();
 
       expect(logger.error).toHaveBeenCalledTimes(1);
-      expect(logger.error).toHaveBeenLastCalledWith(new Error('Home location is not set'));
+      expect(logger.error).toHaveBeenLastCalledWith(error);
     });
 
     it('should not schedule a notification if no POI is found', async () => {
@@ -223,15 +218,6 @@ describe('personal trainer use case', () => {
   });
 
   describe('getConnectionToPlace', () => {
-    it('should throw an error if no home location is set', async () => {
-      await expect(personalTrainer.getConnectionToPlace({
-        latitude: 0,
-        longitude: 0,
-        departure: '2020-01-15T15:00:00Z',
-        pref: preferences.defaults,
-      })).rejects.toThrow('Home location is not set');
-    });
-
     it('should return a connection', async () => {
       const connection = {
         departure: '2020-01-15T10:00:00Z',

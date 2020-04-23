@@ -2,24 +2,21 @@ const express = require('express');
 const wrapAsync = require('../utilities/wrap-async');
 const { formatDate } = require('../utilities/date-formatter');
 const morningRoutine = require('../usecases/morning-routine');
-const preferences = require('../modules/preferences');
 
 const router = express.Router();
 
 router.get('/', wrapAsync(async (req, res) => {
-  const pref = await preferences.get();
-
-  const { event, connection, wakeUpTime } = await Promise.resolve(
-    morningRoutine.getWakeUpTime(pref),
-  );
+  const {
+    event,
+    connection,
+    wakeUpTime,
+  } = await morningRoutine.getWakeUpTime();
 
   let textToDisplay;
   let textToRead;
   let displayRouteOnMap = null;
   if (event && connection) {
-    const weatherForecast = await morningRoutine.getWeatherForecast({
-      pref, datetime: event.start,
-    });
+    const weatherForecast = await morningRoutine.getWeatherForecast(event.start);
 
     textToDisplay = `Next Event: ${event.summary}\n`
                     + `At: ${event.location}\n`
@@ -40,7 +37,7 @@ router.get('/', wrapAsync(async (req, res) => {
       destination: connection.legs[connection.legs.length - 1].to,
     };
   } else if (connection) {
-    const weatherForecast = await morningRoutine.getWeatherForecast({ pref, datetime: new Date() });
+    const weatherForecast = await morningRoutine.getWeatherForecast(new Date());
 
     textToDisplay = 'No planned events.\n\n'
                     + `Weather: ${weatherForecast.day.shortPhrase} with ${weatherForecast.temperature.maximum.value}°C`;
@@ -48,7 +45,7 @@ router.get('/', wrapAsync(async (req, res) => {
     textToRead = 'No planned events. '
                   + `The weather is ${weatherForecast.day.shortPhrase} with ${weatherForecast.temperature.maximum.value}°C`;
   } else {
-    const weatherForecast = await morningRoutine.getWeatherForecast({ pref, datetime: new Date() });
+    const weatherForecast = await morningRoutine.getWeatherForecast(new Date());
 
     textToDisplay = 'Can not find a route to your appointment.\n\n'
                     + `Weather: ${weatherForecast.day.shortPhrase} with ${weatherForecast.temperature.maximum.value}°C`;
@@ -68,9 +65,7 @@ router.get('/', wrapAsync(async (req, res) => {
 }));
 
 router.get('/confirm', wrapAsync(async (req, res) => {
-  const pref = await preferences.get();
-
-  const quoteOfTheDay = await morningRoutine.getQuoteOfTheDay(pref);
+  const quoteOfTheDay = await morningRoutine.getQuoteOfTheDay();
 
   res.send({
     textToDisplay: 'Your quote of the day:\n'

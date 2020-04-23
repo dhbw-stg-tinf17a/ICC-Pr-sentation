@@ -29,7 +29,7 @@ const pref = {
     longitude: 9.17702,
   },
 };
-preferences.get.mockResolvedValue(pref);
+preferences.getChecked.mockResolvedValue(pref);
 
 notifications.sendNotification.mockResolvedValue();
 
@@ -130,13 +130,14 @@ describe('morning routine use case', () => {
       expect(scheduleJobSpy).not.toHaveBeenCalled();
     });
 
-    it('should log, but not throw an error if no home location is set', async () => {
-      preferences.get.mockResolvedValueOnce(preferences.defaults);
+    it('should log, but not throw errors', async () => {
+      const error = new Error('Sorry!');
+      calendar.getEventsStartingBetween.mockRejectedValueOnce(error);
 
       await morningRoutine.run();
 
       expect(logger.error).toHaveBeenCalledTimes(1);
-      expect(logger.error).toHaveBeenLastCalledWith(new Error('Home location is not set'));
+      expect(logger.error).toHaveBeenLastCalledWith(error);
     });
 
     it('should schedule a notification according to the connection to the upcoming event', async () => {
@@ -232,7 +233,7 @@ describe('morning routine use case', () => {
       };
       quote.getQuoteOfTheDay.mockResolvedValueOnce(qod);
 
-      await expect(morningRoutine.getQuoteOfTheDay(pref)).resolves.toStrictEqual(qod);
+      await expect(morningRoutine.getQuoteOfTheDay()).resolves.toStrictEqual(qod);
     });
   });
 
@@ -250,10 +251,8 @@ describe('morning routine use case', () => {
       ];
       weather.getForecast.mockResolvedValueOnce(weatherForecast);
 
-      await expect(morningRoutine.getWeatherForecast({
-        pref,
-        datetime: new Date('2020-01-16T11:00:00Z'),
-      })).resolves.toStrictEqual(weatherForecast[1]);
+      await expect(morningRoutine.getWeatherForecast(new Date('2020-01-16T11:00:00Z')))
+        .resolves.toStrictEqual(weatherForecast[1]);
     });
   });
 });

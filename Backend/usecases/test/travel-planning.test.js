@@ -24,7 +24,7 @@ const pref = {
     longitude: 9.17702,
   },
 };
-preferences.get.mockResolvedValue(pref);
+preferences.getChecked.mockResolvedValue(pref);
 
 const scheduleJobSpy = jest.spyOn(schedule, 'scheduleJob');
 
@@ -169,13 +169,6 @@ describe('travel planning use case', () => {
   });
 
   describe('getConnectionToMainStation', () => {
-    it('should throw an error if no home location is set', async () => {
-      await expect(travelPlanning.getConnectionToMainStation({
-        arrival: '2020-01-18T08:00:00Z',
-        pref: preferences.defaults,
-      })).rejects.toThrow('Home location is not set');
-    });
-
     it('should return a connection to the main station', async () => {
       const connection = {
         departure: '2020-01-15T10:00:00Z',
@@ -198,10 +191,8 @@ describe('travel planning use case', () => {
       };
       vvs.getConnection.mockResolvedValueOnce(connection);
 
-      await expect(travelPlanning.getConnectionToMainStation({
-        arrival: '2020-01-18T08:00:00Z',
-        pref,
-      })).resolves.toStrictEqual(connection);
+      await expect(travelPlanning.getConnectionToMainStation('2020-01-18T08:00:00Z'))
+        .resolves.toStrictEqual(connection);
     });
   });
 });

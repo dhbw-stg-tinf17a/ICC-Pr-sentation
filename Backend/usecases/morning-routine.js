@@ -23,10 +23,11 @@ const quote = require('../modules/quote');
 const timezone = 'Europe/Berlin';
 
 /**
- * @param pref Preferences as returned by `preferences.get`.
  * @return Object containing `quote` and `author`.
  */
-async function getQuoteOfTheDay(pref) {
+async function getQuoteOfTheDay() {
+  const pref = await preferences.getChecked();
+
   return quote.getQuoteOfTheDay(pref.morningRoutineQuoteCategory);
 }
 
@@ -42,25 +43,27 @@ async function getFirstEvent() {
     end: tomorrowEnd,
   });
 
-  let event = events.filter((ev) => ev.end <= todayEnd).find(() => true);
+  let event = events
+    .filter((ev) => ev.end <= todayEnd)
+    .find(() => true);
+
   if (event === undefined || event.start < now) {
     // no event today or first event today already started - look for first event tomorrow
-    event = events.filter((ev) => ev.start > todayEnd).find(() => true);
+    event = events
+      .filter((ev) => ev.start > todayEnd)
+      .find(() => true);
   }
 
   return event;
 }
 
 /**
- * @param pref Preferences as returned by `preferences.get`.
  * @return Object containing `wakeUpTime`, `event` and `connection`. If there is no event today or
  *         tomorrow, all properties are undefined. If the event has no location or no connection to
  *         the event location can be found, `connection` is undefined.
  */
-async function getWakeUpTime(pref) {
-  if (pref.location === undefined) {
-    throw new Error('Home location is not set');
-  }
+async function getWakeUpTime() {
+  const pref = await preferences.getChecked();
 
   const event = await getFirstEvent();
   if (event === undefined) {
@@ -104,17 +107,18 @@ async function getWakeUpTime(pref) {
 }
 
 /**
- * @param pref Preferences as returned by `preferences.get`.
  * @parm datetime Datetime for which the daily forecast should be returned.
  */
-async function getWeatherForecast({ pref, datetime }) {
-  const now = moment.tz(timezone).startOf('day');
-  const daysTo = moment(datetime).endOf('day').diff(now, 'days');
+async function getWeatherForecast(datetime) {
+  const pref = await preferences.getChecked();
 
   const weatherForecast = await weather.getForecast({
     ...pref.location,
     duration: 5,
   });
+
+  const now = moment.tz(timezone).startOf('day');
+  const daysTo = moment(datetime).endOf('day').diff(now, 'days');
 
   return weatherForecast[daysTo];
 }
@@ -123,9 +127,7 @@ async function run() {
   try {
     logger.debug(`Morning routine usecase: Running at ${new Date().toISOString()}`);
 
-    const pref = await preferences.get();
-
-    const { event, connection, wakeUpTime } = await getWakeUpTime(pref);
+    const { event, connection, wakeUpTime } = await getWakeUpTime();
     if (event === undefined) {
       logger.debug('Morning routine usecase: No event found');
       return;
@@ -133,6 +135,7 @@ async function run() {
 
     const eventStart = moment(event.start).tz(timezone).format('HH:mm');
     let body = `${event.summary} starts at ${eventStart}.`;
+
     if (connection !== undefined) {
       const departure = moment(connection.departure).tz(timezone).format('HH:mm');
       body += ` You have to leave at ${departure}.`;
@@ -150,8 +153,10 @@ async function run() {
           },
         },
       });
+
       logger.debug(`Morning routine usecase: Sent notification with body '${body}'`);
     });
+
     logger.debug(`Morning routine usecase: Scheduled notification at ${wakeUpTime.toISOString()} with body '${body}'`);
   } catch (error) {
     logger.error(error);
@@ -169,6 +174,7 @@ function init() {
     },
     run,
   );
+
   logger.info(`Morning routine usecase: First invocation at ${job.nextInvocation().toISOString()}`);
 }
 

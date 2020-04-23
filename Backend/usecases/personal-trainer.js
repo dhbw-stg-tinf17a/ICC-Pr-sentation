@@ -22,12 +22,8 @@ const vvs = require('../modules/vvs');
 
 const timezone = 'Europe/Berlin';
 
-async function getConnectionToPlace({
-  latitude, longitude, departure, pref,
-}) {
-  if (pref.location === undefined) {
-    throw new Error('Home location is not set');
-  }
+async function getConnectionToPlace({ latitude, longitude, departure }) {
+  const pref = await preferences.getChecked();
 
   return vvs.getConnection({
     originCoordinates: pref.location,
@@ -36,10 +32,17 @@ async function getConnectionToPlace({
   });
 }
 
-async function getFreeSlotForActivity(pref) {
-  const start = moment.tz(timezone).hour(pref.personalTrainerStart.hour)
-    .minute(pref.personalTrainerStart.minute).startOf('minute');
-  const end = start.clone().hour(pref.personalTrainerEnd.hour)
+async function getFreeSlotForActivity() {
+  const pref = await preferences.getChecked();
+
+  const start = moment
+    .tz(timezone)
+    .hour(pref.personalTrainerStart.hour)
+    .minute(pref.personalTrainerStart.minute)
+    .startOf('minute');
+  const end = start
+    .clone()
+    .hour(pref.personalTrainerEnd.hour)
     .minute(pref.personalTrainerEnd.minute);
 
   const freeSlots = await calendar.getFreeSlotsBetween({ start, end });
@@ -48,19 +51,18 @@ async function getFreeSlotForActivity(pref) {
   }
 
   // find the longest slot and check if it sufficiently long
-  const freeSlot = freeSlots.sort((a, b) => (b.end - b.start) - (a.end - a.start))[0];
-  if (moment.duration(moment(freeSlot.end).diff(freeSlot.start)).asMinutes()
-      < pref.personalTrainerRequiredMinutes) {
+  const sortedFreeSlots = freeSlots.sort((a, b) => (b.end - b.start) - (a.end - a.start));
+  const freeSlot = sortedFreeSlots[0];
+  const freeSlotMinutes = moment.duration(moment(freeSlot.end).diff(freeSlot.start)).asMinutes();
+  if (freeSlotMinutes < pref.personalTrainerRequiredMinutes) {
     return undefined;
   }
 
   return freeSlot;
 }
 
-async function getRandomPOI({ category, pref }) {
-  if (pref.location === undefined) {
-    throw new Error('Home location is not set');
-  }
+async function getRandomPOI(category) {
+  const pref = await preferences.getChecked();
 
   const pois = await places.getPOIsAround({
     category,
@@ -76,25 +78,17 @@ async function getRandomPOI({ category, pref }) {
   return pois[Math.floor(Math.random() * pois.length)];
 }
 
-async function getRandomSportsCenter(pref) {
-  return getRandomPOI({
-    category: 'SPORTS_CENTER',
-    pref,
-  });
+async function getRandomSportsCenter() {
+  return getRandomPOI('SPORTS_CENTER');
 }
 
 
-async function getRandomParkRecreationArea(pref) {
-  return getRandomPOI({
-    category: 'PARK_RECREATION_AREA',
-    pref,
-  });
+async function getRandomParkRecreationArea() {
+  return getRandomPOI('PARK_RECREATION_AREA');
 }
 
-async function getWeatherForecast(pref) {
-  if (pref.location === undefined) {
-    throw new Error('Home location is not set');
-  }
+async function getWeatherForecast() {
+  const pref = await preferences.getChecked();
 
   const forecast = await weather.getForecast({
     ...pref.location,
@@ -107,21 +101,21 @@ async function run() {
   try {
     logger.debug(`Personal trainer usecase: Running at ${new Date().toISOString()}`);
 
-    const pref = await preferences.get();
+    const pref = await preferences.getChecked();
 
-    const freeSlot = await getFreeSlotForActivity(pref);
+    const freeSlot = await getFreeSlotForActivity();
     if (freeSlot === undefined) {
       logger.debug('Personal trainer usecase: No free slot found');
       return;
     }
 
-    const precipitation = (await getWeatherForecast(pref)).day.hasPrecipitation;
+    const precipitation = (await getWeatherForecast()).day.hasPrecipitation;
 
     let place;
     if (precipitation) {
-      place = await getRandomSportsCenter(pref);
+      place = await getRandomSportsCenter();
     } else {
-      place = await getRandomParkRecreationArea(pref);
+      place = await getRandomParkRecreationArea();
     }
     if (place === undefined) {
       logger.debug('Personal trainer usecase: No place found');
@@ -131,8 +125,8 @@ async function run() {
     const freeSlotStart = moment(freeSlot.start).tz(timezone).format('HH:mm');
     const notificationTime = moment(freeSlot.start)
       .subtract(pref.personalTrainerMinutesBeforeStart, 'minutes');
-
     const body = `You have got a little time at ${freeSlotStart}. Since it ${precipitation ? 'rains' : 'doesn\'t rain'} today, why don't you do some sports at ${place.poi.name}?`;
+
     schedule.scheduleJob(new Date(notificationTime), async () => {
       await notifications.sendNotifications({
         title: 'Recommended sports activity',
@@ -145,8 +139,10 @@ async function run() {
           },
         },
       });
+
       logger.debug(`Personal trainer usecase: Sent notification with body '${body}'`);
     });
+
     logger.debug(`Personal trainer usecase: Scheduled notification at ${notificationTime.toISOString()} with body '${body}'`);
   } catch (err) {
     logger.error(err);
@@ -160,8 +156,10 @@ function init() {
       minute: 0,
       hour: 0,
       tz: timezone,
-    }, run,
+    },
+    run,
   );
+
   logger.info(`Personal trainer usecase: First invocation at ${job.nextInvocation().toISOString()}`);
 }
 

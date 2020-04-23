@@ -4,9 +4,14 @@ const endpoint = 'https://quotes.rest/qod';
 
 async function getQuoteOfTheDay(category) {
   try {
-    const response = await axios.get(endpoint, { params: { category } });
+    const response = await axios.get(endpoint, {
+      params: { category },
+    });
 
-    const { quote, author } = response.data.contents.quotes[0];
+    const {
+      quote,
+      author,
+    } = response.data.contents.quotes[0];
 
     return {
       quote,
