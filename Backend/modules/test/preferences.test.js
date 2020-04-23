@@ -27,6 +27,22 @@ describe('preferences module', () => {
     });
   });
 
+  describe('getChecked', () => {
+    it('should throw an error if preferences are incomplete', async () => {
+      const state = { location: { latitude: 0, longitude: 0 } };
+      await mockDatabase.setState(state);
+
+      await expect(preferences.getChecked()).rejects.toThrow();
+    });
+
+    it('should not throw an error if preferences are complete', async () => {
+      const state = { ...preferences.defaults, calendarURL: 'https://example.com', location: { latitude: 0, longitude: 0 } };
+      await mockDatabase.setState(state);
+
+      await expect(preferences.getChecked()).resolves.toStrictEqual(state);
+    });
+  });
+
   describe('update', () => {
     it('should update the preferences', async () => {
       const state = { location: { latitude: 0, longitude: 0 } };

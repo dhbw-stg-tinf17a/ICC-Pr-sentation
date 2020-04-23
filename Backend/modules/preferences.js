@@ -56,6 +56,14 @@ async function get() {
   return (await database).value();
 }
 
+async function getChecked() {
+  const values = await get();
+
+  const requiredSchema = joi.object(rawSchema).options({ presence: 'required' });
+  joi.assert(values, requiredSchema);
+  return values;
+}
+
 async function update(values) {
   joi.assert(values, schema);
   await (await database).assign(values).write();
@@ -63,6 +71,7 @@ async function update(values) {
 
 module.exports = {
   get,
+  getChecked,
   update,
   defaults,
   schema,
