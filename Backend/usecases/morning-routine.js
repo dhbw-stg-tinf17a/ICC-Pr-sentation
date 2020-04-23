@@ -58,6 +58,10 @@ async function getFirstEvent() {
  *         the event location can be found, `connection` is undefined.
  */
 async function getWakeUpTime(pref) {
+  if (pref.location === undefined) {
+    throw new Error('Home location is not set');
+  }
+
   const event = await getFirstEvent();
   if (event === undefined) {
     // no event today, first event today already started, or no event tomorrow
@@ -72,10 +76,6 @@ async function getWakeUpTime(pref) {
       event,
       wakeUpTime,
     };
-  }
-
-  if (pref.location === undefined) {
-    throw new Error('Home location is not set');
   }
 
   const connection = await vvs.getConnection({
