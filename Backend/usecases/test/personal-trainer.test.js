@@ -7,6 +7,7 @@ const logger = require('../../utilities/logger');
 const calendar = require('../../modules/calendar');
 const weather = require('../../modules/weather');
 const places = require('../../modules/places');
+const vvs = require('../../modules/vvs');
 
 jest.mock('../../modules/preferences');
 jest.mock('../../modules/notifications');
@@ -14,15 +15,16 @@ jest.mock('../../utilities/logger');
 jest.mock('../../modules/calendar');
 jest.mock('../../modules/weather');
 jest.mock('../../modules/places');
+jest.mock('../../modules/vvs');
 
-const pref = preferences.defaults;
-preferences.get.mockResolvedValue({
-  ...pref,
+const pref = {
+  ...preferences.defaults,
   location: {
     latitude: 48.78232,
     longitude: 9.17702,
   },
-});
+};
+preferences.get.mockResolvedValue(pref);
 
 const scheduleJobSpy = jest.spyOn(schedule, 'scheduleJob');
 
@@ -217,6 +219,47 @@ describe('personal trainer use case', () => {
       await personalTrainer.run();
 
       expect(scheduleJobSpy).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('getConnectionToPlace', () => {
+    it('should throw an error if no home location is set', async () => {
+      await expect(personalTrainer.getConnectionToPlace({
+        latitude: 0,
+        longitude: 0,
+        departure: '2020-01-15T15:00:00Z',
+        pref: preferences.defaults,
+      })).rejects.toThrow('Home location is not set');
+    });
+
+    it('should return a connection', async () => {
+      const connection = {
+        departure: '2020-01-15T10:00:00Z',
+        arrival: '2020-01-15T11:00:00Z',
+        duration: {
+          hours: 1,
+          minutes: 0,
+        },
+        legs: [
+          {
+            mode: 'transport',
+            from: 'Talstraße',
+            to: 'Bergstraße',
+            departure: '2020-01-15T10:00:00Z',
+            arrival: '2020-01-15T11:00:00Z',
+            lineName: 'Zahnradbahn',
+            lineDestination: 'Gipfelstraße',
+          },
+        ],
+      };
+      vvs.getConnection.mockResolvedValueOnce(connection);
+
+      await expect(personalTrainer.getConnectionToPlace({
+        latitude: 0,
+        longitude: 0,
+        departure: '2020-01-15T10:00:00Z',
+        pref,
+      })).resolves.toStrictEqual(connection);
     });
   });
 });
