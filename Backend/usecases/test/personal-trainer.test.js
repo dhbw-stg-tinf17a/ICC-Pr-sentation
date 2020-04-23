@@ -48,7 +48,6 @@ describe('personal trainer use case', () => {
 
   describe('init', () => {
     it('should schedule a run', async () => {
-      // TODO check execution by ticking the clock?
       personalTrainer.init();
       expect(scheduleJobSpy).toHaveBeenCalledWith(
         {

@@ -48,7 +48,6 @@ describe('morning routine use case', () => {
 
   describe('init', () => {
     it('should schedule a run', async () => {
-      // TODO check execution by ticking the clock?
       morningRoutine.init();
       expect(scheduleJobSpy).toHaveBeenCalledWith(
         {
@@ -250,6 +249,9 @@ describe('morning routine use case', () => {
         },
       ];
       weather.getForecast.mockResolvedValueOnce(weatherForecast);
+
+      console.log(new Date());
+      console.log((new Date('2020-01-16T11:00:00Z') - new Date()) / (24 * 60 * 60 * 1000));
 
       await expect(morningRoutine.getWeatherForecast(new Date('2020-01-16T11:00:00Z')))
         .resolves.toStrictEqual(weatherForecast[1]);
