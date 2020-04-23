@@ -22,14 +22,14 @@ const clock = fakeTimers.install({ now });
 
 const scheduleJobSpy = jest.spyOn(schedule, 'scheduleJob');
 
-const pref = preferences.defaults;
-preferences.get.mockResolvedValue({
-  ...pref,
+const pref = {
+  ...preferences.defaults,
   location: {
     latitude: 48.78232,
     longitude: 9.17702,
   },
-});
+};
+preferences.get.mockResolvedValue(pref);
 
 notifications.sendNotification.mockResolvedValue();
 

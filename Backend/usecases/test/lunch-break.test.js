@@ -13,7 +13,13 @@ jest.mock('../../modules/notifications');
 jest.mock('../../modules/preferences');
 jest.mock('../../utilities/logger');
 
-const pref = preferences.defaults;
+const pref = {
+  ...preferences.defaults,
+  location: {
+    latitude: 48.78232,
+    longitude: 9.17702,
+  },
+};
 preferences.get.mockResolvedValue(pref);
 
 const scheduleJobSpy = jest.spyOn(schedule, 'scheduleJob');
