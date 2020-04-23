@@ -116,9 +116,12 @@ async function getWeatherForecast(datetime) {
     ...pref.location,
     duration: 5,
   });
+  console.log(weatherForecast);
 
   const now = moment.tz(timezone).startOf('day');
+  console.log(now.toISOString());
   const daysTo = moment(datetime).endOf('day').diff(now, 'days');
+  console.log(daysTo);
 
   return weatherForecast[daysTo];
 }

@@ -157,10 +157,6 @@ describe('travel planning use case', () => {
       const saturday = new Date('2020-01-18T12:00:00Z');
       const sunday = new Date('2020-01-19T12:00:00Z');
 
-      console.log(new Date());
-      console.log((saturday - new Date()) / (24 * 60 * 60 * 1000));
-      console.log((sunday - new Date()) / (24 * 60 * 60 * 1000));
-
       await expect(travelPlanning.getWeatherForecast({
         destination: frankfurt,
         saturday,
