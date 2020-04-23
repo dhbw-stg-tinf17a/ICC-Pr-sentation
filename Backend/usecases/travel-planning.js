@@ -26,11 +26,11 @@ const vvs = require('../modules/vvs');
 const preferences = require('../modules/preferences');
 
 const mainStation = {
-  dbID: '8098096',
   location: {
     latitude: 48.784084,
     longitude: 9.181635,
   },
+  dbID: '8098096',
   vvsID: 'de:08111:6115',
 }; // Stuttgart Hbf
 const excludedStationIDs = ['8098096'];
@@ -71,9 +71,11 @@ async function planTrip({ departure, arrival, destinationID }) {
     }),
   ]);
 
-  const connectionToDestination = connectionsToDestination.sort((a, b) => a.price - b.price)
+  const connectionToDestination = connectionsToDestination
+    .sort((a, b) => a.price - b.price)
     .find(() => true);
-  const connectionFromDestination = connectionsFromDestination.sort((a, b) => a.price - b.price)
+  const connectionFromDestination = connectionsFromDestination
+    .sort((a, b) => a.price - b.price)
     .find(() => true);
 
   return {
@@ -149,7 +151,7 @@ async function run() {
       saturday, sunday, weekendFree,
     } = await getWeekend();
     if (!weekendFree) {
-      logger.debug('Trvael planning usecase: Weekend not free');
+      logger.debug('Travel planning usecase: Weekend not free');
       return;
     }
 

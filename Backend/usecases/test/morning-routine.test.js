@@ -75,7 +75,7 @@ describe('morning routine use case', () => {
 
       clock.tick(event.start - now - pref.morningRoutineMinutesForPreparation * 60 * 1000);
 
-      expect(notifications.sendNotifications).toHaveBeenCalled();
+      expect(notifications.sendNotifications).toHaveBeenCalledTimes(1);
       expect(notifications.sendNotifications).toHaveBeenLastCalledWith({
         title: 'Wake up!',
         options: {
@@ -104,7 +104,7 @@ describe('morning routine use case', () => {
 
       clock.tick(event.start - now - pref.morningRoutineMinutesForPreparation * 60 * 1000);
 
-      expect(notifications.sendNotifications).toHaveBeenCalled();
+      expect(notifications.sendNotifications).toHaveBeenCalledTimes(1);
       expect(notifications.sendNotifications).toHaveBeenLastCalledWith({
         title: 'Wake up!',
         options: {
@@ -171,7 +171,7 @@ describe('morning routine use case', () => {
 
       await morningRoutine.run();
 
-      expect(scheduleJobSpy).toHaveBeenCalled();
+      expect(scheduleJobSpy).toHaveBeenCalledTimes(1);
       expect(notifications.sendNotifications).not.toHaveBeenCalled();
 
       const msForPreparation = pref.morningRoutineMinutesForPreparation * 60 * 1000;
@@ -204,7 +204,7 @@ describe('morning routine use case', () => {
 
       await morningRoutine.run();
 
-      expect(scheduleJobSpy).toHaveBeenCalled();
+      expect(scheduleJobSpy).toHaveBeenCalledTimes(1);
       expect(notifications.sendNotifications).not.toHaveBeenCalled();
 
       clock.tick(event.start - now - pref.morningRoutineMinutesForPreparation * 60 * 1000);
