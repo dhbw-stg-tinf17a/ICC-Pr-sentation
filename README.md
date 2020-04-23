@@ -34,9 +34,6 @@ Many people want to do sport in their free time but often miss external motivati
 Sunny weather → running, biking, or tennis
 Rainy weather → swimming, badminton, or gym
 
-**TODO: remove extensions?**  
-Extension 1: If the user wants to do a different sport, the assistant presents an alternative sport type. Extension 2: The assistant learns itself which sport types the user prefers under which conditions.
-
 **Dialog:** If the user confirms that they want to do the presented activity, the assistant searches for a sports facility (<ins>maps</ins>) and presents the route to the sports facility (<ins>VVS</ins>) if required.  
 
 **Services:** preferences, calendar, VVS, weather, maps
@@ -44,18 +41,12 @@ Extension 1: If the user wants to do a different sport, the assistant presents a
 ## Travel Planning
 Travel is very popular, but the search for a destination is often complicated. For this use case, the assistant sends a notification before the weekend, if the user has enough free time during the weekend (<ins>calendar</ins>). When the user clicks on the notification, the travel planning use case is opened. The user can also open the use case at any other time using the web app. After opening the use case, the assistant presents an optimal travel destination depending on preferred countries of the user (<ins>preferences</ins>) and prices for a roundtrip to the destination, starting from the main station (<ins>DB</ins>). The assistant also presents the <ins>weather</ins> during the weekend at the destination.  
 
-**TODO: remove extensions?**  
-Extension 1: If the user wants to travel to a different destination, the assistant presents an alternative travel destination. Extension 2: The travel destination depends on the <ins>weather</ins> at possible destinations and the weather preferred by the user (<ins>preferences</ins>).
-
 **Dialog:** If the user confirms that they want to travel to the presented destination, the assistant presents the route taken to the main station (<ins>VVS</ins>) and from there to the destination (<ins>DB</ins>).
 
 **Services:** preferences, calendar, DB, VVS, weather
 
 ## Lunch Break
 Many people want to explore different alternatives during their lunch breaks, but the search for restaurants is a time-consuming task. For this use case, the assistant sends a notification shortly before the lunch break. This depends on the <ins>calendar</ins> and on the preferred lunch break times (<ins>preferences</ins>). When the user clicks on the notification, the lunch break use case is opened. The user can also open the use case at any other time using the web app. After opening the use case, the assistant presents a restaurant to go to during the lunch break (<ins>maps</ins>).
-
-**TODO: remove extensions?**  
-Extension 1: If the user wants to go to a different restaurant, the assistant presents an alternative restaurant. Extension 2: The user can rate different restaurants, to which the assistant applies learning techniques for selecting new restaurants.
 
 **Dialog:** If the user wants to go to that restaurant during the lunch break, the assistant presents the route taken to the destination (<ins>VVS</ins>).
 
