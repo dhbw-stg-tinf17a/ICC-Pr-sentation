@@ -105,7 +105,7 @@ function getStationByID(id) {
           resolve(station);
         }
       })
-      .on('end', () => resolve(null));
+      .on('end', () => resolve(undefined));
   });
 }
 
