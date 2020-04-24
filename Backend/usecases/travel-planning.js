@@ -12,7 +12,6 @@
  */
 
 // TODO remember travel destination for weekend
-// TODO store visited destinations
 
 const schedule = require('node-schedule');
 const moment = require('moment-timezone');
@@ -34,7 +33,6 @@ const mainStation = {
   dbID: '8098096',
   vvsID: 'de:08111:6115',
 };
-const excludedStationIDs = ['8098096'];
 const timezone = 'Europe/Berlin';
 
 async function getWeekend() {
@@ -91,9 +89,7 @@ async function planRandomTrip({ departure, arrival }) {
 
   const stations = await db.getFilteredStations((station) => station.location
     && geolib.getDistance(mainStation.location, station.location) / 1000 // m to km
-       >= pref.travelPlanningMinDistance
-    && !excludedStationIDs.findIndex((stationID) => station.id === stationID)
-       >= 0);
+       >= pref.travelPlanningMinDistance);
 
   let connectionToDestination;
   let connectionFromDestination;
