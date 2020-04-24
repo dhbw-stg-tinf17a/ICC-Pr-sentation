@@ -126,8 +126,8 @@ async function run() {
     const notificationTime = moment(freeSlot.start)
       .subtract(pref.personalTrainerMinutesBeforeStart, 'minutes');
     const body = `You have got a little time at ${formatTime(freeSlot.start)}. `
-      + `Since it ${precipitation ? 'rains' : 'doesn\'t rain'} today, `
-      + `why don't you do some sports at ${place.poi.name}?`;
+      + `Since it ${precipitation ? 'rains' : 'does not rain'} today, `
+      + `why not do some sports at ${place.poi.name}?`;
 
     schedule.scheduleJob(new Date(notificationTime), async () => {
       await notifications.sendNotifications({

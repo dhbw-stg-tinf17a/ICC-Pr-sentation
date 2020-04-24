@@ -121,7 +121,7 @@ describe('personal trainer use case', () => {
       expect(notifications.sendNotifications).toHaveBeenLastCalledWith({
         title: 'Recommended sports activity',
         options: {
-          body: 'You have got a little time at 07:00 PM. Since it rains today, why don\'t you do some sports at Sport ist Mord?',
+          body: 'You have got a little time at 07:00 PM. Since it rains today, why not do some sports at Sport ist Mord?',
           icon: '/favicon.jpg',
           badge: '/badge.png',
           data: {
@@ -171,7 +171,7 @@ describe('personal trainer use case', () => {
       expect(notifications.sendNotifications).toHaveBeenLastCalledWith({
         title: 'Recommended sports activity',
         options: {
-          body: 'You have got a little time at 07:00 PM. Since it doesn\'t rain today, why don\'t you do some sports at Schöneberg-Park?',
+          body: 'You have got a little time at 07:00 PM. Since it does not rain today, why not do some sports at Schöneberg-Park?',
           icon: '/favicon.jpg',
           badge: '/badge.png',
           data: {

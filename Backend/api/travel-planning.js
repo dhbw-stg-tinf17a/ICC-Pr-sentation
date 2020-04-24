@@ -122,7 +122,7 @@ router.get('/', wrapAsync(async (req, res) => {
 }));
 
 // TODO remeber last request to /
-// TODO store destination and don't recommend it again
+// TODO store destination and do not recommend it again
 router.get('/confirm', wrapAsync(async (req, res) => {
   const connection = await travelPlanning.getConnectionToMainStation(req.query.arrival);
 
@@ -141,8 +141,8 @@ router.get('/confirm', wrapAsync(async (req, res) => {
       destination: connection.legs[connection.legs.length - 1].to,
     };
   } else {
-    textToDisplay = 'Can not find route to starting point of your travel!\nSorry!';
-    textToRead = 'I can not find a route to your travel starting point. Sorry!';
+    textToDisplay = 'cannot find route to starting point of your travel!\nSorry!';
+    textToRead = 'I cannot find a route to your travel starting point. Sorry!';
     displayRouteOnMap = null;
   }
 

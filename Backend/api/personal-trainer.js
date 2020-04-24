@@ -68,7 +68,7 @@ router.get('/', wrapAsync(async (req, res) => {
 }));
 
 // TODO use token instead of passing all the parameters. or even remeber last request to /
-// TODO store POI ID and don't recommend it again
+// TODO store POI ID and do not recommend it again
 router.get('/confirm', wrapAsync(async (req, res) => {
   const {
     latitude,
@@ -97,8 +97,8 @@ router.get('/confirm', wrapAsync(async (req, res) => {
       destination: connection.legs[connection.legs.length - 1].to,
     };
   } else {
-    textToDisplay = 'Can not find route to training location.\nSorry!';
-    textToRead = 'I can not find a route to your training location. Sorry!';
+    textToDisplay = 'cannot find route to training location.\nSorry!';
+    textToRead = 'I cannot find a route to your training location. Sorry!';
     displayRouteOnMap = null;
   }
 
