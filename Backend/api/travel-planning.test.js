@@ -1,3 +1,5 @@
+jest.mock('morgan', () => () => (req, res, next) => next());
+
 const supertest = require('supertest');
 const app = require('../app');
 
@@ -6,13 +8,13 @@ const request = supertest(app);
 describe('/api/travel-planning', () => {
   describe('GET /', () => {
     it('should work', async () => {
-      request.get('/api/travel-planning');
+      // const response = request.get('/api/travel-planning');
     });
   });
 
   describe('GET /confirm', () => {
     it('should work', async () => {
-      request.get('/api/travel-planning/confirm');
+      // const response = request.get('/api/travel-planning/confirm');
     });
   });
 });
