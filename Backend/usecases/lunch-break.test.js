@@ -99,7 +99,7 @@ describe('lunch break use case', () => {
       expect(notifications.sendNotifications).toHaveBeenLastCalledWith({
         title: 'Recommended restaurant for your lunch break',
         options: {
-          body: 'You have some time to spare during your lunch break at 13:30, why not try a restaurant?',
+          body: 'You have some time to spare during your lunch break at 01:30 PM, why not try a restaurant?',
           icon: '/favicon.jpg',
           badge: '/badge.png',
           data: {

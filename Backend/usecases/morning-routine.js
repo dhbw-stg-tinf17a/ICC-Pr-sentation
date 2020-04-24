@@ -137,8 +137,7 @@ async function run() {
     let body = `${event.summary} starts at ${formatTime(event.start)}.`;
 
     if (connection !== undefined) {
-      const departure = moment(connection.departure).tz(timezone).format('HH:mm');
-      body += ` You have to leave at ${departure}.`;
+      body += ` You have to leave at ${formatTime(connection.departure)}.`;
     }
 
     schedule.scheduleJob(new Date(wakeUpTime), async () => {

@@ -78,7 +78,7 @@ describe('morning routine use case', () => {
       expect(notifications.sendNotifications).toHaveBeenLastCalledWith({
         title: 'Wake up!',
         options: {
-          body: 'A beautiful day starts at 11:00.',
+          body: 'A beautiful day starts at 11:00 AM.',
           icon: '/favicon.jpg',
           badge: '/badge.png',
           data: {
@@ -107,7 +107,7 @@ describe('morning routine use case', () => {
       expect(notifications.sendNotifications).toHaveBeenLastCalledWith({
         title: 'Wake up!',
         options: {
-          body: 'Tomorrow never dies starts at 08:00.',
+          body: 'Tomorrow never dies starts at 08:00 AM.',
           icon: '/favicon.jpg',
           badge: '/badge.png',
           data: {
@@ -181,7 +181,7 @@ describe('morning routine use case', () => {
       expect(notifications.sendNotifications).toHaveBeenLastCalledWith({
         title: 'Wake up!',
         options: {
-          body: 'What a beautiful morning starts at 11:00. You have to leave at 11:00.',
+          body: 'What a beautiful morning starts at 11:00 AM. You have to leave at 11:00 AM.',
           icon: '/favicon.jpg',
           badge: '/badge.png',
           data: {
@@ -213,7 +213,7 @@ describe('morning routine use case', () => {
       expect(notifications.sendNotifications).toHaveBeenLastCalledWith({
         title: 'Wake up!',
         options: {
-          body: 'The final countdown starts at 12:00.',
+          body: 'The final countdown starts at 12:00 PM.',
           icon: '/favicon.jpg',
           badge: '/badge.png',
           data: {
