@@ -23,40 +23,37 @@ router.get('/', wrapAsync(async (req, res) => {
     }),
   ]);
 
-  let textToDisplay;
-  let textToRead;
-  let displayPointOnMap = null;
-  let furtherAction = null;
-  let nextLink = null;
-  if (freeSlot && restaurant) {
-    textToDisplay = `Lunch Break from: ${formatTime(freeSlot.start)}\n`
-                    + `To: ${formatTime(freeSlot.end)}\n\n`
-                    + `Restaurant: ${restaurant.poi.name}\n`
-                    + `Address: ${restaurant.address.freeformAddress}\n`
-                    + `Distance: ${Math.trunc(restaurant.dist)}m`;
-    textToRead = `Your have time for a Lunch Break from ${formatTime(freeSlot.start)} to `
-                + ` ${formatTime(freeSlot.end)}. I recommend ${restaurant.poi.name} on ${restaurant.address.streetName} Street.`;
-    displayPointOnMap = {
-      longitude: restaurant.position.lat,
-      latitude: restaurant.position.lon,
-    };
+  let textToDisplay = '';
+  let textToRead = '';
+  let furtherAction;
+  let nextLink;
+
+  if (freeSlot) {
+    textToDisplay += `Lunch break: ${formatTime(freeSlot.start)} - ${formatTime(freeSlot.end)}.\n`;
+    textToRead += `You have time for a lunch break from ${formatTime(freeSlot.start)} to `
+      + `${formatTime(freeSlot.end)}.\n`;
+  } else {
+    textToDisplay += 'No time for a lunch break.\n';
+    textToRead += 'Unfortunately, you don\'t have time for a lunch break today, but I\'ll try to '
+      + 'find a restaurant anyway.\n';
+  }
+
+  if (restaurant) {
+    textToDisplay += `Restaurant: ${restaurant.poi.name} at ${restaurant.address.freeformAddress}.\n`;
+    textToRead += `I recommend the restaurant ${restaurant.poi.name}.\n`;
     furtherAction = 'Do you want to know how to get to the restaurant?';
     nextLink = `lunch-break/confirm?originLatitude=${latitude}&originLongitude=${longitude}`
-                + `&destinationLatitude=${restaurant.position.lat}&destinationLongitude=${restaurant.position.lon}`
-                + `&departure=${freeSlot.start.toISOString()}`;
-  } else if (restaurant) {
-    textToDisplay = 'No time for lunch break today';
-    textToRead = 'Today you have no free slot in your calendar for a lunch break!';
+      + `&destinationLatitude=${restaurant.location.lat}`
+      + `&destinationLongitude=${restaurant.location.lon}`
+      + `&departure=${freeSlot ? freeSlot.start.toISOString() : new Date().toISOString()}`;
   } else {
-    textToDisplay = 'No restaurant found.\nSorry!';
-    textToRead = 'Unfortunately I could not find a restaurant for today. Sorry.';
+    textToDisplay += 'No restaurant found.\n';
+    textToRead += 'Unfortunately I could not find a restaurant for today. Sorry.\n';
   }
 
   res.send({
     textToDisplay,
     textToRead,
-    displayRouteOnMap: null,
-    displayPointOnMap,
     furtherAction,
     nextLink,
   });
