@@ -43,7 +43,7 @@ describe('/api/lunch-break', () => {
         longitude: 0,
       });
 
-      expect(response.status).toEqual(200);
+      expect(response.status).toStrictEqual(200);
       expect(response.body).toStrictEqual({
         textToDisplay: 'Lunch break: 12:00 PM - 01:00 PM.\n'
           + 'Restaurant: Gaststätte zum Hirsch at Halligalli-Straße 27, 78902 Vorderhahn.',
@@ -65,11 +65,11 @@ describe('/api/lunch-break', () => {
         longitude: 0,
       });
 
-      expect(response.status).toEqual(200);
+      expect(response.status).toStrictEqual(200);
       expect(response.body).toStrictEqual({
         textToDisplay: 'No time for a lunch break.\nNo restaurant found.',
         textToRead: 'Unfortunately, you do not have time for a lunch break today, but I will try '
-          + 'to find a restaurant anyway.\nUnfortunately I cannot find a restaurant for today. '
+          + 'to find a restaurant anyway.\nUnfortunately I did not find a restaurant for today. '
           + 'Sorry.',
       });
     });
@@ -89,7 +89,7 @@ describe('/api/lunch-break', () => {
         longitude: 0,
       });
 
-      expect(response.status).toEqual(200);
+      expect(response.status).toStrictEqual(200);
       expect(response.body).toStrictEqual({
         textToDisplay: 'No time for a lunch break.\n'
           + 'Restaurant: Gaststätte zum Hirsch at Halligalli-Straße 27, 78902 Vorderhahn.',
@@ -140,7 +140,7 @@ describe('/api/lunch-break', () => {
         departure: '2020-01-15T09:50:00Z',
       });
 
-      expect(response.status).toEqual(200);
+      expect(response.status).toStrictEqual(200);
       expect(response.body).toStrictEqual({
         textToDisplay: 'Leave at: 10:50 AM.\nGo to Talstraße, then Bergstraße.',
         textToRead: 'You have to leave at 10:50 AM.\nGo to Talstraße, then Bergstraße.',
@@ -158,10 +158,10 @@ describe('/api/lunch-break', () => {
         departure: '2020-01-15T09:50:00Z',
       });
 
-      expect(response.status).toEqual(200);
+      expect(response.status).toStrictEqual(200);
       expect(response.body).toStrictEqual({
         textToDisplay: 'No route found.',
-        textToRead: 'I cannot find a route to the restaurant. Sorry!',
+        textToRead: 'I did not find a route to the restaurant. Sorry!',
       });
     });
   });

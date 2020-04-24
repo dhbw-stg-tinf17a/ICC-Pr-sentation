@@ -48,7 +48,7 @@ router.get('/', wrapAsync(async (req, res) => {
       + `&departure=${freeSlot ? freeSlot.start.toISOString() : new Date().toISOString()}`;
   } else {
     textToDisplay += 'No restaurant found.';
-    textToRead += 'Unfortunately I cannot find a restaurant for today. Sorry.';
+    textToRead += 'Unfortunately I did not find a restaurant for today. Sorry.';
   }
 
   res.send({
@@ -92,7 +92,7 @@ router.get('/confirm', wrapAsync(async (req, res) => {
                   + `Go to ${formatConnection(connection)}.`;
   } else {
     textToDisplay += 'No route found.';
-    textToRead += 'I cannot find a route to the restaurant. Sorry!';
+    textToRead += 'I did not find a route to the restaurant. Sorry!';
   }
 
   res.send({

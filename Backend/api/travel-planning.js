@@ -141,8 +141,8 @@ router.get('/confirm', wrapAsync(async (req, res) => {
       destination: connection.legs[connection.legs.length - 1].to,
     };
   } else {
-    textToDisplay = 'cannot find route to starting point of your travel!\nSorry!';
-    textToRead = 'I cannot find a route to your travel starting point. Sorry!';
+    textToDisplay = 'did not find route to starting point of your travel!\nSorry!';
+    textToRead = 'I did not find a route to your travel starting point. Sorry!';
     displayRouteOnMap = null;
   }
 

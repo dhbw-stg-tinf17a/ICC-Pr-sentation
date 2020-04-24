@@ -97,8 +97,8 @@ router.get('/confirm', wrapAsync(async (req, res) => {
       destination: connection.legs[connection.legs.length - 1].to,
     };
   } else {
-    textToDisplay = 'cannot find route to training location.\nSorry!';
-    textToRead = 'I cannot find a route to your training location. Sorry!';
+    textToDisplay = 'did not find route to training location.\nSorry!';
+    textToRead = 'I did not find a route to your training location. Sorry!';
     displayRouteOnMap = null;
   }
 
