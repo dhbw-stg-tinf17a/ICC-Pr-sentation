@@ -102,13 +102,13 @@ describe('personal trainer use case', () => {
         },
       ]);
 
-      const restaurant = {
+      const place = {
         poi: { name: 'Sport ist Mord' },
         dist: 500,
         address: { streetName: 'An der Laufbahn' },
         position: { lat: 0, lon: 0 },
       };
-      places.getPOIsAround.mockResolvedValueOnce([restaurant]);
+      places.getPOIsAround.mockResolvedValueOnce([place]);
 
       await personalTrainer.run();
 
@@ -152,13 +152,13 @@ describe('personal trainer use case', () => {
         },
       ]);
 
-      const restaurant = {
+      const place = {
         poi: { name: 'Schöneberg-Park' },
         dist: 500,
         address: { streetName: 'Am Schöneberg-See' },
         position: { lat: 0, lon: 0 },
       };
-      places.getPOIsAround.mockResolvedValueOnce([restaurant]);
+      places.getPOIsAround.mockResolvedValueOnce([place]);
 
       await personalTrainer.run();
 
