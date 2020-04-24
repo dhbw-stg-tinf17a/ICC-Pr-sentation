@@ -11,7 +11,7 @@ jest.mock('../utilities/init-database', () => async (name, defaults) => {
 });
 
 const webpush = require('web-push');
-const notifications = require('../modules/notifications');
+const notifications = require('./notifications');
 
 jest.mock('web-push');
 
@@ -27,10 +27,6 @@ const subscriptions = [
     keys: { p256dh: 'p256dh_key_b', auth: 'auth_key_b' },
   },
 ];
-
-process.env.PUSH_KEY_PRIVATE = 'PUSH_KEY_PRIVATE';
-process.env.PUSH_KEY_PUBLIC = 'PUSH_KEY_PUBLIC';
-process.env.PUSH_SUBJECT = 'PUSH_SUBJECT';
 
 describe('notifications module', () => {
   beforeEach(async () => {

@@ -1,7 +1,12 @@
 #!/usr/bin/env node
 
-const logger = require('pino')({ level: process.env.LOG_LEVEL || 'info' });
+require('dotenv').config();
+
+require('../usecases');
+
 const http = require('http');
+
+const logger = require('../utilities/logger');
 const app = require('../app');
 
 const server = http.createServer(app);

@@ -51,9 +51,17 @@ const rawSchema = {
   travelPlanningMinDistance: nonNegativeNumber,
 };
 const schema = joi.object(rawSchema);
+const requiredSchema = joi.object(rawSchema).options({ presence: 'required' });
 
 async function get() {
   return (await database).value();
+}
+
+async function getChecked() {
+  const values = await get();
+
+  joi.assert(values, requiredSchema);
+  return values;
 }
 
 async function update(values) {
@@ -63,6 +71,7 @@ async function update(values) {
 
 module.exports = {
   get,
+  getChecked,
   update,
   defaults,
   schema,

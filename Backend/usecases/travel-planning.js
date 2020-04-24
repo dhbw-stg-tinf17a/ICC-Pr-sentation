@@ -7,17 +7,13 @@
  * the use case, the assistant presents a travel destination which the user has not yet visited
  * (preferences), prices for a roundtrip to the destination (DB) and the weather at the destination
  * (weather). Dialog: If the user confirms that they want to travel to the presented destination,
- * the assistant presents the route taken to the main station (VVS) and will not recommend that
- * destination again.
+ * the assistant presents the route taken to the main station (VVS).
  */
-
-// TODO remember travel destination for weekend
-// TODO store visited destinations
 
 const schedule = require('node-schedule');
 const moment = require('moment-timezone');
 const geolib = require('geolib');
-const pino = require('pino');
+const logger = require('../utilities/logger');
 const calendar = require('../modules/calendar');
 const db = require('../modules/db');
 const weather = require('../modules/weather');
@@ -25,16 +21,15 @@ const notifications = require('../modules/notifications');
 const vvs = require('../modules/vvs');
 const preferences = require('../modules/preferences');
 
-const logger = pino({ level: process.env.LOG_LEVEL || 'info' });
+// Stuttgart Hbf
 const mainStation = {
-  dbID: '8098096',
   location: {
     latitude: 48.784084,
     longitude: 9.181635,
   },
+  dbID: '8098096',
   vvsID: 'de:08111:6115',
-}; // Stuttgart Hbf
-const excludedStationIDs = ['8098096'];
+};
 const timezone = 'Europe/Berlin';
 
 async function getWeekend() {
@@ -72,9 +67,12 @@ async function planTrip({ departure, arrival, destinationID }) {
     }),
   ]);
 
-  const connectionToDestination = connectionsToDestination.sort((a, b) => a.price - b.price)
+  const connectionToDestination = connectionsToDestination
+    .sort((a, b) => a.price - b.price)
     .find(() => true);
-  const connectionFromDestination = connectionsFromDestination.sort((a, b) => a.price - b.price)
+
+  const connectionFromDestination = connectionsFromDestination
+    .sort((a, b) => a.price - b.price)
     .find(() => true);
 
   return {
@@ -83,20 +81,23 @@ async function planTrip({ departure, arrival, destinationID }) {
   };
 }
 
-async function planRandomTrip({ departure, arrival, pref }) {
+async function planRandomTrip({ departure, arrival }) {
+  const pref = await preferences.getChecked();
+
   const stations = await db.getFilteredStations((station) => station.location
     && geolib.getDistance(mainStation.location, station.location) / 1000 // m to km
-       >= pref.travelPlanningMinDistance
-    && !excludedStationIDs.findIndex((stationID) => station.id === stationID) >= 0);
+       >= pref.travelPlanningMinDistance);
 
   let connectionToDestination;
   let connectionFromDestination;
   let destination;
+
   do {
     destination = stations[Math.floor(Math.random() * stations.length)];
 
     ({
-      connectionToDestination, connectionFromDestination,
+      connectionToDestination,
+      connectionFromDestination,
     } = await planTrip({
       departure,
       arrival,
@@ -113,8 +114,8 @@ async function planRandomTrip({ departure, arrival, pref }) {
 
 async function getWeatherForecast({ destination, saturday, sunday }) {
   const now = moment.tz(timezone).startOf('day');
-  const daysToSaturday = moment(saturday).endOf('day').diff(now, 'days');
-  const daysToSunday = moment(sunday).endOf('day').diff(now, 'days');
+  const daysToSaturday = moment.tz(saturday, timezone).endOf('day').diff(now, 'days');
+  const daysToSunday = moment.tz(sunday, timezone).endOf('day').diff(now, 'days');
 
   const forecast = await weather.getForecast({
     latitude: destination.location.latitude,
@@ -128,10 +129,8 @@ async function getWeatherForecast({ destination, saturday, sunday }) {
   };
 }
 
-async function getConnectionToMainStation({ arrival, pref }) {
-  if (pref.location === undefined) {
-    throw new Error('Home location is not set');
-  }
+async function getConnectionToMainStation({ arrival }) {
+  const pref = await preferences.getChecked();
 
   return vvs.getConnection({
     originCoordinates: pref.location,
@@ -144,26 +143,28 @@ async function run() {
   try {
     logger.debug(`Travel planning usecase: Running at ${new Date().toISOString()}`);
 
-    const pref = await preferences.get();
-
     const {
-      saturday, sunday, weekendFree,
+      saturday,
+      sunday,
+      weekendFree,
     } = await getWeekend();
     if (!weekendFree) {
-      logger.debug('Trvael planning usecase: Weekend not free');
+      logger.debug('Travel planning usecase: Weekend not free');
       return;
     }
 
     const {
-      destination, connectionToDestination, connectionFromDestination,
+      destination,
+      connectionToDestination,
+      connectionFromDestination,
     } = await planRandomTrip({
       departure: saturday,
       arrival: sunday,
-      pref,
     });
     const price = connectionToDestination.price + connectionFromDestination.price;
 
     const body = `Your weekend seems to be free, why not travel to ${destination.address.city} and back for just ${price} €?`;
+
     notifications.sendNotifications({
       title: 'Recommended trip for this weekend',
       options: {
@@ -172,10 +173,10 @@ async function run() {
         badge: '/badge.png',
         data: {
           usecase: 'travel-planning',
-          destinationID: destination.id,
         },
       },
     });
+
     logger.debug(`Travel planning usecase: Sent notification with body '${body}'`);
   } catch (error) {
     logger.error(error);
@@ -184,9 +185,13 @@ async function run() {
 
 function init() {
   // every Friday at 07:00
-  const job = schedule.scheduleJob({
-    minute: 0, hour: 7, dayOfWeek: 5, tz: timezone,
-  }, run);
+  const job = schedule.scheduleJob(
+    {
+      minute: 0, hour: 7, dayOfWeek: 5, tz: timezone,
+    },
+    run,
+  );
+
   logger.info(`Travel planning usecase: First invocation at ${job.nextInvocation().toISOString()}`);
 }
 
@@ -197,4 +202,5 @@ module.exports = {
   planRandomTrip,
   getWeatherForecast,
   getConnectionToMainStation,
+  run,
 };

@@ -15,10 +15,9 @@ const options = {
   sv: true, // prefer fast routes
   device: 'HANDY', // prevent mimimi
 };
-
 const endpoint = 'https://ps.bahn.de/preissuche/preissuche/psc_service.go';
 
-async function parseData(data) {
+async function parseConnectionsResponseData(data) {
   const connections = Object.values(data.verbindungen).map((connection) => {
     const legs = connection.trains.map((leg) => ({
       mode: 'transport',
@@ -67,8 +66,9 @@ async function parseData(data) {
 }
 
 async function getConnections({ originID, destinationID, departure }) {
-  const date = moment(departure).tz('Europe/Berlin').format('DD.MM.YY');
-  const time = moment(departure).tz('Europe/Berlin').format('HH:mm');
+  const localDeparture = moment(departure).tz('Europe/Berlin');
+  const date = localDeparture.format('DD.MM.YY');
+  const time = localDeparture.format('HH:mm');
   const params = {
     data: JSON.stringify({
       s: originID,
@@ -94,7 +94,7 @@ async function getConnections({ originID, destinationID, departure }) {
     throw new Error(`DB prices API returned: ${message}`);
   }
 
-  return parseData(response.data);
+  return parseConnectionsResponseData(response.data);
 }
 
 function getStationByID(id) {
@@ -105,7 +105,7 @@ function getStationByID(id) {
           resolve(station);
         }
       })
-      .on('end', () => resolve(null));
+      .on('end', () => resolve(undefined));
   });
 }
 

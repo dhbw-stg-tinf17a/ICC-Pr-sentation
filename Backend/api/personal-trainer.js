@@ -1,116 +1,94 @@
 const express = require('express');
 const wrapAsync = require('../utilities/wrap-async');
-const { formatTime } = require('../utilities/date-formatter');
+const { formatTime, formatConnection } = require('../utilities/formatter');
 const personalTrainer = require('../usecases/personal-trainer');
-const preferences = require('../modules/preferences');
 
 const router = express.Router();
 
 router.get('/', wrapAsync(async (req, res) => {
-  const pref = await preferences.get();
-
   const [
     freeSlot,
     weatherForecast,
   ] = await Promise.all([
-    personalTrainer.getFreeSlotForActivity(pref),
-    personalTrainer.getWeatherForecast(pref),
+    personalTrainer.getFreeSlotForActivity(),
+    personalTrainer.getWeatherForecast(),
   ]);
 
   let place;
-  let trainingLocation;
-  if (weatherForecast.day.hasPrecipitation) {
-    place = await personalTrainer.getRandomSportsCenter(pref);
-    trainingLocation = 'indoor';
+  let textToDisplay = '';
+  let textToRead = '';
+  let furtherAction;
+  let nextLink;
+
+  if (freeSlot) {
+    textToDisplay += `Training slot: ${formatTime(freeSlot.start)} - `
+      + `${formatTime(freeSlot.end)}.\n`;
+    textToRead += `You have time for training from ${formatTime(freeSlot.start)} to `
+      + `${formatTime(freeSlot.end)}.\n`;
   } else {
-    place = await personalTrainer.getRandomParkRecreationArea(pref);
-    trainingLocation = 'outdoor';
+    textToDisplay += 'No time for training.\n';
+    textToRead += 'Unfortunately, you do not have time for training today, but I will try to find '
+      + 'a training place anyway.\n';
   }
 
-  let textToDisplay;
-  let textToRead;
-  let displayPointOnMap = null;
-  let furtherAction = null;
-  let nextLink = null;
-  if (freeSlot && place) {
-    textToDisplay = 'Found a free slot for training!\n'
-                    + `Start: ${formatTime(freeSlot.start)}\n`
-                    + `End: ${formatTime(freeSlot.end)}\n\n`
-                    + `Todays ${trainingLocation} location: ${place.poi.name}\n`
-                    + `Distance: ${Math.trunc(place.dist)}m\n\n`
-                    + `Weather: ${weatherForecast.day.shortPhrase} with ${weatherForecast.temperature.maximum.value}°C`;
-    textToRead = `You have a free slot to train. You are free from ${formatTime(freeSlot.start)} `
-                  + `until ${formatTime(freeSlot.end)}. `
-                  + `The weather is ${weatherForecast.day.shortPhrase} with ${weatherForecast.temperature.maximum.value}°C. `
-                  + `Today it would be better to train ${trainingLocation}s at ${place.poi.name}.`;
-    displayPointOnMap = {
-      longitude: place.position.lat,
-      latitude: place.position.lon,
-    };
-    furtherAction = 'Do you want to know how to get to your training location?';
-    nextLink = `personal-trainer/confirm?latitude=${place.position.lat}&longitude=${place.position.lon}`
-                + `&departure=${freeSlot.start.toISOString()}`;
-  } else if (place) {
-    textToDisplay = 'No free slot for training.\nMaybe Tomorrow!';
-    textToRead = 'Unfortunately there is no free slot for training today. '
-                  + 'I will get back to you tomorrow!';
+  if (weatherForecast.day.hasPrecipitation) {
+    textToDisplay += 'It rains today, train indoors.\n';
+    textToRead += 'Since it rains today, I recommend training indoors.\n';
+    place = await personalTrainer.getRandomSportsCenter();
   } else {
-    textToDisplay = 'No fitting location found.\nTrain at home!';
-    textToRead = 'Unfortunately I could not find a fitting location. '
-                  + 'You have to train at home today!';
+    textToDisplay += 'It is sunny, train outdoors.\n';
+    textToRead += 'Since it is sunny today, I recommend training outdoors.\n';
+    place = await personalTrainer.getRandomParkRecreationArea();
+  }
+
+  if (place) {
+    textToDisplay += `Training place: ${place.poi.name} at ${place.address.freeformAddress}.`;
+    textToRead += `I recommend the training place ${place.poi.name}.`;
+    furtherAction = 'Do you want to know how to get there?';
+    nextLink = `personal-trainer/confirm?latitude=${place.position.lat}`
+      + `&longitude=${place.position.lon}&departure=${freeSlot.start.toISOString()}`;
+  } else {
+    textToDisplay += 'No training place found.';
+    textToRead += 'Unfortunately I did not find a training place. Train at home.';
   }
 
   res.send({
     textToDisplay,
     textToRead,
-    displayRouteOnMap: null,
-    displayPointOnMap,
     furtherAction,
     nextLink,
   });
 }));
 
-// TODO use token instead of passing all the parameters. or even remeber last request to /
-// TODO store POI ID and don't recommend it again
 router.get('/confirm', wrapAsync(async (req, res) => {
-  const { latitude, longitude, departure } = req.query;
-
-  const pref = await preferences.get();
+  const {
+    latitude,
+    longitude,
+    departure,
+  } = req.query;
 
   const connection = await personalTrainer.getConnectionToPlace({
     latitude,
     longitude,
     departure,
-    pref,
   });
 
-  let textToRead;
-  let textToDisplay;
-  let displayRouteOnMap;
+  let textToRead = '';
+  let textToDisplay = '';
+
   if (connection) {
-    textToDisplay = `Leave home: ${formatTime(connection.departure)}\n`
-                    + `First stop: ${connection.legs[0].to}\n`
-                    + `Destination: ${connection.legs[connection.legs.length - 1].to}`;
-    textToRead = `You have to leave at ${formatTime(connection.departure)}. `
-                  + `Your first stop will be ${connection.legs[0].to}. `
-                  + `Your destination is ${connection.legs[connection.legs.length - 1].to}`;
-    displayRouteOnMap = {
-      origin: connection.legs[0].from,
-      destination: connection.legs[connection.legs.length - 1].to,
-    };
+    textToDisplay += `Leave at: ${formatTime(connection.departure)}.\n`
+      + `Go to ${formatConnection(connection)}.`;
+    textToRead += `You have to leave at ${formatTime(connection.departure)}.\n`
+                  + `Go to ${formatConnection(connection)}.`;
   } else {
-    textToDisplay = 'Can not find route to training location.\nSorry!';
-    textToRead = 'I can not find a route to your training location. Sorry!';
-    displayRouteOnMap = null;
+    textToDisplay += 'No route found.';
+    textToRead += 'I did not find a route to the training place. Sorry!';
   }
 
   res.send({
     textToDisplay,
     textToRead,
-    displayRouteOnMap,
-    displayPointOnMap: null,
-    furtherAction: null,
-    nextLink: null,
   });
 }));
 

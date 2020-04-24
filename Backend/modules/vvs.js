@@ -51,7 +51,9 @@ async function parseTripResponse(response) {
   const departure = trip.StartTime[0];
   const arrival = trip.EndTime[0];
   const duration = moment.duration(moment(arrival).diff(departure));
-  const legs = trip.TripLeg.map(parseTripLeg).filter((tripLeg) => Object.keys(tripLeg).length > 0);
+  const legs = trip.TripLeg
+    .map(parseTripLeg)
+    .filter((tripLeg) => Object.keys(tripLeg).length > 0);
 
   return {
     departure,
@@ -73,9 +75,13 @@ async function getResponse(requestPayload) {
       </ServiceRequest>
     </Trias>`;
 
-  const response = await axios.post(endpoint, request, { headers: { 'Content-Type': 'text/xml' } });
+  const response = await axios.post(endpoint, request, {
+    headers: { 'Content-Type': 'text/xml' },
+  });
 
-  const object = await xml2js.parseStringPromise(response.data, { ignoreAttrs: true });
+  const object = await xml2js.parseStringPromise(response.data, {
+    ignoreAttrs: true,
+  });
 
   return object.Trias.ServiceDelivery[0].DeliveryPayload[0];
 }
@@ -95,6 +101,7 @@ async function getWaypoint({
   coordinates, address, stop, datetime,
 }) {
   let locationRefContent;
+
   if (coordinates !== undefined) {
     locationRefContent = `
       <GeoPosition>
@@ -104,13 +111,12 @@ async function getWaypoint({
   } else if (stop !== undefined) {
     locationRefContent = `<StopPointRef>${stop}</StopPointRef>`;
   } else {
-    // TODO maybe convert address to coordinates using Azure Maps instead
-    // would be faster and more flexible
     const addressCode = await getAddressCode(address);
     locationRefContent = `<AddressRef>${addressCode}</AddressRef>`;
   }
 
   let waypoint = `<LocationRef>${locationRefContent}</LocationRef>`;
+
   if (datetime !== undefined) {
     waypoint += `<DepArrTime>${new Date(datetime).toISOString()}</DepArrTime>`;
   }

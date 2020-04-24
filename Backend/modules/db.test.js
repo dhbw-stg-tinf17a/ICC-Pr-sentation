@@ -1,5 +1,5 @@
 const axios = require('axios').default;
-const db = require('../modules/db');
+const db = require('./db');
 
 jest.mock('axios');
 
@@ -103,7 +103,7 @@ describe('db module', () => {
     });
 
     it('should return null if no station with the given id exists', async () => {
-      await expect(db.getStationByID('0')).resolves.toBeNull();
+      await expect(db.getStationByID('0')).resolves.toBeUndefined();
     });
   });
 

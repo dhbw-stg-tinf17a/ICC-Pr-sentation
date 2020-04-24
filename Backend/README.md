@@ -8,5 +8,10 @@ To run it, you have to
 - Start the server with `npm start`
 - Use `npm run start-dev` instead to restart the server on changes
 
-## Which services use which APIs?
-**TODO**
+To test it, you have to
+
+- Install the dependencies with `npm install`
+- Run the tests with `npm test`
+
+The coverage is shown in the terminal.
+You can also look at it by opening `./coverage/lcov-report/index.html` in the web browser.

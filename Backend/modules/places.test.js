@@ -1,9 +1,7 @@
 const axios = require('axios').default;
-const places = require('../modules/places');
+const places = require('./places');
 
 jest.mock('axios');
-
-process.env.AZURE_MAPS_KEY = 'AZURE_MAPS_KEY';
 
 describe('places module', () => {
   describe('getPOIsAround', () => {
