@@ -83,10 +83,34 @@ describe('/api/personal-trainer', () => {
   });
 
   describe('GET /confirm', () => {
-    it('should work', async () => {
+    it('should generate a valid message with a connection', async () => {
+      personalTrainer.getConnectionToPlace.mockResolvedValueOnce({
+        departure: '2020-01-15T16:10:00Z',
+        legs: [
+          { to: 'Talstraße' },
+          { to: 'Bergstraße' },
+        ],
+      });
+
       const response = await request.get('/api/personal-trainer/confirm');
 
       expect(response.status).toStrictEqual(200);
+      expect(response.body).toStrictEqual({
+        textToDisplay: 'Leave at: 05:10 PM.\nGo to Talstraße, then Bergstraße.',
+        textToRead: 'You have to leave at 05:10 PM.\nGo to Talstraße, then Bergstraße.',
+      });
+    });
+
+    it('should generate a valid message with no connection', async () => {
+      personalTrainer.getConnectionToPlace.mockResolvedValueOnce();
+
+      const response = await request.get('/api/personal-trainer/confirm');
+
+      expect(response.status).toStrictEqual(200);
+      expect(response.body).toStrictEqual({
+        textToDisplay: 'No route found.',
+        textToRead: 'I did not find a route to the training place. Sorry!',
+      });
     });
   });
 });

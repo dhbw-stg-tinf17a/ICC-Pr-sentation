@@ -1,6 +1,6 @@
 const express = require('express');
 const wrapAsync = require('../utilities/wrap-async');
-const { formatTime } = require('../utilities/formatter');
+const { formatTime, formatConnection } = require('../utilities/formatter');
 const personalTrainer = require('../usecases/personal-trainer');
 
 const router = express.Router();
@@ -75,33 +75,22 @@ router.get('/confirm', wrapAsync(async (req, res) => {
     departure,
   });
 
-  let textToRead;
-  let textToDisplay;
-  let displayRouteOnMap;
+  let textToRead = '';
+  let textToDisplay = '';
+
   if (connection) {
-    textToDisplay = `Leave home: ${formatTime(connection.departure)}\n`
-                    + `First stop: ${connection.legs[0].to}\n`
-                    + `Destination: ${connection.legs[connection.legs.length - 1].to}`;
-    textToRead = `You have to leave at ${formatTime(connection.departure)}. `
-                  + `Your first stop will be ${connection.legs[0].to}. `
-                  + `Your destination is ${connection.legs[connection.legs.length - 1].to}`;
-    displayRouteOnMap = {
-      origin: connection.legs[0].from,
-      destination: connection.legs[connection.legs.length - 1].to,
-    };
+    textToDisplay += `Leave at: ${formatTime(connection.departure)}.\n`
+      + `Go to ${formatConnection(connection)}.`;
+    textToRead += `You have to leave at ${formatTime(connection.departure)}.\n`
+                  + `Go to ${formatConnection(connection)}.`;
   } else {
-    textToDisplay = 'did not find route to training location.\nSorry!';
-    textToRead = 'I did not find a route to your training location. Sorry!';
-    displayRouteOnMap = null;
+    textToDisplay += 'No route found.';
+    textToRead += 'I did not find a route to the training place. Sorry!';
   }
 
   res.send({
     textToDisplay,
     textToRead,
-    displayRouteOnMap,
-    displayPointOnMap: null,
-    furtherAction: null,
-    nextLink: null,
   });
 }));
 
