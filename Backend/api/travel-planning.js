@@ -121,8 +121,7 @@ router.get('/', wrapAsync(async (req, res) => {
   });
 }));
 
-// TODO remeber last request to /
-// TODO store destination and do not recommend it again
+// TODO store recommended travel destination for week
 router.get('/confirm', wrapAsync(async (req, res) => {
   const connection = await travelPlanning.getConnectionToMainStation(req.query.arrival);
 

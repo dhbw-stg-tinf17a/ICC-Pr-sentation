@@ -7,11 +7,10 @@
  * the use case, the assistant presents a travel destination which the user has not yet visited
  * (preferences), prices for a roundtrip to the destination (DB) and the weather at the destination
  * (weather). Dialog: If the user confirms that they want to travel to the presented destination,
- * the assistant presents the route taken to the main station (VVS) and will not recommend that
- * destination again.
+ * the assistant presents the route taken to the main station (VVS).
  */
 
-// TODO remember travel destination for weekend
+// TODO store recommended travel destination for week
 
 const schedule = require('node-schedule');
 const moment = require('moment-timezone');

@@ -10,7 +10,6 @@
  */
 
 // TODO store recommended restaurant for day
-// TODO store visited restaurants
 
 const schedule = require('node-schedule');
 const moment = require('moment-timezone');

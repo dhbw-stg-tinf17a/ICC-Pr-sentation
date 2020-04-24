@@ -60,8 +60,7 @@ router.get('/', wrapAsync(async (req, res) => {
   });
 }));
 
-// TODO use token instead of passing all the parameters. or even remeber last request to /
-// TODO store POI ID and do not recommend it again
+// TODO store recommended training place for day
 router.get('/confirm', wrapAsync(async (req, res) => {
   const {
     latitude,

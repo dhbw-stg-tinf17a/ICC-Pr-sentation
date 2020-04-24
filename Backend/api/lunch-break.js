@@ -59,8 +59,7 @@ router.get('/', wrapAsync(async (req, res) => {
   });
 }));
 
-// TODO store recommended restaurant for route generation
-// TODO store POI ID and do not recommend it again
+// TODO store recommended restaurant for day
 router.get('/confirm', wrapAsync(async (req, res) => {
   const {
     originLatitude,
