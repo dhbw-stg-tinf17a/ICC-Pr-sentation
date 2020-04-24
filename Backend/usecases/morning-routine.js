@@ -19,6 +19,7 @@ const weather = require('../modules/weather');
 const preferences = require('../modules/preferences');
 const notifications = require('../modules/notifications');
 const quote = require('../modules/quote');
+const { formatTime } = require('../utilities/formatter');
 
 const timezone = 'Europe/Berlin';
 
@@ -133,8 +134,7 @@ async function run() {
       return;
     }
 
-    const eventStart = moment(event.start).tz(timezone).format('HH:mm');
-    let body = `${event.summary} starts at ${eventStart}.`;
+    let body = `${event.summary} starts at ${formatTime(event.start)}.`;
 
     if (connection !== undefined) {
       const departure = moment(connection.departure).tz(timezone).format('HH:mm');

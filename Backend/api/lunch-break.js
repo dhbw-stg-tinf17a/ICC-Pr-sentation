@@ -1,6 +1,6 @@
 const express = require('express');
 const wrapAsync = require('../utilities/wrap-async');
-const { formatTime } = require('../utilities/date-formatter');
+const { formatTime } = require('../utilities/formatter');
 const lunchBreak = require('../usecases/lunch-break');
 const vvs = require('../modules/vvs');
 
@@ -59,7 +59,7 @@ router.get('/', wrapAsync(async (req, res) => {
   });
 }));
 
-// TODO use token instead of passing all the parameters. or even remeber last request to /
+// TODO store recommended restaurant for route generation
 // TODO store POI ID and don't recommend it again
 router.get('/confirm', wrapAsync(async (req, res) => {
   const {

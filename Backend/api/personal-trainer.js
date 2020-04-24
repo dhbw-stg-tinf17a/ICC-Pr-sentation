@@ -1,6 +1,6 @@
 const express = require('express');
 const wrapAsync = require('../utilities/wrap-async');
-const { formatTime } = require('../utilities/date-formatter');
+const { formatTime } = require('../utilities/formatter');
 const personalTrainer = require('../usecases/personal-trainer');
 
 const router = express.Router();

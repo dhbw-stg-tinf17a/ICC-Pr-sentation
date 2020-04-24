@@ -1,7 +1,7 @@
 const express = require('express');
 const travelPlanning = require('../usecases/travel-planning');
 const wrapAsync = require('../utilities/wrap-async');
-const { formatDate } = require('../utilities/date-formatter');
+const { formatDatetime } = require('../utilities/formatter');
 const db = require('../modules/db');
 
 const router = express.Router();
@@ -73,23 +73,23 @@ router.get('/', wrapAsync(async (req, res) => {
   if (weekendFree && destination) {
     textToDisplay = 'Free next weekend\n'
                     + `Destination: ${destination.name} in ${destination.address.city}\n`
-                    + `Depart from ${connectionToDestination.legs[0].from}, ${formatDate(connectionToDestination.legs[0].departure)}\n`
+                    + `Depart from ${connectionToDestination.legs[0].from}, ${formatDatetime(connectionToDestination.legs[0].departure)}\n`
                     + `Arrive at ${connectionToDestination.legs[connectionToDestination.legs.length - 1].to},`
-                    + `${formatDate(connectionToDestination.legs[connectionToDestination.legs.length - 1].arrival)}\n`
+                    + `${formatDatetime(connectionToDestination.legs[connectionToDestination.legs.length - 1].arrival)}\n`
                     + `Price: ${connectionToDestination.price}€ + ${connectionFromDestination.price}€\n\n`
 
-                    + `Return from ${connectionFromDestination.legs[0].from}, ${formatDate(connectionFromDestination.legs[0].departure)}\n`
+                    + `Return from ${connectionFromDestination.legs[0].from}, ${formatDatetime(connectionFromDestination.legs[0].departure)}\n`
                     + `Arrive home at ${connectionFromDestination.legs[connectionFromDestination.legs.length - 1].to}, `
-                    + `${formatDate(connectionFromDestination.legs[connectionFromDestination.legs.length - 1].arrival)}\n\n`
+                    + `${formatDatetime(connectionFromDestination.legs[connectionFromDestination.legs.length - 1].arrival)}\n\n`
 
                     + `Saturday: ${saturdayWeatherForecast.day.shortPhrase} with ${saturdayWeatherForecast.temperature.maximum.value}°C\n`
                     + `Sunday: ${sundayWeatherForecast.day.shortPhrase} with ${sundayWeatherForecast.temperature.maximum.value}°C`;
 
     textToRead = `You are free next weekend. You could travel to ${destination.name} in `
                   + `${destination.address.city}. Your train leaves from ${connectionToDestination.legs[0].from} at `
-                  + `${formatDate(connectionToDestination.legs[0].departure)}. You will arrive at `
+                  + `${formatDatetime(connectionToDestination.legs[0].departure)}. You will arrive at `
                   + `${connectionToDestination.legs[connectionToDestination.legs.length - 1].to} at `
-                  + `${formatDate(connectionToDestination.legs[connectionToDestination.legs.length - 1].arrival)}. `
+                  + `${formatDatetime(connectionToDestination.legs[connectionToDestination.legs.length - 1].arrival)}. `
                   + `The total price will be ${connectionToDestination.price + connectionFromDestination.price}€. `
                   + `The weather will be ${saturdayWeatherForecast.day.shortPhrase} with ${saturdayWeatherForecast.temperature.maximum.value}°C`;
 
@@ -130,10 +130,10 @@ router.get('/confirm', wrapAsync(async (req, res) => {
   let textToDisplay;
   let displayRouteOnMap;
   if (connection) {
-    textToDisplay = `Leave home: ${formatDate(connection.departure)}\n`
+    textToDisplay = `Leave home: ${formatDatetime(connection.departure)}\n`
                     + `First stop: ${connection.legs[0].to}\n`
                     + `Destination: ${connection.legs[connection.legs.length - 1].to}`;
-    textToRead = `You have to leave at ${formatDate(connection.departure)}. `
+    textToRead = `You have to leave at ${formatDatetime(connection.departure)}. `
                   + `Your first stop will be ${connection.legs[0].to}. `
                   + `Your destination is ${connection.legs[connection.legs.length - 1].to}`;
     displayRouteOnMap = {

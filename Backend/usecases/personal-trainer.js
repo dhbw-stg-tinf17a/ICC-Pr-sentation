@@ -19,6 +19,7 @@ const places = require('../modules/places');
 const preferences = require('../modules/preferences');
 const weather = require('../modules/weather');
 const vvs = require('../modules/vvs');
+const { formatTime } = require('../utilities/formatter');
 
 const timezone = 'Europe/Berlin';
 
@@ -122,10 +123,11 @@ async function run() {
       return;
     }
 
-    const freeSlotStart = moment(freeSlot.start).tz(timezone).format('HH:mm');
     const notificationTime = moment(freeSlot.start)
       .subtract(pref.personalTrainerMinutesBeforeStart, 'minutes');
-    const body = `You have got a little time at ${freeSlotStart}. Since it ${precipitation ? 'rains' : 'doesn\'t rain'} today, why don't you do some sports at ${place.poi.name}?`;
+    const body = `You have got a little time at ${formatTime(freeSlot.start)}. `
+      + `Since it ${precipitation ? 'rains' : 'doesn\'t rain'} today, `
+      + `why don't you do some sports at ${place.poi.name}?`;
 
     schedule.scheduleJob(new Date(notificationTime), async () => {
       await notifications.sendNotifications({

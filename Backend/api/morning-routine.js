@@ -1,6 +1,6 @@
 const express = require('express');
 const wrapAsync = require('../utilities/wrap-async');
-const { formatDate } = require('../utilities/date-formatter');
+const { formatDatetime } = require('../utilities/formatter');
 const morningRoutine = require('../usecases/morning-routine');
 
 const router = express.Router();
@@ -20,16 +20,16 @@ router.get('/', wrapAsync(async (req, res) => {
 
     textToDisplay = `Next Event: ${event.summary}\n`
                     + `At: ${event.location}\n`
-                    + `Start: ${formatDate(event.start)}\n`
-                    + `Wake up: ${formatDate(wakeUpTime)}\n\n`
+                    + `Start: ${formatDatetime(event.start)}\n`
+                    + `Wake up: ${formatDatetime(wakeUpTime)}\n\n`
 
-                    + `Leave home: ${formatDate(connection.departure)}\n`
+                    + `Leave home: ${formatDatetime(connection.departure)}\n`
                     + `First stop: ${connection.legs[0].to}\n\n`
 
                     + `Weather: ${weatherForecast.day.shortPhrase} with ${weatherForecast.temperature.maximum.value}°C`;
 
-    textToRead = `Your next Event is ${event.summary} at ${event.location}. It starts at ${formatDate(event.start)}. `
-                  + `You have to leave at ${formatDate(connection.departure)}. `
+    textToRead = `Your next Event is ${event.summary} at ${event.location}. It starts at ${formatDatetime(event.start)}. `
+                  + `You have to leave at ${formatDatetime(connection.departure)}. `
                   + `The weather will be ${weatherForecast.day.shortPhrase} with ${weatherForecast.temperature.maximum.value}°C`;
 
     displayRouteOnMap = {

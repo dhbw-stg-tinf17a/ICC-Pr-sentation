@@ -19,6 +19,7 @@ const calendar = require('../modules/calendar');
 const places = require('../modules/places');
 const notifications = require('../modules/notifications');
 const preferences = require('../modules/preferences');
+const { formatTime } = require('../utilities/formatter');
 
 const timezone = 'Europe/Berlin';
 
@@ -83,10 +84,9 @@ async function run() {
       return;
     }
 
-    const freeSlotStart = moment(freeSlot.start).tz(timezone).format('HH:mm');
     const notificationTime = moment(freeSlot.start)
       .subtract(pref.lunchBreakMinutesBeforeStart, 'minutes');
-    const body = `You have some time to spare during your lunch break at ${freeSlotStart}, why not try a restaurant?`;
+    const body = `You have some time to spare during your lunch break at ${formatTime(freeSlot.start)}, why not try a restaurant?`;
 
     schedule.scheduleJob(new Date(notificationTime), async () => {
       await notifications.sendNotifications({
