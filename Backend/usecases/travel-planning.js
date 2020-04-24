@@ -180,7 +180,6 @@ async function run() {
         badge: '/badge.png',
         data: {
           usecase: 'travel-planning',
-          destinationID: destination.id,
         },
       },
     });

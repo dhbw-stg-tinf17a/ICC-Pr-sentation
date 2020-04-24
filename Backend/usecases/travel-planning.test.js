@@ -108,7 +108,6 @@ describe('travel planning use case', () => {
           badge: '/badge.png',
           body: 'Your weekend seems to be free, why not travel to Frankfurt (Main) and back for just 39.8 €?',
           data: {
-            destinationID: '8000105',
             usecase: 'travel-planning',
           },
           icon: '/favicon.jpg',
