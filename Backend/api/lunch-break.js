@@ -1,6 +1,6 @@
 const express = require('express');
 const wrapAsync = require('../utilities/wrap-async');
-const { formatTime } = require('../utilities/formatter');
+const { formatTime, formatConnection } = require('../utilities/formatter');
 const lunchBreak = require('../usecases/lunch-break');
 const vvs = require('../modules/vvs');
 
@@ -34,21 +34,21 @@ router.get('/', wrapAsync(async (req, res) => {
       + `${formatTime(freeSlot.end)}.\n`;
   } else {
     textToDisplay += 'No time for a lunch break.\n';
-    textToRead += 'Unfortunately, you don\'t have time for a lunch break today, but I\'ll try to '
+    textToRead += 'Unfortunately, you do not have time for a lunch break today, but I will try to '
       + 'find a restaurant anyway.\n';
   }
 
   if (restaurant) {
-    textToDisplay += `Restaurant: ${restaurant.poi.name} at ${restaurant.address.freeformAddress}.\n`;
-    textToRead += `I recommend the restaurant ${restaurant.poi.name}.\n`;
+    textToDisplay += `Restaurant: ${restaurant.poi.name} at ${restaurant.address.freeformAddress}.`;
+    textToRead += `I recommend the restaurant ${restaurant.poi.name}.`;
     furtherAction = 'Do you want to know how to get to the restaurant?';
     nextLink = `lunch-break/confirm?originLatitude=${latitude}&originLongitude=${longitude}`
       + `&destinationLatitude=${restaurant.location.lat}`
       + `&destinationLongitude=${restaurant.location.lon}`
       + `&departure=${freeSlot ? freeSlot.start.toISOString() : new Date().toISOString()}`;
   } else {
-    textToDisplay += 'No restaurant found.\n';
-    textToRead += 'Unfortunately I could not find a restaurant for today. Sorry.\n';
+    textToDisplay += 'No restaurant found.';
+    textToRead += 'Unfortunately I cannot find a restaurant for today. Sorry.';
   }
 
   res.send({
@@ -60,7 +60,7 @@ router.get('/', wrapAsync(async (req, res) => {
 }));
 
 // TODO store recommended restaurant for route generation
-// TODO store POI ID and don't recommend it again
+// TODO store POI ID and do not recommend it again
 router.get('/confirm', wrapAsync(async (req, res) => {
   const {
     originLatitude,
@@ -82,33 +82,22 @@ router.get('/confirm', wrapAsync(async (req, res) => {
     departure,
   });
 
-  let textToRead;
-  let textToDisplay;
-  let displayRouteOnMap;
+  let textToRead = '';
+  let textToDisplay = '';
+
   if (connection) {
-    textToDisplay = `Leave for Lunch: ${formatTime(connection.departure)}\n`
-                    + `First stop: ${connection.legs[0].to}\n`
-                    + `Destination: ${connection.legs[connection.legs.length - 1].to}`;
-    textToRead = `You have to leave at ${formatTime(connection.departure)}. `
-                  + `Your first stop will be ${connection.legs[0].to}. `
-                  + `Your destination is ${connection.legs[connection.legs.length - 1].to}`;
-    displayRouteOnMap = {
-      origin: connection.legs[0].from,
-      destination: connection.legs[connection.legs.length - 1].to,
-    };
+    textToDisplay += `Leave at: ${formatTime(connection.departure)}.\n`
+      + `Go to ${formatConnection(connection)}.`;
+    textToRead += `You have to leave at ${formatTime(connection.departure)}.\n`
+                  + `Go to ${formatConnection(connection)}.`;
   } else {
-    textToDisplay = 'Can not find route to restaurant!\nSorry!';
-    textToRead = 'I can not find a route to your restaurant. Sorry!';
-    displayRouteOnMap = null;
+    textToDisplay += 'No route found.';
+    textToRead += 'I cannot find a route to the restaurant. Sorry!';
   }
 
   res.send({
     textToDisplay,
     textToRead,
-    displayRouteOnMap,
-    displayPointOnMap: null,
-    furtherAction: null,
-    nextLink: null,
   });
 }));
 
