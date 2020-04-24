@@ -103,7 +103,20 @@ describe('/api/morning-routine', () => {
 
   describe('GET /confirm', () => {
     it('should generate a valid message with the quote of the day', async () => {
-      // const response = await request.get('/api/morning-routine/confirm');
+      morningRoutine.getQuoteOfTheDay.mockResolvedValueOnce({
+        quote: 'Only a stupid man would request that many quotes.',
+        author: 'Gunter',
+      });
+
+      const response = await request.get('/api/morning-routine/confirm');
+
+      expect(response.status).toStrictEqual(200);
+      expect(response.body).toStrictEqual({
+        textToDisplay: 'Quote of the day: "Only a stupid man would request that many quotes." - '
+          + 'Gunter.',
+        textToRead: 'Your quote of the day is from Gunter. He said Only a stupid man would request '
+          + 'that many quotes.',
+      });
     });
   });
 });
