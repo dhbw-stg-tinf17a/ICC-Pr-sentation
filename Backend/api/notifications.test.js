@@ -41,8 +41,16 @@ describe('/api/notifications', () => {
   });
 
   describe('POST /disable', () => {
-    it('should work', async () => {
-      // const response = request.post('/api/notifications/disable');
+    it('remove the subscription', async () => {
+      notifications.removeSubscription.mockResolvedValueOnce();
+
+      const response = await request.post('/api/notifications/disable').send({
+        endpoint: 'https://example.com/a',
+      });
+
+      expect(response.status).toStrictEqual(200);
+      expect(notifications.removeSubscription).toHaveBeenCalledTimes(1);
+      expect(notifications.removeSubscription).toHaveBeenLastCalledWith('https://example.com/a');
     });
   });
 });
