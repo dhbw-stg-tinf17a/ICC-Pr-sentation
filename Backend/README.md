@@ -12,3 +12,6 @@ To test it, you have to
 
 - Install the dependencies with `npm install`
 - Run the tests with `npm test`
+
+The coverage is shown in the terminal.
+You can also look at it by opening `./coverage/lcov-report/index.html` in the web browser.
