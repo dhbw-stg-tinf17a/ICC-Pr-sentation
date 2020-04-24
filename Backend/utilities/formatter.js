@@ -9,11 +9,11 @@ function formatDatetime(datetime) {
   const tomorrow = today.clone().add(1, 'day');
 
   if (localDatetime.isSame(today, 'day')) {
-    return `Today ${localDatetime.format('hh:mm A')}`;
+    return `today ${localDatetime.format('hh:mm A')}`;
   }
 
   if (localDatetime.isSame(tomorrow, 'day')) {
-    return `Tomorrow ${localDatetime.format('hh:mm A')}`;
+    return `tomorrow ${localDatetime.format('hh:mm A')}`;
   }
 
   return localDatetime.format('dddd hh:mm A');

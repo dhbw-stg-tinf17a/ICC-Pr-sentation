@@ -15,7 +15,7 @@ morningRoutine.getWeatherForecast.mockResolvedValue({
 });
 
 const clock = fakeTimers.install({
-  now: new Date('2020-01-15T08:00:00Z'),
+  now: new Date('2020-01-15T07:00:00Z'),
 });
 
 const request = supertest(app);
@@ -50,10 +50,10 @@ describe('/api/morning-routine', () => {
 
       expect(response.status).toStrictEqual(200);
       expect(response.body).toStrictEqual({
-        textToDisplay: 'Event: Mediocre morning.\nStart: Tomorrow 09:00 AM.\nLeave at: 08:20 AM.\n'
+        textToDisplay: 'Event: Mediocre morning.\nStart: tomorrow 09:00 AM.\nLeave at: 08:20 AM.\n'
           + 'Go to Talstraße, then Bergstraße.\nWake up at: 08:00 AM.\n'
           + 'Weather: Breezy in the morning; sunny.',
-        textToRead: 'Your next event is Mediocre morning.\nIt starts at Tomorrow 09:00 AM.\n'
+        textToRead: 'Your next event is Mediocre morning.\nIt starts at tomorrow 09:00 AM.\n'
           + 'You have to leave at 08:20 AM.\nGo to Talstraße, then Bergstraße.\n'
           + 'Wake up at 08:00 AM.\n'
           + 'The weather will be Breezy this morning; otherwise, chilly with plenty of sunshine.',
@@ -66,18 +66,18 @@ describe('/api/morning-routine', () => {
       morningRoutine.getWakeUpTime.mockResolvedValueOnce({
         event: {
           summary: 'Mediocre morning',
-          start: new Date('2020-01-16T08:00:00Z'),
+          start: new Date('2020-01-15T08:00:00Z'),
         },
-        wakeUpTime: new Date('2020-01-16T07:40:00Z'),
+        wakeUpTime: new Date('2020-01-15T07:40:00Z'),
       });
 
       const response = await request.get('/api/morning-routine');
 
       expect(response.status).toStrictEqual(200);
       expect(response.body).toStrictEqual({
-        textToDisplay: 'Event: Mediocre morning.\nStart: Tomorrow 09:00 AM.\n'
+        textToDisplay: 'Event: Mediocre morning.\nStart: today 09:00 AM.\n'
           + 'Wake up at: 08:40 AM.\nWeather: Breezy in the morning; sunny.',
-        textToRead: 'Your next event is Mediocre morning.\nIt starts at Tomorrow 09:00 AM.\n'
+        textToRead: 'Your next event is Mediocre morning.\nIt starts at today 09:00 AM.\n'
           + 'Wake up at 08:40 AM.\n'
           + 'The weather will be Breezy this morning; otherwise, chilly with plenty of sunshine.',
         furtherAction: 'Do you want to hear your quote of the day?',
