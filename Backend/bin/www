@@ -2,6 +2,8 @@
 
 require('dotenv').config();
 
+require('../usecases');
+
 const http = require('http');
 
 const logger = require('../utilities/logger');

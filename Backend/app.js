@@ -2,8 +2,6 @@ const express = require('express');
 const helmet = require('helmet');
 const morgan = require('morgan');
 
-require('./usecases');
-
 const app = express();
 
 app.use(helmet());
