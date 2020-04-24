@@ -10,8 +10,6 @@
  * the assistant presents the route taken to the main station (VVS).
  */
 
-// TODO store recommended travel destination for week
-
 const schedule = require('node-schedule');
 const moment = require('moment-timezone');
 const geolib = require('geolib');

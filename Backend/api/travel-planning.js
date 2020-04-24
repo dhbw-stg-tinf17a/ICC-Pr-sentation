@@ -83,7 +83,6 @@ router.get('/', wrapAsync(async (req, res) => {
   });
 }));
 
-// TODO store recommended travel destination for week
 router.get('/confirm', wrapAsync(async (req, res) => {
   const connection = await travelPlanning.getConnectionToMainStation(req.query.arrival);
 

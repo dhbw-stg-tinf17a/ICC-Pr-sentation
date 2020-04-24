@@ -60,7 +60,6 @@ router.get('/', wrapAsync(async (req, res) => {
   });
 }));
 
-// TODO store recommended training place for day
 router.get('/confirm', wrapAsync(async (req, res) => {
   const {
     latitude,

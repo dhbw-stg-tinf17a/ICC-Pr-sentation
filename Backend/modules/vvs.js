@@ -111,8 +111,6 @@ async function getWaypoint({
   } else if (stop !== undefined) {
     locationRefContent = `<StopPointRef>${stop}</StopPointRef>`;
   } else {
-    // TODO maybe convert address to coordinates using Azure Maps instead
-    // would be faster and more flexible
     const addressCode = await getAddressCode(address);
     locationRefContent = `<AddressRef>${addressCode}</AddressRef>`;
   }

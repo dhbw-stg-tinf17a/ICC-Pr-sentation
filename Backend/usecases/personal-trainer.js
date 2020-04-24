@@ -8,8 +8,6 @@
  * activity, the assistant  presents the route to the place (VVS) .
  */
 
-// TODO store recommended training place for day
-
 const schedule = require('node-schedule');
 const moment = require('moment-timezone');
 const logger = require('../utilities/logger');

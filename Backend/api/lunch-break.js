@@ -59,7 +59,6 @@ router.get('/', wrapAsync(async (req, res) => {
   });
 }));
 
-// TODO store recommended restaurant for day
 router.get('/confirm', wrapAsync(async (req, res) => {
   const {
     originLatitude,
